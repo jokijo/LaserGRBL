@@ -216,7 +216,7 @@
                             <Button Content="Start" Width="60"/>
                             <Button Content="Pause" Width="60"/>
                             <Button Content="Stop" Width="60"/>
-                            <Separator/>
+                            <Border Width="1" Background="#CCCCCC" Margin="5,0"/>
                             <Button Content="Reset" Width="60"/>
                         </StackPanel>
                     </Border>

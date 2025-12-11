@@ -2,5 +2,6 @@
 
 public partial class MainWindowViewModel : ViewModelBase
 {
-    public string Greeting { get; } = "Welcome to Avalonia!";
+    // Main window view model for AvaloniaGRBL
+    // Future properties and commands will be added here as features are implemented
 }

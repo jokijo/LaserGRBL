@@ -1,0 +1,238 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:AvaloniaGRBL.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="768"
+        x:Class="AvaloniaGRBL.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="AvaloniaGRBL"
+        Width="1024" Height="768">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <DockPanel>
+        <!-- Menu Bar -->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_Grbl">
+                <MenuItem Header="Connect..."/>
+                <MenuItem Header="Disconnect"/>
+                <MenuItem Header="WiFi Discovery"/>
+                <Separator/>
+                <MenuItem Header="Grbl Reset"/>
+                <MenuItem Header="Go Home"/>
+                <MenuItem Header="Unlock"/>
+                <Separator/>
+                <MenuItem Header="Grbl Configuration"/>
+                <MenuItem Header="Settings"/>
+                <MenuItem Header="Material Database"/>
+                <MenuItem Header="Laser Usage Stats"/>
+                <Separator/>
+                <MenuItem Header="Hotkeys"/>
+                <Separator/>
+                <MenuItem Header="Exit"/>
+            </MenuItem>
+            <MenuItem Header="_File">
+                <MenuItem Header="Open File..."/>
+                <MenuItem Header="Append File..."/>
+                <MenuItem Header="Re-Open File"/>
+                <MenuItem Header="Save Program"/>
+                <MenuItem Header="Advanced Save"/>
+                <Separator/>
+                <MenuItem Header="Save Project"/>
+                <Separator/>
+                <MenuItem Header="Send File"/>
+                <MenuItem Header="Start From Position"/>
+                <Separator/>
+                <MenuItem Header="Run Multiple"/>
+            </MenuItem>
+            <MenuItem Header="_Generate">
+                <MenuItem Header="Power vs Speed"/>
+                <MenuItem Header="Cutting Test"/>
+                <MenuItem Header="Accuracy Test"/>
+                <MenuItem Header="Shake Test"/>
+                <MenuItem Header="ESP8266"/>
+                <MenuItem Header="Grbl Emulator"/>
+            </MenuItem>
+            <MenuItem Header="_Schema">
+                <MenuItem Header="CAD Style"/>
+                <MenuItem Header="CAD Dark"/>
+                <MenuItem Header="Blue Laser"/>
+                <MenuItem Header="Red Laser"/>
+                <MenuItem Header="Dark"/>
+                <MenuItem Header="Hacker"/>
+                <MenuItem Header="Nighty"/>
+            </MenuItem>
+            <MenuItem Header="_Preview">
+                <MenuItem Header="Auto Size"/>
+                <MenuItem Header="Zoom In"/>
+                <MenuItem Header="Zoom Out"/>
+                <Separator/>
+                <MenuItem Header="Show Laser Off Movements"/>
+                <MenuItem Header="Show Executed Commands"/>
+                <MenuItem Header="Show Bounding Box"/>
+                <MenuItem Header="Cross Cursor"/>
+            </MenuItem>
+            <MenuItem Header="_Language">
+                <MenuItem Header="English"/>
+                <MenuItem Header="Italian"/>
+                <MenuItem Header="Spanish"/>
+                <MenuItem Header="French"/>
+                <MenuItem Header="German"/>
+            </MenuItem>
+            <MenuItem Header="_Tools">
+                <MenuItem Header="Install CH340 Driver"/>
+                <MenuItem Header="Flash Grbl Firmware"/>
+                <Separator/>
+                <MenuItem Header="Configuration Wizard"/>
+            </MenuItem>
+            <MenuItem Header="_?">
+                <MenuItem Header="Auto Update"/>
+                <MenuItem Header="Check Now"/>
+                <Separator/>
+                <MenuItem Header="Open Session Log"/>
+                <MenuItem Header="Activate Extended Log"/>
+                <Separator/>
+                <MenuItem Header="Help Online"/>
+                <MenuItem Header="About"/>
+                <MenuItem Header="Facebook Community"/>
+                <Separator/>
+                <MenuItem Header="Donate"/>
+                <MenuItem Header="License"/>
+            </MenuItem>
+        </Menu>
+
+        <!-- Status Bar -->
+        <Border DockPanel.Dock="Bottom" Background="#F0F0F0" BorderBrush="#CCCCCC" BorderThickness="0,1,0,0" Padding="5,2">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="Lines: 0/0" VerticalAlignment="Center"/>
+                <TextBlock Text="Buffer: 0" VerticalAlignment="Center"/>
+                <ProgressBar Width="100" Height="16" Value="0" Maximum="127" VerticalAlignment="Center"/>
+                <TextBlock Text="Estimated: 00:00:00" VerticalAlignment="Center"/>
+                <TextBlock Text="Status: Idle" VerticalAlignment="Center" FontWeight="Bold"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content Area with Split View -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300" MinWidth="200"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left Panel: Connection and Jog Controls -->
+            <Border Grid.Column="0" Background="#FAFAFA" BorderBrush="#CCCCCC" BorderThickness="0,0,1,0">
+                <StackPanel Margin="10">
+                    <!-- Connection Section -->
+                    <Border Background="White" BorderBrush="#CCCCCC" BorderThickness="1" Padding="10" Margin="0,0,0,10">
+                        <StackPanel>
+                            <TextBlock Text="Connection" FontWeight="Bold" Margin="0,0,0,10"/>
+                            <StackPanel Orientation="Horizontal" Spacing="5" Margin="0,0,0,5">
+                                <TextBlock Text="COM Port:" VerticalAlignment="Center" Width="80"/>
+                                <ComboBox Width="120" SelectedIndex="0">
+                                    <ComboBoxItem>COM1</ComboBoxItem>
+                                    <ComboBoxItem>COM2</ComboBoxItem>
+                                    <ComboBoxItem>COM3</ComboBoxItem>
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="5" Margin="0,0,0,10">
+                                <TextBlock Text="Baud Rate:" VerticalAlignment="Center" Width="80"/>
+                                <ComboBox Width="120" SelectedIndex="0">
+                                    <ComboBoxItem>115200</ComboBoxItem>
+                                    <ComboBoxItem>57600</ComboBoxItem>
+                                    <ComboBoxItem>9600</ComboBoxItem>
+                                </ComboBox>
+                            </StackPanel>
+                            <Button Content="Connect" HorizontalAlignment="Stretch"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Jog Controls Section -->
+                    <Border Background="White" BorderBrush="#CCCCCC" BorderThickness="1" Padding="10">
+                        <StackPanel>
+                            <TextBlock Text="Jog Controls" FontWeight="Bold" Margin="0,0,0,10"/>
+                            
+                            <!-- Jog Buttons Grid -->
+                            <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*,*" Margin="0,0,0,10">
+                                <!-- Top Row -->
+                                <Button Grid.Row="0" Grid.Column="0" Content="↖" Width="50" Height="40" HorizontalAlignment="Center"/>
+                                <Button Grid.Row="0" Grid.Column="1" Content="↑" Width="50" Height="40" HorizontalAlignment="Center"/>
+                                <Button Grid.Row="0" Grid.Column="2" Content="↗" Width="50" Height="40" HorizontalAlignment="Center"/>
+                                
+                                <!-- Middle Row -->
+                                <Button Grid.Row="1" Grid.Column="0" Content="←" Width="50" Height="40" HorizontalAlignment="Center"/>
+                                <Button Grid.Row="1" Grid.Column="1" Content="⌂" Width="50" Height="40" HorizontalAlignment="Center"/>
+                                <Button Grid.Row="1" Grid.Column="2" Content="→" Width="50" Height="40" HorizontalAlignment="Center"/>
+                                
+                                <!-- Bottom Row -->
+                                <Button Grid.Row="2" Grid.Column="0" Content="↙" Width="50" Height="40" HorizontalAlignment="Center"/>
+                                <Button Grid.Row="2" Grid.Column="1" Content="↓" Width="50" Height="40" HorizontalAlignment="Center"/>
+                                <Button Grid.Row="2" Grid.Column="2" Content="↘" Width="50" Height="40" HorizontalAlignment="Center"/>
+                            </Grid>
+
+                            <!-- Jog Speed -->
+                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                <TextBlock Text="Speed:" VerticalAlignment="Center" Width="60"/>
+                                <TextBox Text="1000" Width="80"/>
+                                <TextBlock Text="mm/min" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            
+                            <StackPanel Orientation="Horizontal" Spacing="5" Margin="0,5,0,0">
+                                <TextBlock Text="Step:" VerticalAlignment="Center" Width="60"/>
+                                <ComboBox Width="80" SelectedIndex="1">
+                                    <ComboBoxItem>0.1</ComboBoxItem>
+                                    <ComboBoxItem>1</ComboBoxItem>
+                                    <ComboBoxItem>10</ComboBoxItem>
+                                    <ComboBoxItem>100</ComboBoxItem>
+                                </ComboBox>
+                                <TextBlock Text="mm" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- Splitter -->
+            <GridSplitter Grid.Column="1" Background="#CCCCCC" ResizeDirection="Columns"/>
+
+            <!-- Right Panel: Preview Area -->
+            <Border Grid.Column="2" Background="White">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Toolbar -->
+                    <Border Grid.Row="0" Background="#F0F0F0" BorderBrush="#CCCCCC" BorderThickness="0,0,0,1" Padding="5">
+                        <StackPanel Orientation="Horizontal" Spacing="5">
+                            <Button Content="Open" Width="60"/>
+                            <Button Content="Start" Width="60"/>
+                            <Button Content="Pause" Width="60"/>
+                            <Button Content="Stop" Width="60"/>
+                            <Border Width="1" Background="#CCCCCC" Margin="5,0"/>
+                            <Button Content="Reset" Width="60"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Preview Canvas -->
+                    <Border Grid.Row="1" Background="#FAFAFA" Margin="10">
+                        <Canvas Background="White">
+                            <TextBlock Canvas.Left="20" Canvas.Top="20" Text="G-Code Preview Area" 
+                                     FontSize="24" Foreground="#CCCCCC" FontWeight="Light"/>
+                            <TextBlock Canvas.Left="20" Canvas.Top="60" Text="Load a G-Code file to see the preview" 
+                                     FontSize="14" Foreground="#999999"/>
+                        </Canvas>
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+    </DockPanel>
+
+</Window>

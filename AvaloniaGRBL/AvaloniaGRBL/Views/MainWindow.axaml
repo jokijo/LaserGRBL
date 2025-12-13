@@ -214,24 +214,44 @@
                     <!-- Toolbar -->
                     <Border Grid.Row="0" Background="#F0F0F0" BorderBrush="#CCCCCC" BorderThickness="0,0,0,1" Padding="5">
                         <StackPanel Orientation="Horizontal" Spacing="5">
-                            <Button Content="Open" Width="60"/>
+                            <Button Content="Open" Width="60" Command="{Binding LoadGCodeFileCommand}"/>
                             <Button Content="Start" Width="60"/>
                             <Button Content="Pause" Width="60"/>
                             <Button Content="Stop" Width="60"/>
                             <Border Width="1" Background="#CCCCCC" Margin="5,0"/>
                             <Button Content="Reset" Width="60"/>
+                            <Separator/>
+                            <TextBlock Text="{Binding GcodeFileName}" VerticalAlignment="Center" Margin="10,0,0,0" FontWeight="SemiBold"/>
                         </StackPanel>
                     </Border>
 
                     <!-- Preview Canvas / Connection Log -->
                     <Border Grid.Row="1" Background="#FAFAFA" Margin="10">
                         <Grid>
-                            <Canvas Background="White" IsVisible="{Binding !IsConnected}">
-                                <TextBlock Canvas.Left="20" Canvas.Top="20" Text="G-Code Preview Area" 
-                                         FontSize="24" Foreground="#CCCCCC" FontWeight="Light"/>
-                                <TextBlock Canvas.Left="20" Canvas.Top="60" Text="Load a G-Code file to see the preview" 
-                                         FontSize="14" Foreground="#999999"/>
-                            </Canvas>
+                            <!-- G-Code Preview Canvas -->
+                            <Border Background="White" IsVisible="{Binding !IsConnected}">
+                                <Grid>
+                                    <Canvas Name="PreviewCanvas" Background="White" ClipToBounds="True"/>
+                                    <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20" IsVisible="{Binding !HasGCodeLoaded}">
+                                        <TextBlock Text="G-Code Preview Area" 
+                                                 FontSize="24" Foreground="#CCCCCC" FontWeight="Light"/>
+                                        <TextBlock Text="Load a G-Code file to see the preview" 
+                                                 FontSize="14" Foreground="#999999" Margin="0,10,0,0"/>
+                                    </StackPanel>
+                                    <Border Background="#F0F0F0" 
+                                            BorderBrush="#CCCCCC" 
+                                            BorderThickness="1" 
+                                            Padding="10" 
+                                            VerticalAlignment="Bottom" 
+                                            HorizontalAlignment="Right" 
+                                            Margin="10"
+                                            IsVisible="{Binding HasGCodeLoaded}">
+                                        <TextBlock Text="{Binding GcodeStats}" FontFamily="Courier New" FontSize="12"/>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                            
+                            <!-- Connection Log -->
                             <ScrollViewer Background="White" IsVisible="{Binding IsConnected}">
                                 <StackPanel Margin="10">
                                     <TextBlock Text="Connection Log" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>

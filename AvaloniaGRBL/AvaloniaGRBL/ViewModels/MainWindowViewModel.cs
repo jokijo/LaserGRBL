@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AvaloniaGRBL.Models;
 using AvaloniaGRBL.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -36,6 +37,18 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     
     [ObservableProperty]
     private string _connectionLog = "";
+    
+    [ObservableProperty]
+    private GCodeFile? _loadedGCodeFile;
+    
+    [ObservableProperty]
+    private bool _hasGCodeLoaded;
+    
+    [ObservableProperty]
+    private string _gcodeFileName = "No file loaded";
+    
+    [ObservableProperty]
+    private string _gcodeStats = "";
     
     public MainWindowViewModel()
     {
@@ -157,6 +170,73 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         
         // Rebuild log text from queue using string.Join for efficiency
         ConnectionLog = string.Join(Environment.NewLine, _logQueue);
+    }
+    
+    [RelayCommand]
+    private async Task LoadGCodeFileAsync()
+    {
+        try
+        {
+            var topLevel = Avalonia.Application.Current?.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop
+                ? desktop.MainWindow
+                : null;
+            
+            if (topLevel == null)
+                return;
+            
+            var files = await topLevel.StorageProvider.OpenFilePickerAsync(new Avalonia.Platform.Storage.FilePickerOpenOptions
+            {
+                Title = "Open G-Code File",
+                AllowMultiple = false,
+                FileTypeFilter = new[]
+                {
+                    new Avalonia.Platform.Storage.FilePickerFileType("G-Code Files")
+                    {
+                        Patterns = new[] { "*.gcode", "*.nc", "*.ngc", "*.txt" }
+                    },
+                    new Avalonia.Platform.Storage.FilePickerFileType("All Files")
+                    {
+                        Patterns = new[] { "*.*" }
+                    }
+                }
+            });
+            
+            if (files.Count > 0)
+            {
+                var file = files[0];
+                var path = file.Path.LocalPath;
+                
+                AppendLog($"Loading G-Code file: {file.Name}");
+                
+                // Load file on background thread to avoid blocking UI
+                LoadedGCodeFile = await Task.Run(() => GCodeFile.Load(path));
+                HasGCodeLoaded = true;
+                GcodeFileName = file.Name;
+                
+                UpdateGCodeStats();
+                
+                AppendLog($"G-Code file loaded: {LoadedGCodeFile.CommandCount} commands");
+            }
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Error loading G-Code file: {ex.Message}");
+            HasGCodeLoaded = false;
+            LoadedGCodeFile = null;
+        }
+    }
+    
+    private void UpdateGCodeStats()
+    {
+        if (LoadedGCodeFile == null)
+        {
+            GcodeStats = "";
+            return;
+        }
+        
+        var bounds = LoadedGCodeFile.Bounds;
+        GcodeStats = $"Commands: {LoadedGCodeFile.CommandCount}\n" +
+                     $"Size: {bounds.Width:F2} x {bounds.Height:F2} mm";
     }
     
     public void Dispose()

@@ -56,7 +56,9 @@ public class GCodeFile
                 cmd.CommandType == GCodeCommandType.ArcCW ||
                 cmd.CommandType == GCodeCommandType.ArcCCW)
             {
-                // Update position (absolute or relative mode - we assume absolute for now)
+                // NOTE: This assumes absolute positioning mode (G90)
+                // TODO: Add support for relative positioning mode (G91) by tracking modal state
+                // and adding relative coordinates to current position instead of replacing them
                 if (cmd.HasParameter('X'))
                     currentX = cmd.GetParameter('X');
                 if (cmd.HasParameter('Y'))

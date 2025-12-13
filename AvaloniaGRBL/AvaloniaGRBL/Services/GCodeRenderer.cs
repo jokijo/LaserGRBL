@@ -160,6 +160,8 @@ public class GCodeRenderer
         if (_currentFile == null)
             return;
         
+        // NOTE: This assumes absolute positioning mode (G90)
+        // Relative positioning mode (G91) is not currently supported
         double currentX = 0, currentY = 0;
         bool laserOn = false;
         
@@ -221,8 +223,10 @@ public class GCodeRenderer
             else if (cmd.CommandType == GCodeCommandType.ArcCW || 
                      cmd.CommandType == GCodeCommandType.ArcCCW)
             {
-                // Simplified arc rendering - for now, approximate with line to end point
-                // Full arc rendering would require calculating arc center and drawing segments
+                // NOTE: Simplified arc rendering - arcs are approximated with straight lines
+                // This provides a basic visualization but reduces accuracy for curved toolpaths
+                // TODO: Implement proper arc rendering by calculating arc center from I/J parameters
+                // and drawing multiple line segments to approximate the curve
                 var newX = cmd.HasParameter('X') ? cmd.GetParameter('X') : currentX;
                 var newY = cmd.HasParameter('Y') ? cmd.GetParameter('Y') : currentY;
                 

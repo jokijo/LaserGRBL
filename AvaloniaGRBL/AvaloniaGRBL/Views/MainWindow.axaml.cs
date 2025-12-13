@@ -1,3 +1,4 @@
+using System;
 using Avalonia.Controls;
 using AvaloniaGRBL.Services;
 using AvaloniaGRBL.ViewModels;
@@ -30,6 +31,17 @@ public partial class MainWindow : Window
                 viewModel.PropertyChanged += ViewModel_PropertyChanged;
             }
         }
+    }
+    
+    protected override void OnClosed(EventArgs e)
+    {
+        // Unsubscribe from ViewModel events to prevent memory leak
+        if (DataContext is MainWindowViewModel viewModel)
+        {
+            viewModel.PropertyChanged -= ViewModel_PropertyChanged;
+        }
+        
+        base.OnClosed(e);
     }
     
     private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

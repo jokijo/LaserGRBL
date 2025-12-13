@@ -45,30 +45,28 @@ public class GCodeCommand
             return;
         }
         
-        // Parse command type
-        if (cleanCommand.StartsWith("G0", StringComparison.OrdinalIgnoreCase) || 
-            cleanCommand.Contains("G0 ") || cleanCommand.Contains("G0X") || cleanCommand.Contains("G0Y"))
+        // Parse command type using word boundary matching for accuracy
+        if (Regex.IsMatch(cleanCommand, @"\bG0\b", RegexOptions.IgnoreCase))
         {
             CommandType = GCodeCommandType.RapidMove;
         }
-        else if (cleanCommand.StartsWith("G1", StringComparison.OrdinalIgnoreCase) || 
-                 cleanCommand.Contains("G1 ") || cleanCommand.Contains("G1X") || cleanCommand.Contains("G1Y"))
+        else if (Regex.IsMatch(cleanCommand, @"\bG1\b", RegexOptions.IgnoreCase))
         {
             CommandType = GCodeCommandType.LinearMove;
         }
-        else if (cleanCommand.StartsWith("G2", StringComparison.OrdinalIgnoreCase) || cleanCommand.Contains("G2 "))
+        else if (Regex.IsMatch(cleanCommand, @"\bG2\b", RegexOptions.IgnoreCase))
         {
             CommandType = GCodeCommandType.ArcCW;
         }
-        else if (cleanCommand.StartsWith("G3", StringComparison.OrdinalIgnoreCase) || cleanCommand.Contains("G3 "))
+        else if (Regex.IsMatch(cleanCommand, @"\bG3\b", RegexOptions.IgnoreCase))
         {
             CommandType = GCodeCommandType.ArcCCW;
         }
-        else if (cleanCommand.StartsWith("M3", StringComparison.OrdinalIgnoreCase) || cleanCommand.Contains("M3 ") || cleanCommand.Contains("M3S"))
+        else if (Regex.IsMatch(cleanCommand, @"\bM3\b", RegexOptions.IgnoreCase))
         {
             CommandType = GCodeCommandType.SpindleOn;
         }
-        else if (cleanCommand.StartsWith("M5", StringComparison.OrdinalIgnoreCase) || cleanCommand.Contains("M5"))
+        else if (Regex.IsMatch(cleanCommand, @"\bM5\b", RegexOptions.IgnoreCase))
         {
             CommandType = GCodeCommandType.SpindleOff;
         }
@@ -78,7 +76,8 @@ public class GCodeCommand
         }
         
         // Parse parameters using regex to extract letter-number pairs
-        var matches = Regex.Matches(cleanCommand, @"([A-Z])(-?\d+\.?\d*)");
+        // Updated regex to require digits after decimal point when present
+        var matches = Regex.Matches(cleanCommand, @"([A-Z])(-?\d+(?:\.\d+)?)");
         foreach (Match match in matches)
         {
             if (match.Groups.Count >= 3)

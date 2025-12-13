@@ -208,7 +208,8 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
                 
                 AppendLog($"Loading G-Code file: {file.Name}");
                 
-                LoadedGCodeFile = GCodeFile.Load(path);
+                // Load file on background thread to avoid blocking UI
+                LoadedGCodeFile = await Task.Run(() => GCodeFile.Load(path));
                 HasGCodeLoaded = true;
                 GcodeFileName = file.Name;
                 

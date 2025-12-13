@@ -116,18 +116,27 @@ public partial class MainWindowViewModel : ViewModelBase
     
     private void OnConnectionStatusChanged(object? sender, string status)
     {
-        StatusText = status;
-        AppendLog($"Status: {status}");
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            StatusText = status;
+            AppendLog($"Status: {status}");
+        });
     }
     
     private void OnDataReceived(object? sender, string data)
     {
-        AppendLog($"RX: {data}");
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            AppendLog($"RX: {data}");
+        });
     }
     
     private void OnErrorOccurred(object? sender, Exception exception)
     {
-        AppendLog($"Error: {exception.Message}");
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            AppendLog($"Error: {exception.Message}");
+        });
     }
     
     private void AppendLog(string message)

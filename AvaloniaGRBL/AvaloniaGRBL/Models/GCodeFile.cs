@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AvaloniaGRBL.Models;
 
@@ -87,7 +88,7 @@ public class GCodeFile
     /// <summary>
     /// Saves the G-Code file to the specified path
     /// </summary>
-    public async System.Threading.Tasks.Task SaveAsync(string filePath)
+    public async Task SaveAsync(string filePath)
     {
         var lines = Commands.Select(cmd => cmd.RawCommand).ToArray();
         await File.WriteAllLinesAsync(filePath, lines);

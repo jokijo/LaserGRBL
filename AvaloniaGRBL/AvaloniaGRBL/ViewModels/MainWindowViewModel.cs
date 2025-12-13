@@ -54,6 +54,8 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     [ObservableProperty]
     private string _gcodeStats = "";
     
+    private string? _lastOpenedFilePath;
+    
     [ObservableProperty]
     private double _jogSpeed = 1000;
     
@@ -265,6 +267,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
                 LoadedGCodeFile = await Task.Run(() => GCodeFile.Load(path));
                 HasGCodeLoaded = true;
                 GcodeFileName = file.Name;
+                _lastOpenedFilePath = path;
                 
                 UpdateGCodeStats();
                 
@@ -290,6 +293,189 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         var bounds = LoadedGCodeFile.Bounds;
         GcodeStats = $"Commands: {LoadedGCodeFile.CommandCount}\n" +
                      $"Size: {bounds.Width:F2} x {bounds.Height:F2} mm";
+    }
+    
+    [RelayCommand]
+    private async Task AppendGCodeFileAsync()
+    {
+        try
+        {
+            var topLevel = Avalonia.Application.Current?.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop
+                ? desktop.MainWindow
+                : null;
+            
+            if (topLevel == null)
+                return;
+            
+            var files = await topLevel.StorageProvider.OpenFilePickerAsync(new Avalonia.Platform.Storage.FilePickerOpenOptions
+            {
+                Title = "Append G-Code File",
+                AllowMultiple = false,
+                FileTypeFilter = new[]
+                {
+                    new Avalonia.Platform.Storage.FilePickerFileType("G-Code Files")
+                    {
+                        Patterns = new[] { "*.gcode", "*.nc", "*.ngc", "*.txt" }
+                    },
+                    new Avalonia.Platform.Storage.FilePickerFileType("All Files")
+                    {
+                        Patterns = new[] { "*.*" }
+                    }
+                }
+            });
+            
+            if (files.Count > 0)
+            {
+                var file = files[0];
+                var path = file.Path.LocalPath;
+                
+                AppendLog($"Appending G-Code file: {file.Name}");
+                
+                // Load the new file
+                var appendedFile = await Task.Run(() => GCodeFile.Load(path));
+                
+                if (LoadedGCodeFile != null)
+                {
+                    // Append commands to existing file
+                    LoadedGCodeFile.AppendCommands(appendedFile.Commands);
+                    GcodeFileName = $"{GcodeFileName} + {file.Name}";
+                }
+                else
+                {
+                    // No existing file, just load it
+                    LoadedGCodeFile = appendedFile;
+                    GcodeFileName = file.Name;
+                    _lastOpenedFilePath = path;
+                }
+                
+                HasGCodeLoaded = true;
+                UpdateGCodeStats();
+                
+                AppendLog($"File appended. Total commands: {LoadedGCodeFile.CommandCount}");
+            }
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Error appending G-Code file: {ex.Message}");
+        }
+    }
+    
+    [RelayCommand]
+    private async Task ReOpenGCodeFileAsync()
+    {
+        if (string.IsNullOrEmpty(_lastOpenedFilePath))
+        {
+            AppendLog("No file to re-open");
+            return;
+        }
+        
+        try
+        {
+            AppendLog($"Re-opening file: {_lastOpenedFilePath}");
+            
+            // Load file on background thread to avoid blocking UI
+            LoadedGCodeFile = await Task.Run(() => GCodeFile.Load(_lastOpenedFilePath));
+            HasGCodeLoaded = true;
+            GcodeFileName = System.IO.Path.GetFileName(_lastOpenedFilePath);
+            
+            UpdateGCodeStats();
+            
+            AppendLog($"G-Code file re-opened: {LoadedGCodeFile.CommandCount} commands");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Error re-opening G-Code file: {ex.Message}");
+            HasGCodeLoaded = false;
+            LoadedGCodeFile = null;
+        }
+    }
+    
+    [RelayCommand]
+    private async Task SaveProgramAsync()
+    {
+        if (LoadedGCodeFile == null)
+        {
+            AppendLog("No program to save");
+            return;
+        }
+        
+        try
+        {
+            var topLevel = Avalonia.Application.Current?.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop
+                ? desktop.MainWindow
+                : null;
+            
+            if (topLevel == null)
+                return;
+            
+            var file = await topLevel.StorageProvider.SaveFilePickerAsync(new Avalonia.Platform.Storage.FilePickerSaveOptions
+            {
+                Title = "Save G-Code Program",
+                DefaultExtension = "gcode",
+                SuggestedFileName = string.IsNullOrEmpty(_lastOpenedFilePath) 
+                    ? "program.gcode" 
+                    : System.IO.Path.GetFileName(_lastOpenedFilePath),
+                FileTypeChoices = new[]
+                {
+                    new Avalonia.Platform.Storage.FilePickerFileType("G-Code Files")
+                    {
+                        Patterns = new[] { "*.gcode", "*.nc", "*.ngc" }
+                    },
+                    new Avalonia.Platform.Storage.FilePickerFileType("Text Files")
+                    {
+                        Patterns = new[] { "*.txt" }
+                    },
+                    new Avalonia.Platform.Storage.FilePickerFileType("All Files")
+                    {
+                        Patterns = new[] { "*.*" }
+                    }
+                }
+            });
+            
+            if (file != null)
+            {
+                var path = file.Path.LocalPath;
+                AppendLog($"Saving program to: {path}");
+                
+                await LoadedGCodeFile.SaveAsync(path);
+                _lastOpenedFilePath = path;
+                GcodeFileName = System.IO.Path.GetFileName(path);
+                
+                AppendLog($"Program saved successfully");
+            }
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Error saving program: {ex.Message}");
+        }
+    }
+    
+    [RelayCommand]
+    private void AdvancedSave()
+    {
+        // Placeholder for advanced save functionality
+        AppendLog("Advanced Save feature coming soon");
+    }
+    
+    [RelayCommand]
+    private void SaveProject()
+    {
+        // Placeholder for save project functionality
+        AppendLog("Save Project feature coming soon");
+    }
+    
+    [RelayCommand]
+    private void StartFromPosition()
+    {
+        // Placeholder for start from position functionality
+        AppendLog("Start From Position feature coming soon");
+    }
+    
+    [RelayCommand]
+    private void RunMultiple()
+    {
+        // Placeholder for run multiple functionality
+        AppendLog("Run Multiple feature coming soon");
     }
     
     [RelayCommand]

@@ -39,18 +39,18 @@
                 <MenuItem Header="Exit"/>
             </MenuItem>
             <MenuItem Header="_File">
-                <MenuItem Header="Open File..."/>
-                <MenuItem Header="Append File..."/>
-                <MenuItem Header="Re-Open File"/>
-                <MenuItem Header="Save Program"/>
-                <MenuItem Header="Advanced Save"/>
+                <MenuItem Header="Open File..." Command="{Binding LoadGCodeFileCommand}"/>
+                <MenuItem Header="Append File..." Command="{Binding AppendGCodeFileCommand}"/>
+                <MenuItem Header="Re-Open File" Command="{Binding ReOpenGCodeFileCommand}"/>
+                <MenuItem Header="Save Program" Command="{Binding SaveProgramCommand}"/>
+                <MenuItem Header="Advanced Save" Command="{Binding AdvancedSaveCommand}"/>
                 <Separator/>
-                <MenuItem Header="Save Project"/>
+                <MenuItem Header="Save Project" Command="{Binding SaveProjectCommand}"/>
                 <Separator/>
-                <MenuItem Header="Send File"/>
-                <MenuItem Header="Start From Position"/>
+                <MenuItem Header="Send File" Command="{Binding StartProgramCommand}"/>
+                <MenuItem Header="Start From Position" Command="{Binding StartFromPositionCommand}"/>
                 <Separator/>
-                <MenuItem Header="Run Multiple"/>
+                <MenuItem Header="Run Multiple" Command="{Binding RunMultipleCommand}"/>
             </MenuItem>
             <MenuItem Header="_Generate">
                 <MenuItem Header="Power vs Speed"/>
@@ -109,14 +109,14 @@
         </Menu>
 
         <!-- Status Bar -->
-        <Border DockPanel.Dock="Bottom" Background="#F0F0F0" BorderBrush="#CCCCCC" BorderThickness="0,1,0,0" Padding="5,2">
+        <Border DockPanel.Dock="Bottom" Background="#E0E0E0" BorderBrush="#AAAAAA" BorderThickness="0,1,0,0" Padding="5,2">
             <StackPanel Orientation="Horizontal" Spacing="10">
-                <TextBlock Text="Lines: 0/0" VerticalAlignment="Center"/>
-                <TextBlock Text="Buffer: 0" VerticalAlignment="Center"/>
+                <TextBlock Text="Lines: 0/0" VerticalAlignment="Center" Foreground="#000000"/>
+                <TextBlock Text="Buffer: 0" VerticalAlignment="Center" Foreground="#000000"/>
                 <ProgressBar Width="100" Height="16" Value="0" Maximum="127" VerticalAlignment="Center"/>
-                <TextBlock Text="Estimated: 00:00:00" VerticalAlignment="Center"/>
-                <TextBlock Text="{Binding StatusText, StringFormat='Status: {0}'}" VerticalAlignment="Center" FontWeight="Bold"/>
-                <TextBlock Text="{Binding GrblState, StringFormat='State: {0}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#0066CC"/>
+                <TextBlock Text="Estimated: 00:00:00" VerticalAlignment="Center" Foreground="#000000"/>
+                <TextBlock Text="{Binding StatusText, StringFormat='Status: {0}'}" VerticalAlignment="Center" FontWeight="Bold" Foreground="#000000"/>
+                <TextBlock Text="{Binding GrblState, StringFormat='State: {0}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#0055AA"/>
             </StackPanel>
         </Border>
 
@@ -129,18 +129,18 @@
             </Grid.ColumnDefinitions>
 
             <!-- Left Panel: Connection and Jog Controls -->
-            <Border Grid.Column="0" Background="#FAFAFA" BorderBrush="#CCCCCC" BorderThickness="0,0,1,0">
+            <Border Grid.Column="0" Background="#F5F5F5" BorderBrush="#AAAAAA" BorderThickness="0,0,1,0">
                 <StackPanel Margin="10">
                     <!-- Connection Section -->
-                    <Border Background="White" BorderBrush="#CCCCCC" BorderThickness="1" Padding="10" Margin="0,0,0,10">
+                    <Border Background="White" BorderBrush="#AAAAAA" BorderThickness="1" Padding="10" Margin="0,0,0,10">
                         <StackPanel>
-                            <TextBlock Text="Connection" FontWeight="Bold" Margin="0,0,0,10"/>
+                            <TextBlock Text="Connection" FontWeight="Bold" Margin="0,0,0,10" Foreground="#000000"/>
                             <StackPanel Orientation="Horizontal" Spacing="5" Margin="0,0,0,5">
-                                <TextBlock Text="COM Port:" VerticalAlignment="Center" Width="80"/>
+                                <TextBlock Text="COM Port:" VerticalAlignment="Center" Width="80" Foreground="#000000"/>
                                 <ComboBox Width="120" ItemsSource="{Binding AvailablePorts}" SelectedItem="{Binding SelectedPort}"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Spacing="5" Margin="0,0,0,10">
-                                <TextBlock Text="Baud Rate:" VerticalAlignment="Center" Width="80"/>
+                                <TextBlock Text="Baud Rate:" VerticalAlignment="Center" Width="80" Foreground="#000000"/>
                                 <ComboBox Width="120" ItemsSource="{Binding AvailableBaudRates}" SelectedItem="{Binding SelectedBaudRate}"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Spacing="5">
@@ -157,9 +157,9 @@
                     </Border>
 
                     <!-- Jog Controls Section -->
-                    <Border Background="White" BorderBrush="#CCCCCC" BorderThickness="1" Padding="10">
+                    <Border Background="White" BorderBrush="#AAAAAA" BorderThickness="1" Padding="10">
                         <StackPanel>
-                            <TextBlock Text="Jog Controls" FontWeight="Bold" Margin="0,0,0,10"/>
+                            <TextBlock Text="Jog Controls" FontWeight="Bold" Margin="0,0,0,10" Foreground="#000000"/>
                             
                             <!-- Jog Buttons Grid -->
                             <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*,*" Margin="0,0,0,10">
@@ -190,29 +190,29 @@
 
                             <!-- Jog Speed -->
                             <StackPanel Orientation="Horizontal" Spacing="5">
-                                <TextBlock Text="Speed:" VerticalAlignment="Center" Width="60"/>
+                                <TextBlock Text="Speed:" VerticalAlignment="Center" Width="60" Foreground="#000000"/>
                                 <TextBox Text="{Binding JogSpeed}" Width="80"/>
-                                <TextBlock Text="mm/min" VerticalAlignment="Center"/>
+                                <TextBlock Text="mm/min" VerticalAlignment="Center" Foreground="#000000"/>
                             </StackPanel>
                             
                             <StackPanel Orientation="Horizontal" Spacing="5" Margin="0,5,0,0">
-                                <TextBlock Text="Step:" VerticalAlignment="Center" Width="60"/>
+                                <TextBlock Text="Step:" VerticalAlignment="Center" Width="60" Foreground="#000000"/>
                                 <ComboBox Width="80" SelectedIndex="1" 
                                           ItemsSource="{Binding JogStepOptions}" 
                                           SelectedItem="{Binding JogStep}"/>
-                                <TextBlock Text="mm" VerticalAlignment="Center"/>
+                                <TextBlock Text="mm" VerticalAlignment="Center" Foreground="#000000"/>
                             </StackPanel>
                             
                             <!-- Status Display -->
                             <Separator Margin="0,10"/>
-                            <TextBlock Text="Status" FontWeight="Bold" Margin="0,0,0,5"/>
-                            <TextBlock Text="{Binding GrblState}" FontSize="12" Margin="0,0,0,5"/>
+                            <TextBlock Text="Status" FontWeight="Bold" Margin="0,0,0,5" Foreground="#000000"/>
+                            <TextBlock Text="{Binding GrblState}" FontSize="12" Margin="0,0,0,5" Foreground="#000000"/>
                             
-                            <TextBlock Text="Machine Position" FontWeight="SemiBold" FontSize="11" Margin="0,5,0,2"/>
-                            <TextBlock Text="{Binding MachinePosition}" FontFamily="Courier New" FontSize="11" Margin="0,0,0,5"/>
+                            <TextBlock Text="Machine Position" FontWeight="SemiBold" FontSize="11" Margin="0,5,0,2" Foreground="#000000"/>
+                            <TextBlock Text="{Binding MachinePosition}" FontFamily="Courier New" FontSize="11" Margin="0,0,0,5" Foreground="#000000"/>
                             
-                            <TextBlock Text="Work Position" FontWeight="SemiBold" FontSize="11" Margin="0,5,0,2"/>
-                            <TextBlock Text="{Binding WorkPosition}" FontFamily="Courier New" FontSize="11"/>
+                            <TextBlock Text="Work Position" FontWeight="SemiBold" FontSize="11" Margin="0,5,0,2" Foreground="#000000"/>
+                            <TextBlock Text="{Binding WorkPosition}" FontFamily="Courier New" FontSize="11" Foreground="#000000"/>
                         </StackPanel>
                     </Border>
                 </StackPanel>
@@ -230,24 +230,24 @@
                     </Grid.RowDefinitions>
 
                     <!-- Toolbar -->
-                    <Border Grid.Row="0" Background="#F0F0F0" BorderBrush="#CCCCCC" BorderThickness="0,0,0,1" Padding="5">
+                    <Border Grid.Row="0" Background="#E0E0E0" BorderBrush="#AAAAAA" BorderThickness="0,0,0,1" Padding="5">
                         <StackPanel Orientation="Horizontal" Spacing="5">
                             <Button Content="Open" Width="60" Command="{Binding LoadGCodeFileCommand}"/>
                             <Button Content="Start" Width="60" Command="{Binding StartProgramCommand}"/>
                             <Button Content="Pause" Width="60" Command="{Binding PauseProgramCommand}"/>
                             <Button Content="Resume" Width="60" Command="{Binding ResumeProgramCommand}"/>
                             <Button Content="Stop" Width="60" Command="{Binding StopProgramCommand}"/>
-                            <Border Width="1" Background="#CCCCCC" Margin="5,0"/>
+                            <Border Width="1" Background="#AAAAAA" Margin="5,0"/>
                             <Button Content="Reset" Width="60" Command="{Binding ResetGrblCommand}"/>
                             <Separator/>
-                            <TextBlock Text="{Binding GcodeFileName}" VerticalAlignment="Center" Margin="10,0,0,0" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding CurrentLine, StringFormat='Line: {0}'}" VerticalAlignment="Center" Margin="10,0,0,0" IsVisible="{Binding IsProgramRunning}"/>
-                            <TextBlock Text="{Binding TotalLines, StringFormat='/ {0}'}" VerticalAlignment="Center" IsVisible="{Binding IsProgramRunning}"/>
+                            <TextBlock Text="{Binding GcodeFileName}" VerticalAlignment="Center" Margin="10,0,0,0" FontWeight="SemiBold" Foreground="#000000"/>
+                            <TextBlock Text="{Binding CurrentLine, StringFormat='Line: {0}'}" VerticalAlignment="Center" Margin="10,0,0,0" IsVisible="{Binding IsProgramRunning}" Foreground="#000000"/>
+                            <TextBlock Text="{Binding TotalLines, StringFormat='/ {0}'}" VerticalAlignment="Center" IsVisible="{Binding IsProgramRunning}" Foreground="#000000"/>
                         </StackPanel>
                     </Border>
 
                     <!-- Preview Canvas / Connection Log -->
-                    <Border Grid.Row="1" Background="#FAFAFA" Margin="10">
+                    <Border Grid.Row="1" Background="#F8F8F8" Margin="10">
                         <Grid>
                             <!-- G-Code Preview Canvas -->
                             <Border Background="White" IsVisible="{Binding !IsConnected}">
@@ -255,19 +255,19 @@
                                     <Canvas Name="PreviewCanvas" Background="White" ClipToBounds="True"/>
                                     <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20" IsVisible="{Binding !HasGCodeLoaded}">
                                         <TextBlock Text="G-Code Preview Area" 
-                                                 FontSize="24" Foreground="#CCCCCC" FontWeight="Light"/>
+                                                 FontSize="24" Foreground="#AAAAAA" FontWeight="Light"/>
                                         <TextBlock Text="Load a G-Code file to see the preview" 
-                                                 FontSize="14" Foreground="#999999" Margin="0,10,0,0"/>
+                                                 FontSize="14" Foreground="#777777" Margin="0,10,0,0"/>
                                     </StackPanel>
-                                    <Border Background="#F0F0F0" 
-                                            BorderBrush="#CCCCCC" 
+                                    <Border Background="#E8E8E8" 
+                                            BorderBrush="#AAAAAA" 
                                             BorderThickness="1" 
                                             Padding="10" 
                                             VerticalAlignment="Bottom" 
                                             HorizontalAlignment="Right" 
                                             Margin="10"
                                             IsVisible="{Binding HasGCodeLoaded}">
-                                        <TextBlock Text="{Binding GcodeStats}" FontFamily="Courier New" FontSize="12"/>
+                                        <TextBlock Text="{Binding GcodeStats}" FontFamily="Courier New" FontSize="12" Foreground="#000000"/>
                                     </Border>
                                 </Grid>
                             </Border>
@@ -275,13 +275,14 @@
                             <!-- Connection Log -->
                             <ScrollViewer Background="White" IsVisible="{Binding IsConnected}">
                                 <StackPanel Margin="10">
-                                    <TextBlock Text="Connection Log" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
+                                    <TextBlock Text="Connection Log" FontWeight="Bold" FontSize="16" Margin="0,0,0,10" Foreground="#000000"/>
                                     <TextBox Text="{Binding ConnectionLog}" 
                                              IsReadOnly="True" 
                                              TextWrapping="Wrap"
                                              FontFamily="Courier New"
                                              MinHeight="400"
-                                             Background="#F5F5F5"/>
+                                             Background="#F5F5F5"
+                                             Foreground="#000000"/>
                                 </StackPanel>
                             </ScrollViewer>
                         </Grid>

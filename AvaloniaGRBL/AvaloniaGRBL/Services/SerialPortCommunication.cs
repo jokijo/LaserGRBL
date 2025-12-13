@@ -6,11 +6,12 @@ namespace AvaloniaGRBL.Services;
 /// <summary>
 /// Cross-platform serial port communication implementation using System.IO.Ports
 /// </summary>
-public class SerialPortCommunication : ISerialCommunication
+public class SerialPortCommunication : ISerialCommunication, IDisposable
 {
     private SerialPort? _serialPort;
     private string? _portName;
     private int _baudRate;
+    private bool _disposed;
     
     public bool IsOpen => _serialPort?.IsOpen ?? false;
     
@@ -118,5 +119,14 @@ public class SerialPortCommunication : ISerialCommunication
             throw new InvalidOperationException("Serial port is not open");
             
         return _serialPort!.ReadLine();
+    }
+    
+    public void Dispose()
+    {
+        if (!_disposed)
+        {
+            Close();
+            _disposed = true;
+        }
     }
 }

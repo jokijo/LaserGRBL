@@ -8,9 +8,10 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace AvaloniaGRBL.ViewModels;
 
-public partial class MainWindowViewModel : ViewModelBase
+public partial class MainWindowViewModel : ViewModelBase, IDisposable
 {
     private readonly GrblConnection _grblConnection;
+    private bool _disposed;
     
     [ObservableProperty]
     private ObservableCollection<string> _availablePorts;
@@ -149,6 +150,22 @@ public partial class MainWindowViewModel : ViewModelBase
         if (lines.Length > 1000)
         {
             ConnectionLog = string.Join('\n', lines.TakeLast(1000));
+        }
+    }
+    
+    public void Dispose()
+    {
+        if (!_disposed)
+        {
+            // Unsubscribe from events
+            _grblConnection.StatusChanged -= OnConnectionStatusChanged;
+            _grblConnection.DataReceived -= OnDataReceived;
+            _grblConnection.ErrorOccurred -= OnErrorOccurred;
+            
+            // Dispose connection
+            _grblConnection.Dispose();
+            
+            _disposed = true;
         }
     }
 }

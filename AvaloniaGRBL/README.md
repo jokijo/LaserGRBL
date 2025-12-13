@@ -90,9 +90,9 @@ AvaloniaGRBL/
 - [x] Add preview area panel
 - [x] Add status bar
 
-### Phase 2: Core Functionality (Planned)
-- [ ] Implement serial port communication
-- [ ] Add GRBL connection logic
+### Phase 2: Core Functionality (In Progress)
+- [x] Implement serial port communication
+- [x] Add GRBL connection logic
 - [ ] Implement G-Code file loading
 - [ ] Add G-Code preview rendering
 - [ ] Implement jog controls functionality

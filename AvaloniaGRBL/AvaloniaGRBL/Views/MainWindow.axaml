@@ -233,13 +233,16 @@
                     <Border Grid.Row="0" Background="#F0F0F0" BorderBrush="#CCCCCC" BorderThickness="0,0,0,1" Padding="5">
                         <StackPanel Orientation="Horizontal" Spacing="5">
                             <Button Content="Open" Width="60" Command="{Binding LoadGCodeFileCommand}"/>
-                            <Button Content="Start" Width="60"/>
-                            <Button Content="Pause" Width="60"/>
-                            <Button Content="Stop" Width="60"/>
+                            <Button Content="Start" Width="60" Command="{Binding StartProgramCommand}"/>
+                            <Button Content="Pause" Width="60" Command="{Binding PauseProgramCommand}"/>
+                            <Button Content="Resume" Width="60" Command="{Binding ResumeProgramCommand}"/>
+                            <Button Content="Stop" Width="60" Command="{Binding StopProgramCommand}"/>
                             <Border Width="1" Background="#CCCCCC" Margin="5,0"/>
-                            <Button Content="Reset" Width="60"/>
+                            <Button Content="Reset" Width="60" Command="{Binding ResetGrblCommand}"/>
                             <Separator/>
                             <TextBlock Text="{Binding GcodeFileName}" VerticalAlignment="Center" Margin="10,0,0,0" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding CurrentLine, StringFormat='Line: {0}'}" VerticalAlignment="Center" Margin="10,0,0,0" IsVisible="{Binding IsProgramRunning}"/>
+                            <TextBlock Text="{Binding TotalLines, StringFormat='/ {0}'}" VerticalAlignment="Center" IsVisible="{Binding IsProgramRunning}"/>
                         </StackPanel>
                     </Border>
 

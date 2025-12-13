@@ -155,13 +155,8 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
             _logQueue.Dequeue();
         }
         
-        // Rebuild log text from queue
-        var sb = new StringBuilder();
-        foreach (var entry in _logQueue)
-        {
-            sb.AppendLine(entry);
-        }
-        ConnectionLog = sb.ToString();
+        // Rebuild log text from queue using string.Join for efficiency
+        ConnectionLog = string.Join(Environment.NewLine, _logQueue);
     }
     
     public void Dispose()

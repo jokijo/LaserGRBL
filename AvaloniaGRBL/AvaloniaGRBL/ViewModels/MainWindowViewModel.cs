@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -339,6 +340,8 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
                     // Append commands to existing file
                     LoadedGCodeFile.AppendCommands(appendedFile.Commands);
                     GcodeFileName = $"{GcodeFileName} + {file.Name}";
+                    // Clear the last opened file path since content has changed
+                    _lastOpenedFilePath = null;
                 }
                 else
                 {
@@ -376,7 +379,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
             // Load file on background thread to avoid blocking UI
             LoadedGCodeFile = await Task.Run(() => GCodeFile.Load(_lastOpenedFilePath));
             HasGCodeLoaded = true;
-            GcodeFileName = System.IO.Path.GetFileName(_lastOpenedFilePath);
+            GcodeFileName = Path.GetFileName(_lastOpenedFilePath);
             
             UpdateGCodeStats();
             
@@ -414,7 +417,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
                 DefaultExtension = "gcode",
                 SuggestedFileName = string.IsNullOrEmpty(_lastOpenedFilePath) 
                     ? "program.gcode" 
-                    : System.IO.Path.GetFileName(_lastOpenedFilePath),
+                    : Path.GetFileName(_lastOpenedFilePath),
                 FileTypeChoices = new[]
                 {
                     new Avalonia.Platform.Storage.FilePickerFileType("G-Code Files")
@@ -439,7 +442,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
                 
                 await LoadedGCodeFile.SaveAsync(path);
                 _lastOpenedFilePath = path;
-                GcodeFileName = System.IO.Path.GetFileName(path);
+                GcodeFileName = Path.GetFileName(path);
                 
                 AppendLog($"Program saved successfully");
             }

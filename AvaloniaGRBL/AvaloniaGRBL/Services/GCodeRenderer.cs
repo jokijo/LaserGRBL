@@ -242,7 +242,8 @@ public class GCodeRenderer
                         StartPoint = p1,
                         EndPoint = p2,
                         Stroke = brush,
-                        StrokeThickness = LineThickness
+                        StrokeThickness = LineThickness,
+                        StrokeDashArray = new Avalonia.Collections.AvaloniaList<double> { 3, 2 } // Dashed to indicate approximation
                     };
                     
                     _canvas.Children.Add(line);

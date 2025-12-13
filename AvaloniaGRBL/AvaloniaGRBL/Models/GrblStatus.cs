@@ -36,7 +36,7 @@ public class GrblStatus
     
     /// <summary>
     /// Parse GRBL status report
-    /// Format: &lt;Idle|MPos:0.000,0.000,0.000|WPos:0.000,0.000,0.000|FS:0,0&gt;
+    /// Format: <![CDATA[<Idle|MPos:0.000,0.000,0.000|WPos:0.000,0.000,0.000|FS:0,0>]]>
     /// </summary>
     public static GrblStatus? Parse(string statusReport)
     {

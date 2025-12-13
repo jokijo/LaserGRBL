@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -294,7 +295,7 @@ public class GrblConnection : IDisposable
     /// </summary>
     private string FormatJogCommand(double x, double y, double z, double feedRate)
     {
-        var parts = new System.Collections.Generic.List<string> { "$J=G91" }; // Relative positioning
+        var parts = new List<string> { "$J=G91" }; // Relative positioning
         
         if (x != 0)
             parts.Add($"X{x.ToString("F3", CultureInfo.InvariantCulture)}");

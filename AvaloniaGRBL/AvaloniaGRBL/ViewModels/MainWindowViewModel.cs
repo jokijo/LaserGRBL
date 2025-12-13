@@ -89,8 +89,8 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     [ObservableProperty]
     private int _totalLines;
     
-    private Queue<string> _gcodeQueue = new();
     private CancellationTokenSource? _executionCancellation;
+    private readonly ManualResetEventSlim _pauseEvent = new(true);
     
     public MainWindowViewModel()
     {
@@ -454,6 +454,9 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
             CurrentLine = 0;
             TotalLines = LoadedGCodeFile.CommandCount;
             
+            // Ensure pause event is set (not paused) at start
+            _pauseEvent.Set();
+            
             _executionCancellation = new CancellationTokenSource();
             
             await Task.Run(() => ExecuteProgramLoop(_executionCancellation.Token));
@@ -473,6 +476,10 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
             IsProgramRunning = false;
             IsProgramPaused = false;
             CurrentLine = 0;
+            
+            // Ensure pause event is set for next execution
+            _pauseEvent.Set();
+            
             _executionCancellation?.Dispose();
             _executionCancellation = null;
         }
@@ -490,12 +497,14 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     {
         if (LoadedGCodeFile == null) return;
         
+        int lastReportedLine = 0;
+        
         for (int i = 0; i < LoadedGCodeFile.Commands.Count && !cancellationToken.IsCancellationRequested; i++)
         {
-            // Wait if paused
-            while (IsProgramPaused && !cancellationToken.IsCancellationRequested)
+            // Wait if paused using efficient event-based waiting
+            if (!_pauseEvent.Wait(0))
             {
-                Thread.Sleep(100);
+                _pauseEvent.Wait(cancellationToken);
             }
             
             if (cancellationToken.IsCancellationRequested)
@@ -514,13 +523,20 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
             {
                 _grblConnection.SendCommand(command.RawCommand);
                 
-                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                // Update UI periodically (every 10 lines) to reduce overhead
+                if (i - lastReportedLine >= 10 || i == LoadedGCodeFile.Commands.Count - 1)
                 {
-                    CurrentLine = i + 1;
-                });
+                    int currentLineSnapshot = i + 1;
+                    Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                    {
+                        CurrentLine = currentLineSnapshot;
+                    });
+                    lastReportedLine = i;
+                }
                 
-                // Basic delay to avoid overwhelming GRBL
-                // In a real implementation, this should wait for 'ok' responses
+                // NOTE: Simple delay-based implementation for initial version.
+                // A production implementation should wait for 'ok' acknowledgments from GRBL
+                // to handle buffering properly and avoid overwhelming the controller.
                 Thread.Sleep(50);
             }
             catch (Exception ex)
@@ -532,6 +548,15 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
                 break;
             }
         }
+        
+        // Final update
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            if (!cancellationToken.IsCancellationRequested && LoadedGCodeFile != null)
+            {
+                CurrentLine = LoadedGCodeFile.Commands.Count;
+            }
+        });
     }
     
     /// <summary>
@@ -548,6 +573,9 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         
         try
         {
+            // Block the execution loop
+            _pauseEvent.Reset();
+            
             // Send Feed Hold command (0x21 = '!')
             _grblConnection.SendImmediate(0x21);
             IsProgramPaused = true;
@@ -580,6 +608,9 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         {
             // Send Cycle Start/Resume command (0x7E = '~')
             _grblConnection.SendImmediate(0x7E);
+            
+            // Unblock the execution loop
+            _pauseEvent.Set();
             IsProgramPaused = false;
             AppendLog("Program resumed (Cycle Start)");
         }
@@ -677,6 +708,9 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
             // Stop any running program
             _executionCancellation?.Cancel();
             _executionCancellation?.Dispose();
+            
+            // Dispose pause event
+            _pauseEvent.Dispose();
             
             // Unsubscribe from events
             _grblConnection.StatusChanged -= OnConnectionStatusChanged;

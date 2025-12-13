@@ -16,6 +16,35 @@
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel/>
     </Design.DataContext>
+    
+    <Window.Styles>
+        <Style Selector="Button.jog-button">
+            <Setter Property="Background" Value="#2196F3"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Width" Value="50"/>
+            <Setter Property="Height" Value="40"/>
+        </Style>
+        <Style Selector="Button.jog-home">
+            <Setter Property="Background" Value="#FF9800"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Width" Value="50"/>
+            <Setter Property="Height" Value="40"/>
+        </Style>
+        <Style Selector="Button.connect-button">
+            <Setter Property="Background" Value="#4CAF50"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+        <Style Selector="Button.refresh-button">
+            <Setter Property="Background" Value="#2196F3"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+    </Window.Styles>
 
     <DockPanel>
         <!-- Menu Bar -->
@@ -153,11 +182,13 @@
                                 <Button Content="{Binding IsConnected, Converter={x:Static converters:BoolToTextConverter.Instance}}" 
                                         Command="{Binding ConnectCommand}" 
                                         HorizontalAlignment="Stretch"
-                                        Width="150"/>
+                                        Width="150"
+                                        Classes="connect-button"/>
                                 <Button Content="↻" 
                                         Command="{Binding RefreshPortsCommand}" 
                                         Width="30" 
-                                        ToolTip.Tip="Refresh Ports"/>
+                                        ToolTip.Tip="Refresh Ports"
+                                        Classes="refresh-button"/>
                             </StackPanel>
                         </StackPanel>
                     </Border>
@@ -170,28 +201,37 @@
                             <!-- Jog Buttons Grid -->
                             <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*,*" Margin="0,0,0,10">
                                 <!-- Top Row -->
-                                <Button Grid.Row="0" Grid.Column="0" Content="↖" Width="50" Height="40" 
-                                        HorizontalAlignment="Center" Command="{Binding JogNorthWestCommand}"/>
-                                <Button Grid.Row="0" Grid.Column="1" Content="↑" Width="50" Height="40" 
-                                        HorizontalAlignment="Center" Command="{Binding JogNorthCommand}"/>
-                                <Button Grid.Row="0" Grid.Column="2" Content="↗" Width="50" Height="40" 
-                                        HorizontalAlignment="Center" Command="{Binding JogNorthEastCommand}"/>
+                                <Button Grid.Row="0" Grid.Column="0" Content="↖" 
+                                        HorizontalAlignment="Center" Command="{Binding JogNorthWestCommand}"
+                                        Classes="jog-button"/>
+                                <Button Grid.Row="0" Grid.Column="1" Content="↑" 
+                                        HorizontalAlignment="Center" Command="{Binding JogNorthCommand}"
+                                        Classes="jog-button"/>
+                                <Button Grid.Row="0" Grid.Column="2" Content="↗" 
+                                        HorizontalAlignment="Center" Command="{Binding JogNorthEastCommand}"
+                                        Classes="jog-button"/>
                                 
                                 <!-- Middle Row -->
-                                <Button Grid.Row="1" Grid.Column="0" Content="←" Width="50" Height="40" 
-                                        HorizontalAlignment="Center" Command="{Binding JogWestCommand}"/>
-                                <Button Grid.Row="1" Grid.Column="1" Content="⌂" Width="50" Height="40" 
-                                        HorizontalAlignment="Center" Command="{Binding JogHomeCommand}"/>
-                                <Button Grid.Row="1" Grid.Column="2" Content="→" Width="50" Height="40" 
-                                        HorizontalAlignment="Center" Command="{Binding JogEastCommand}"/>
+                                <Button Grid.Row="1" Grid.Column="0" Content="←" 
+                                        HorizontalAlignment="Center" Command="{Binding JogWestCommand}"
+                                        Classes="jog-button"/>
+                                <Button Grid.Row="1" Grid.Column="1" Content="⌂" 
+                                        HorizontalAlignment="Center" Command="{Binding JogHomeCommand}"
+                                        Classes="jog-home"/>
+                                <Button Grid.Row="1" Grid.Column="2" Content="→" 
+                                        HorizontalAlignment="Center" Command="{Binding JogEastCommand}"
+                                        Classes="jog-button"/>
                                 
                                 <!-- Bottom Row -->
-                                <Button Grid.Row="2" Grid.Column="0" Content="↙" Width="50" Height="40" 
-                                        HorizontalAlignment="Center" Command="{Binding JogSouthWestCommand}"/>
-                                <Button Grid.Row="2" Grid.Column="1" Content="↓" Width="50" Height="40" 
-                                        HorizontalAlignment="Center" Command="{Binding JogSouthCommand}"/>
-                                <Button Grid.Row="2" Grid.Column="2" Content="↘" Width="50" Height="40" 
-                                        HorizontalAlignment="Center" Command="{Binding JogSouthEastCommand}"/>
+                                <Button Grid.Row="2" Grid.Column="0" Content="↙" 
+                                        HorizontalAlignment="Center" Command="{Binding JogSouthWestCommand}"
+                                        Classes="jog-button"/>
+                                <Button Grid.Row="2" Grid.Column="1" Content="↓" 
+                                        HorizontalAlignment="Center" Command="{Binding JogSouthCommand}"
+                                        Classes="jog-button"/>
+                                <Button Grid.Row="2" Grid.Column="2" Content="↘" 
+                                        HorizontalAlignment="Center" Command="{Binding JogSouthEastCommand}"
+                                        Classes="jog-button"/>
                             </Grid>
 
                             <!-- Jog Speed -->

@@ -15,6 +15,12 @@ namespace AvaloniaGRBL.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase, IDisposable
 {
+    // URL constants
+    private const string HelpFaqUrl = "https://lasergrbl.com/faq/";
+    private const string DonateUrl = "https://lasergrbl.com/donate";
+    private const string FacebookCommunityUrl = "https://www.facebook.com/groups/486886768471991";
+    private const string CH340DriversSearchUrl = "https://www.google.com/search?q=ch340+drivers";
+    
     private readonly GrblConnection _grblConnection;
     private readonly Queue<string> _logQueue = new(1000);
     private bool _disposed;
@@ -1117,7 +1123,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     private void InstallCH340Driver()
     {
         AppendLog("Install CH340 Driver feature coming soon");
-        AppendLog("Please download the driver from: https://www.google.com/search?q=ch340+drivers");
+        AppendLog($"Please download the driver from: {CH340DriversSearchUrl}");
     }
     
     [RelayCommand]
@@ -1175,12 +1181,12 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     [RelayCommand]
     private void HelpOnline()
     {
-        AppendLog("Opening help online at: https://lasergrbl.com/faq/");
+        AppendLog($"Opening help online at: {HelpFaqUrl}");
         try
         {
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
             {
-                FileName = "https://lasergrbl.com/faq/",
+                FileName = HelpFaqUrl,
                 UseShellExecute = true
             });
         }
@@ -1194,7 +1200,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     private void About()
     {
         AppendLog("About: AvaloniaGRBL - A cross-platform GRBL controller");
-        AppendLog("Visit: https://lasergrbl.com/faq/");
+        AppendLog($"Visit: {HelpFaqUrl}");
     }
     
     [RelayCommand]
@@ -1205,7 +1211,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         {
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
             {
-                FileName = "https://www.facebook.com/groups/486886768471991",
+                FileName = FacebookCommunityUrl,
                 UseShellExecute = true
             });
         }
@@ -1223,7 +1229,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         {
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
             {
-                FileName = "https://lasergrbl.com/donate",
+                FileName = DonateUrl,
                 UseShellExecute = true
             });
         }

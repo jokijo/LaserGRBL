@@ -15,6 +15,12 @@ namespace AvaloniaGRBL.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase, IDisposable
 {
+    // URL constants
+    private const string HelpFaqUrl = "https://lasergrbl.com/faq/";
+    private const string DonateUrl = "https://lasergrbl.com/donate";
+    private const string FacebookCommunityUrl = "https://www.facebook.com/groups/486886768471991";
+    private const string CH340DriversSearchUrl = "https://www.google.com/search?q=ch340+drivers";
+    
     private readonly GrblConnection _grblConnection;
     private readonly Queue<string> _logQueue = new(1000);
     private bool _disposed;
@@ -899,6 +905,345 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     private bool CanResetGrbl()
     {
         return IsConnected;
+    }
+    
+    // ===== Grbl Menu Commands =====
+    
+    [RelayCommand]
+    private void WiFiDiscovery()
+    {
+        AppendLog("WiFi Discovery feature coming soon");
+    }
+    
+    [RelayCommand]
+    private void GoHome()
+    {
+        if (!IsConnected)
+        {
+            AppendLog("Error: Not connected");
+            return;
+        }
+        
+        try
+        {
+            _grblConnection.SendCommand("$H");
+            AppendLog("Homing command sent ($H)");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Go Home failed: {ex.Message}");
+        }
+    }
+    
+    [RelayCommand]
+    private void Unlock()
+    {
+        if (!IsConnected)
+        {
+            AppendLog("Error: Not connected");
+            return;
+        }
+        
+        try
+        {
+            _grblConnection.SendCommand("$X");
+            AppendLog("Unlock command sent ($X)");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Unlock failed: {ex.Message}");
+        }
+    }
+    
+    [RelayCommand]
+    private void GrblConfiguration()
+    {
+        AppendLog("Grbl Configuration feature coming soon");
+    }
+    
+    [RelayCommand]
+    private void Settings()
+    {
+        AppendLog("Settings feature coming soon");
+    }
+    
+    [RelayCommand]
+    private void MaterialDatabase()
+    {
+        AppendLog("Material Database feature coming soon");
+    }
+    
+    [RelayCommand]
+    private void LaserUsageStats()
+    {
+        AppendLog("Laser Usage Stats feature coming soon");
+    }
+    
+    [RelayCommand]
+    private void Hotkeys()
+    {
+        AppendLog("Hotkeys configuration feature coming soon");
+    }
+    
+    [RelayCommand]
+    private void Exit()
+    {
+        var lifetime = Avalonia.Application.Current?.ApplicationLifetime 
+            as Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime;
+        lifetime?.Shutdown();
+    }
+    
+    // ===== Generate Menu Commands =====
+    
+    [RelayCommand]
+    private void PowerVsSpeed()
+    {
+        AppendLog("Power vs Speed generator feature coming soon");
+    }
+    
+    [RelayCommand]
+    private void CuttingTest()
+    {
+        AppendLog("Cutting Test generator feature coming soon");
+    }
+    
+    [RelayCommand]
+    private void AccuracyTest()
+    {
+        AppendLog("Accuracy Test generator feature coming soon");
+    }
+    
+    [RelayCommand]
+    private void ShakeTest()
+    {
+        AppendLog("Shake Test generator feature coming soon");
+    }
+    
+    [RelayCommand]
+    private void ESP8266()
+    {
+        AppendLog("ESP8266 configuration feature coming soon");
+    }
+    
+    [RelayCommand]
+    private void GrblEmulator()
+    {
+        AppendLog("Grbl Emulator feature coming soon");
+    }
+    
+    // ===== Schema Menu Commands =====
+    
+    [ObservableProperty]
+    private string _currentSchema = "CAD Style";
+    
+    [RelayCommand]
+    private void SetSchema(string schemaName)
+    {
+        CurrentSchema = schemaName;
+        AppendLog($"Color schema changed to: {schemaName}");
+        // TODO: Apply the color schema to the UI
+    }
+    
+    // ===== Preview Menu Commands =====
+    
+    [RelayCommand]
+    private void AutoSize()
+    {
+        AppendLog("Auto Size preview feature coming soon");
+    }
+    
+    [RelayCommand]
+    private void ZoomIn()
+    {
+        AppendLog("Zoom In preview feature coming soon");
+    }
+    
+    [RelayCommand]
+    private void ZoomOut()
+    {
+        AppendLog("Zoom Out preview feature coming soon");
+    }
+    
+    [ObservableProperty]
+    private bool _showLaserOffMovements = false;
+    
+    [RelayCommand]
+    private void ToggleLaserOffMovements()
+    {
+        ShowLaserOffMovements = !ShowLaserOffMovements;
+        AppendLog($"Show Laser Off Movements: {ShowLaserOffMovements}");
+    }
+    
+    [ObservableProperty]
+    private bool _showExecutedCommands = false;
+    
+    [RelayCommand]
+    private void ToggleExecutedCommands()
+    {
+        ShowExecutedCommands = !ShowExecutedCommands;
+        AppendLog($"Show Executed Commands: {ShowExecutedCommands}");
+    }
+    
+    [ObservableProperty]
+    private bool _showBoundingBox = false;
+    
+    [RelayCommand]
+    private void ToggleBoundingBox()
+    {
+        ShowBoundingBox = !ShowBoundingBox;
+        AppendLog($"Show Bounding Box: {ShowBoundingBox}");
+    }
+    
+    [ObservableProperty]
+    private bool _crossCursor = false;
+    
+    [RelayCommand]
+    private void ToggleCrossCursor()
+    {
+        CrossCursor = !CrossCursor;
+        AppendLog($"Cross Cursor: {CrossCursor}");
+    }
+    
+    // ===== Language Menu Commands =====
+    
+    [ObservableProperty]
+    private string _currentLanguage = "English";
+    
+    [RelayCommand]
+    private void SetLanguage(string languageName)
+    {
+        CurrentLanguage = languageName;
+        AppendLog($"Language changed to: {languageName}. Application restart required.");
+        // TODO: Implement language change with application restart
+    }
+    
+    // ===== Tools Menu Commands =====
+    
+    [RelayCommand]
+    private void InstallCH340Driver()
+    {
+        AppendLog("Install CH340 Driver feature coming soon");
+        AppendLog($"Please download the driver from: {CH340DriversSearchUrl}");
+    }
+    
+    [RelayCommand]
+    private void FlashGrblFirmware()
+    {
+        if (IsConnected)
+        {
+            AppendLog("Error: Please disconnect before flashing firmware");
+            return;
+        }
+        AppendLog("Flash Grbl Firmware feature coming soon");
+    }
+    
+    [RelayCommand]
+    private void ConfigurationWizard()
+    {
+        AppendLog("Configuration Wizard feature coming soon");
+    }
+    
+    // ===== Help Menu Commands =====
+    
+    [ObservableProperty]
+    private bool _autoUpdateEnabled = true;
+    
+    [RelayCommand]
+    private void ToggleAutoUpdate()
+    {
+        AutoUpdateEnabled = !AutoUpdateEnabled;
+        AppendLog($"Auto Update: {(AutoUpdateEnabled ? "Enabled" : "Disabled")}");
+    }
+    
+    [RelayCommand]
+    private void CheckForUpdates()
+    {
+        AppendLog("Checking for updates...");
+        AppendLog("Check for updates feature coming soon");
+    }
+    
+    [RelayCommand]
+    private void OpenSessionLog()
+    {
+        AppendLog("Open Session Log feature coming soon");
+    }
+    
+    [ObservableProperty]
+    private bool _extendedLogEnabled = false;
+    
+    [RelayCommand]
+    private void ToggleExtendedLog()
+    {
+        ExtendedLogEnabled = !ExtendedLogEnabled;
+        AppendLog($"Extended Log: {(ExtendedLogEnabled ? "Enabled" : "Disabled")}");
+    }
+    
+    [RelayCommand]
+    private void HelpOnline()
+    {
+        AppendLog($"Opening help online at: {HelpFaqUrl}");
+        try
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = HelpFaqUrl,
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Error opening help: {ex.Message}");
+        }
+    }
+    
+    [RelayCommand]
+    private void About()
+    {
+        AppendLog("About: AvaloniaGRBL - A cross-platform GRBL controller");
+        AppendLog($"Visit: {HelpFaqUrl}");
+    }
+    
+    [RelayCommand]
+    private void FacebookCommunity()
+    {
+        AppendLog("Opening Facebook Community...");
+        try
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = FacebookCommunityUrl,
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Error opening Facebook: {ex.Message}");
+        }
+    }
+    
+    [RelayCommand]
+    private void Donate()
+    {
+        AppendLog("Opening donation page...");
+        try
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = DonateUrl,
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Error opening donation page: {ex.Message}");
+        }
+    }
+    
+    [RelayCommand]
+    private void License()
+    {
+        AppendLog("License: GPL-3.0");
+        AppendLog("For more information, visit the project repository");
     }
     
     public void Dispose()

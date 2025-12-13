@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AvaloniaGRBL.Models;
 
@@ -74,6 +75,25 @@ public class GCodeFile
     public int CommandCount => Commands.Count;
     
     public bool IsEmpty => Commands.Count == 0;
+    
+    /// <summary>
+    /// Appends commands from another file to this file
+    /// </summary>
+    public void AppendCommands(List<GCodeCommand> commands)
+    {
+        Commands.AddRange(commands);
+        CalculateBounds();
+    }
+    
+    /// <summary>
+    /// Saves the G-Code file to the specified path
+    /// </summary>
+    public async Task SaveAsync(string filePath)
+    {
+        var lines = Commands.Select(cmd => cmd.RawCommand).ToArray();
+        await File.WriteAllLinesAsync(filePath, lines);
+        FileName = Path.GetFileName(filePath);
+    }
 }
 
 public class GCodeBounds

@@ -71,7 +71,19 @@ public class GrblConnection : IDisposable
             
             // Stop receive loop
             _cancellationTokenSource?.Cancel();
-            _receiveTask?.Wait(TimeSpan.FromSeconds(2));
+            
+            // Wait for receive task to complete (don't block too long)
+            if (_receiveTask != null)
+            {
+                try
+                {
+                    _receiveTask.Wait(TimeSpan.FromSeconds(2));
+                }
+                catch (AggregateException)
+                {
+                    // Task was cancelled, this is expected
+                }
+            }
             
             // Close serial port
             _serial.Close();

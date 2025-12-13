@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using AvaloniaGRBL.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -11,6 +13,7 @@ namespace AvaloniaGRBL.ViewModels;
 public partial class MainWindowViewModel : ViewModelBase, IDisposable
 {
     private readonly GrblConnection _grblConnection;
+    private readonly Queue<string> _logQueue = new(1000);
     private bool _disposed;
     
     [ObservableProperty]
@@ -143,14 +146,22 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     private void AppendLog(string message)
     {
         var timestamp = DateTime.Now.ToString("HH:mm:ss.fff");
-        ConnectionLog += $"[{timestamp}] {message}\n";
+        var logEntry = $"[{timestamp}] {message}";
         
-        // Keep only last 1000 lines
-        var lines = ConnectionLog.Split('\n');
-        if (lines.Length > 1000)
+        // Add to queue and maintain max size
+        _logQueue.Enqueue(logEntry);
+        if (_logQueue.Count > 1000)
         {
-            ConnectionLog = string.Join('\n', lines.TakeLast(1000));
+            _logQueue.Dequeue();
         }
+        
+        // Rebuild log text from queue
+        var sb = new StringBuilder();
+        foreach (var entry in _logQueue)
+        {
+            sb.AppendLine(entry);
+        }
+        ConnectionLog = sb.ToString();
     }
     
     public void Dispose()

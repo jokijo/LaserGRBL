@@ -13,9 +13,35 @@ public class SerialPortCommunication : ISerialCommunication, IDisposable
     private int _baudRate;
     private bool _disposed;
     
-    public bool IsOpen => _serialPort?.IsOpen ?? false;
+    public bool IsOpen
+    {
+        get
+        {
+            try
+            {
+                return _serialPort?.IsOpen ?? false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+    }
     
-    public bool HasData => _serialPort?.BytesToRead > 0;
+    public bool HasData
+    {
+        get
+        {
+            try
+            {
+                return _serialPort?.BytesToRead > 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+    }
     
     public void Configure(string portName, int baudRate)
     {

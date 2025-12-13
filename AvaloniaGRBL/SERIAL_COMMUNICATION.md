@@ -75,6 +75,25 @@ Located in the left panel:
 1. Click "Disconnect" button
 2. Port will be closed and resources released
 
+### Using Jog Controls
+
+1. Ensure connected to a GRBL device
+2. Set desired jog speed (mm/min) in the Speed field
+3. Select step size from dropdown (0.1, 1, 10, or 100 mm)
+4. Click directional buttons to move:
+   - Arrow buttons for N, S, E, W, NE, NW, SE, SW movements
+   - Home button (⌂) to run homing cycle
+5. Monitor position in the status display and connection log
+
+### Monitoring Status
+
+- **Real-time Updates**: Status is automatically polled every 250ms when connected
+- **Machine Position**: Shows absolute machine coordinates (MPos)
+- **Work Position**: Shows position relative to work coordinate system (WPos)
+- **Machine State**: Displays current GRBL state (Idle, Run, Hold, Alarm, etc.)
+- **Status Bar**: Shows connection status and machine state
+- **Left Panel**: Displays detailed position information
+
 ## Features
 
 ### Implemented
@@ -86,11 +105,13 @@ Located in the left panel:
 - ✓ Thread-safe UI updates
 - ✓ Connection logging with timestamps
 - ✓ Error handling and reporting
+- ✓ GRBL status polling (? command) - automatic polling every 250ms
+- ✓ Real-time position tracking - machine and work positions
+- ✓ Status report parsing - extracts state, positions, feed rate
+- ✓ Jog command support - $J= format with directional movement
 
 ### Future Enhancements
-- GRBL status polling (? command)
 - Command queue management
-- Real-time position tracking
 - Alarm handling
 - GRBL configuration reading ($$ command)
 

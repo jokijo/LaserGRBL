@@ -32,8 +32,9 @@ AvaloniaGRBL is the multi-platform version of LaserGRBL, designed to run on Wind
   - **Left Panel**: Connection controls and Jog controls
     - COM port and baud rate selection
     - Working Connect/Disconnect functionality
-    - Directional jog buttons (8-way + home)
-    - Speed and step size controls
+    - Directional jog buttons (8-way + home) - fully functional
+    - Speed and step size controls (configurable)
+    - Real-time status display (machine/work position)
   - **Right Panel**: G-Code preview area
     - Toolbar with operation buttons
     - Working "Open" button to load G-Code files
@@ -52,6 +53,29 @@ The G-Code preview system includes:
   - Grid overlay for scale reference
   - Automatic scaling and centering to fit canvas
 - **Information Display**: Shows command count and dimensions (width x height)
+
+### Jog Controls
+
+The jog control system provides:
+- **8-Way Directional Movement**: Jog in N, S, E, W, NE, NW, SE, SW directions
+- **Home Function**: Return to home position using GRBL homing cycle ($H)
+- **Configurable Parameters**:
+  - Jog speed (mm/min)
+  - Step size (0.1, 1, 10, 100 mm)
+- **GRBL Jogging Protocol**: Uses $J= command format for smooth jogging
+- **Command Logging**: All jog commands are logged with parameters
+
+### Status Monitoring
+
+Real-time status monitoring includes:
+- **Automatic Status Polling**: Queries GRBL status every 250ms
+- **Status Report Parsing**: Extracts machine state, positions, and feed rates
+- **Position Display**:
+  - Machine position (MPos) - absolute coordinates
+  - Work position (WPos) - relative to work coordinate system
+  - Updates displayed in left panel and status bar
+- **Machine State**: Shows current GRBL state (Idle, Run, Hold, Alarm, etc.)
+- **Thread-Safe Updates**: All status updates marshaled to UI thread
 
 ## Building and Running
 
@@ -105,13 +129,13 @@ AvaloniaGRBL/
 - [x] Add preview area panel
 - [x] Add status bar
 
-### Phase 2: Core Functionality (In Progress)
+### Phase 2: Core Functionality (✓ Completed)
 - [x] Implement serial port communication
 - [x] Add GRBL connection logic
 - [x] Implement G-Code file loading
 - [x] Add G-Code preview rendering
-- [ ] Implement jog controls functionality
-- [ ] Add status monitoring
+- [x] Implement jog controls functionality
+- [x] Add status monitoring
 
 ### Phase 3: Advanced Features (Planned)
 - [ ] Image import and conversion

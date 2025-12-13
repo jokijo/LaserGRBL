@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using AvaloniaGRBL.Models;
 
 namespace AvaloniaGRBL.Services;
 
@@ -12,9 +15,11 @@ public class GrblConnection : IDisposable
     private readonly ISerialCommunication _serial;
     private CancellationTokenSource? _cancellationTokenSource;
     private Task? _receiveTask;
+    private Task? _statusPollingTask;
     
     public event EventHandler<string>? DataReceived;
     public event EventHandler<string>? StatusChanged;
+    public event EventHandler<GrblStatus>? StatusReportReceived;
     public event EventHandler<Exception>? ErrorOccurred;
     
     public bool IsConnected => _serial.IsOpen;
@@ -46,6 +51,9 @@ public class GrblConnection : IDisposable
             _cancellationTokenSource = new CancellationTokenSource();
             _receiveTask = Task.Run(() => ReceiveLoop(_cancellationTokenSource.Token));
             
+            // Start status polling
+            _statusPollingTask = Task.Run(() => StatusPollingLoop(_cancellationTokenSource.Token));
+            
             // Send soft reset to GRBL
             SendCommand("\x18"); // Ctrl-X soft reset
             
@@ -69,15 +77,27 @@ public class GrblConnection : IDisposable
         {
             OnStatusChanged("Disconnecting...");
             
-            // Stop receive loop
+            // Stop receive loop and status polling
             _cancellationTokenSource?.Cancel();
             
-            // Wait for receive task to complete (don't block too long)
+            // Wait for tasks to complete (don't block too long)
             if (_receiveTask != null)
             {
                 try
                 {
                     _receiveTask.Wait(TimeSpan.FromSeconds(2));
+                }
+                catch (AggregateException)
+                {
+                    // Task was cancelled, this is expected
+                }
+            }
+            
+            if (_statusPollingTask != null)
+            {
+                try
+                {
+                    _statusPollingTask.Wait(TimeSpan.FromSeconds(2));
                 }
                 catch (AggregateException)
                 {
@@ -99,6 +119,7 @@ public class GrblConnection : IDisposable
             _cancellationTokenSource?.Dispose();
             _cancellationTokenSource = null;
             _receiveTask = null;
+            _statusPollingTask = null;
         }
     }
     
@@ -154,7 +175,20 @@ public class GrblConnection : IDisposable
                     string line = _serial.ReadLine();
                     if (!string.IsNullOrWhiteSpace(line))
                     {
-                        OnDataReceived(line.Trim());
+                        line = line.Trim();
+                        
+                        // Check if this is a status report
+                        if (line.StartsWith("<") && line.EndsWith(">"))
+                        {
+                            var status = GrblStatus.Parse(line);
+                            if (status != null)
+                            {
+                                OnStatusReportReceived(status);
+                            }
+                        }
+                        
+                        // Always fire DataReceived for logging
+                        OnDataReceived(line);
                     }
                 }
                 else
@@ -188,6 +222,91 @@ public class GrblConnection : IDisposable
     protected virtual void OnErrorOccurred(Exception exception)
     {
         ErrorOccurred?.Invoke(this, exception);
+    }
+    
+    protected virtual void OnStatusReportReceived(GrblStatus status)
+    {
+        StatusReportReceived?.Invoke(this, status);
+    }
+    
+    private void StatusPollingLoop(CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            try
+            {
+                // Query status every 250ms
+                Thread.Sleep(250);
+                
+                if (!cancellationToken.IsCancellationRequested && IsConnected)
+                {
+                    // Send status query (? command) - ASCII 63
+                    SendImmediate(63);
+                }
+            }
+            catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
+            {
+                OnErrorOccurred(ex);
+                Thread.Sleep(1000); // Wait a bit longer on error
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Execute jog command in specified direction
+    /// </summary>
+    /// <param name="direction">Direction to jog</param>
+    /// <param name="distance">Distance in mm</param>
+    /// <param name="feedRate">Feed rate in mm/min</param>
+    public void Jog(JogDirection direction, double distance, double feedRate)
+    {
+        if (!IsConnected)
+            throw new InvalidOperationException("Not connected");
+            
+        try
+        {
+            string command = direction switch
+            {
+                JogDirection.Home => "$H",
+                JogDirection.N => FormatJogCommand(0, distance, 0, feedRate),
+                JogDirection.S => FormatJogCommand(0, -distance, 0, feedRate),
+                JogDirection.E => FormatJogCommand(distance, 0, 0, feedRate),
+                JogDirection.W => FormatJogCommand(-distance, 0, 0, feedRate),
+                JogDirection.NE => FormatJogCommand(distance, distance, 0, feedRate),
+                JogDirection.NW => FormatJogCommand(-distance, distance, 0, feedRate),
+                JogDirection.SE => FormatJogCommand(distance, -distance, 0, feedRate),
+                JogDirection.SW => FormatJogCommand(-distance, -distance, 0, feedRate),
+                JogDirection.Zup => FormatJogCommand(0, 0, distance, feedRate),
+                JogDirection.Zdown => FormatJogCommand(0, 0, -distance, feedRate),
+                _ => throw new ArgumentException($"Invalid jog direction: {direction}")
+            };
+            
+            SendCommand(command);
+        }
+        catch (Exception ex)
+        {
+            OnErrorOccurred(ex);
+            throw;
+        }
+    }
+    
+    /// <summary>
+    /// Format a jog command using GRBL $J syntax
+    /// </summary>
+    private string FormatJogCommand(double x, double y, double z, double feedRate)
+    {
+        var parts = new List<string> { "$J=G91" }; // Relative positioning
+        
+        if (x != 0)
+            parts.Add($"X{x.ToString("F3", CultureInfo.InvariantCulture)}");
+        if (y != 0)
+            parts.Add($"Y{y.ToString("F3", CultureInfo.InvariantCulture)}");
+        if (z != 0)
+            parts.Add($"Z{z.ToString("F3", CultureInfo.InvariantCulture)}");
+            
+        parts.Add($"F{feedRate.ToString("F0", CultureInfo.InvariantCulture)}");
+        
+        return string.Join("", parts);
     }
     
     public void Dispose()

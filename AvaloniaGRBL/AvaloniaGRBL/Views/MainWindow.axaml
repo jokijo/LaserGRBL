@@ -116,6 +116,7 @@
                 <ProgressBar Width="100" Height="16" Value="0" Maximum="127" VerticalAlignment="Center"/>
                 <TextBlock Text="Estimated: 00:00:00" VerticalAlignment="Center"/>
                 <TextBlock Text="{Binding StatusText, StringFormat='Status: {0}'}" VerticalAlignment="Center" FontWeight="Bold"/>
+                <TextBlock Text="{Binding GrblState, StringFormat='State: {0}'}" VerticalAlignment="Center" FontWeight="SemiBold" Foreground="#0066CC"/>
             </StackPanel>
         </Border>
 
@@ -163,38 +164,55 @@
                             <!-- Jog Buttons Grid -->
                             <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,*,*" Margin="0,0,0,10">
                                 <!-- Top Row -->
-                                <Button Grid.Row="0" Grid.Column="0" Content="↖" Width="50" Height="40" HorizontalAlignment="Center"/>
-                                <Button Grid.Row="0" Grid.Column="1" Content="↑" Width="50" Height="40" HorizontalAlignment="Center"/>
-                                <Button Grid.Row="0" Grid.Column="2" Content="↗" Width="50" Height="40" HorizontalAlignment="Center"/>
+                                <Button Grid.Row="0" Grid.Column="0" Content="↖" Width="50" Height="40" 
+                                        HorizontalAlignment="Center" Command="{Binding JogNorthWestCommand}"/>
+                                <Button Grid.Row="0" Grid.Column="1" Content="↑" Width="50" Height="40" 
+                                        HorizontalAlignment="Center" Command="{Binding JogNorthCommand}"/>
+                                <Button Grid.Row="0" Grid.Column="2" Content="↗" Width="50" Height="40" 
+                                        HorizontalAlignment="Center" Command="{Binding JogNorthEastCommand}"/>
                                 
                                 <!-- Middle Row -->
-                                <Button Grid.Row="1" Grid.Column="0" Content="←" Width="50" Height="40" HorizontalAlignment="Center"/>
-                                <Button Grid.Row="1" Grid.Column="1" Content="⌂" Width="50" Height="40" HorizontalAlignment="Center"/>
-                                <Button Grid.Row="1" Grid.Column="2" Content="→" Width="50" Height="40" HorizontalAlignment="Center"/>
+                                <Button Grid.Row="1" Grid.Column="0" Content="←" Width="50" Height="40" 
+                                        HorizontalAlignment="Center" Command="{Binding JogWestCommand}"/>
+                                <Button Grid.Row="1" Grid.Column="1" Content="⌂" Width="50" Height="40" 
+                                        HorizontalAlignment="Center" Command="{Binding JogHomeCommand}"/>
+                                <Button Grid.Row="1" Grid.Column="2" Content="→" Width="50" Height="40" 
+                                        HorizontalAlignment="Center" Command="{Binding JogEastCommand}"/>
                                 
                                 <!-- Bottom Row -->
-                                <Button Grid.Row="2" Grid.Column="0" Content="↙" Width="50" Height="40" HorizontalAlignment="Center"/>
-                                <Button Grid.Row="2" Grid.Column="1" Content="↓" Width="50" Height="40" HorizontalAlignment="Center"/>
-                                <Button Grid.Row="2" Grid.Column="2" Content="↘" Width="50" Height="40" HorizontalAlignment="Center"/>
+                                <Button Grid.Row="2" Grid.Column="0" Content="↙" Width="50" Height="40" 
+                                        HorizontalAlignment="Center" Command="{Binding JogSouthWestCommand}"/>
+                                <Button Grid.Row="2" Grid.Column="1" Content="↓" Width="50" Height="40" 
+                                        HorizontalAlignment="Center" Command="{Binding JogSouthCommand}"/>
+                                <Button Grid.Row="2" Grid.Column="2" Content="↘" Width="50" Height="40" 
+                                        HorizontalAlignment="Center" Command="{Binding JogSouthEastCommand}"/>
                             </Grid>
 
                             <!-- Jog Speed -->
                             <StackPanel Orientation="Horizontal" Spacing="5">
                                 <TextBlock Text="Speed:" VerticalAlignment="Center" Width="60"/>
-                                <TextBox Text="1000" Width="80"/>
+                                <TextBox Text="{Binding JogSpeed}" Width="80"/>
                                 <TextBlock Text="mm/min" VerticalAlignment="Center"/>
                             </StackPanel>
                             
                             <StackPanel Orientation="Horizontal" Spacing="5" Margin="0,5,0,0">
                                 <TextBlock Text="Step:" VerticalAlignment="Center" Width="60"/>
-                                <ComboBox Width="80" SelectedIndex="1">
-                                    <ComboBoxItem>0.1</ComboBoxItem>
-                                    <ComboBoxItem>1</ComboBoxItem>
-                                    <ComboBoxItem>10</ComboBoxItem>
-                                    <ComboBoxItem>100</ComboBoxItem>
-                                </ComboBox>
+                                <ComboBox Width="80" SelectedIndex="1" 
+                                          ItemsSource="{Binding JogStepOptions}" 
+                                          SelectedItem="{Binding JogStep}"/>
                                 <TextBlock Text="mm" VerticalAlignment="Center"/>
                             </StackPanel>
+                            
+                            <!-- Status Display -->
+                            <Separator Margin="0,10"/>
+                            <TextBlock Text="Status" FontWeight="Bold" Margin="0,0,0,5"/>
+                            <TextBlock Text="{Binding GrblState}" FontSize="12" Margin="0,0,0,5"/>
+                            
+                            <TextBlock Text="Machine Position" FontWeight="SemiBold" FontSize="11" Margin="0,5,0,2"/>
+                            <TextBlock Text="{Binding MachinePosition}" FontFamily="Courier New" FontSize="11" Margin="0,0,0,5"/>
+                            
+                            <TextBlock Text="Work Position" FontWeight="SemiBold" FontSize="11" Margin="0,5,0,2"/>
+                            <TextBlock Text="{Binding WorkPosition}" FontFamily="Courier New" FontSize="11"/>
                         </StackPanel>
                     </Border>
                 </StackPanel>

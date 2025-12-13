@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using AvaloniaGRBL.Models;
 using AvaloniaGRBL.Services;
@@ -30,6 +31,8 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     private int _selectedBaudRate = 115200;
     
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(StartProgramCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ResetGrblCommand))]
     private bool _isConnected;
     
     [ObservableProperty]
@@ -42,6 +45,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     private GCodeFile? _loadedGCodeFile;
     
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(StartProgramCommand))]
     private bool _hasGCodeLoaded;
     
     [ObservableProperty]
@@ -66,6 +70,27 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     
     [ObservableProperty]
     private string _grblState = "Unknown";
+    
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(StartProgramCommand))]
+    [NotifyCanExecuteChangedFor(nameof(PauseProgramCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ResumeProgramCommand))]
+    [NotifyCanExecuteChangedFor(nameof(StopProgramCommand))]
+    private bool _isProgramRunning;
+    
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(PauseProgramCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ResumeProgramCommand))]
+    private bool _isProgramPaused;
+    
+    [ObservableProperty]
+    private int _currentLine;
+    
+    [ObservableProperty]
+    private int _totalLines;
+    
+    private Queue<string> _gcodeQueue = new();
+    private CancellationTokenSource? _executionCancellation;
     
     public MainWindowViewModel()
     {
@@ -402,10 +427,257 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         }
     }
     
+    /// <summary>
+    /// Start executing the loaded G-code program
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanStartProgram))]
+    private async Task StartProgramAsync()
+    {
+        if (!IsConnected || LoadedGCodeFile == null)
+        {
+            AppendLog("Error: Cannot start program - not connected or no file loaded");
+            return;
+        }
+        
+        if (IsProgramRunning)
+        {
+            AppendLog("Error: Program is already running");
+            return;
+        }
+        
+        try
+        {
+            AppendLog($"Starting program execution: {LoadedGCodeFile.CommandCount} commands");
+            
+            IsProgramRunning = true;
+            IsProgramPaused = false;
+            CurrentLine = 0;
+            TotalLines = LoadedGCodeFile.CommandCount;
+            
+            _executionCancellation = new CancellationTokenSource();
+            
+            await Task.Run(() => ExecuteProgramLoop(_executionCancellation.Token));
+            
+            AppendLog("Program execution completed");
+        }
+        catch (OperationCanceledException)
+        {
+            AppendLog("Program execution stopped");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Program execution error: {ex.Message}");
+        }
+        finally
+        {
+            IsProgramRunning = false;
+            IsProgramPaused = false;
+            CurrentLine = 0;
+            _executionCancellation?.Dispose();
+            _executionCancellation = null;
+        }
+    }
+    
+    private bool CanStartProgram()
+    {
+        return IsConnected && HasGCodeLoaded && !IsProgramRunning;
+    }
+    
+    /// <summary>
+    /// Execute the G-code program loop
+    /// </summary>
+    private void ExecuteProgramLoop(CancellationToken cancellationToken)
+    {
+        if (LoadedGCodeFile == null) return;
+        
+        for (int i = 0; i < LoadedGCodeFile.Commands.Count && !cancellationToken.IsCancellationRequested; i++)
+        {
+            // Wait if paused
+            while (IsProgramPaused && !cancellationToken.IsCancellationRequested)
+            {
+                Thread.Sleep(100);
+            }
+            
+            if (cancellationToken.IsCancellationRequested)
+                break;
+            
+            var command = LoadedGCodeFile.Commands[i];
+            
+            // Skip empty lines and comments
+            if (command.CommandType == GCodeCommandType.Comment || 
+                string.IsNullOrWhiteSpace(command.RawCommand))
+            {
+                continue;
+            }
+            
+            try
+            {
+                _grblConnection.SendCommand(command.RawCommand);
+                
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                {
+                    CurrentLine = i + 1;
+                });
+                
+                // Basic delay to avoid overwhelming GRBL
+                // In a real implementation, this should wait for 'ok' responses
+                Thread.Sleep(50);
+            }
+            catch (Exception ex)
+            {
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                {
+                    AppendLog($"Error sending command at line {i + 1}: {ex.Message}");
+                });
+                break;
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Pause the currently running program
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanPauseProgram))]
+    private void PauseProgram()
+    {
+        if (!IsProgramRunning || IsProgramPaused)
+        {
+            AppendLog("Error: No running program to pause");
+            return;
+        }
+        
+        try
+        {
+            // Send Feed Hold command (0x21 = '!')
+            _grblConnection.SendImmediate(0x21);
+            IsProgramPaused = true;
+            AppendLog("Program paused (Feed Hold)");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Pause failed: {ex.Message}");
+        }
+    }
+    
+    private bool CanPauseProgram()
+    {
+        return IsProgramRunning && !IsProgramPaused;
+    }
+    
+    /// <summary>
+    /// Resume the paused program
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanResumeProgram))]
+    private void ResumeProgram()
+    {
+        if (!IsProgramRunning || !IsProgramPaused)
+        {
+            AppendLog("Error: No paused program to resume");
+            return;
+        }
+        
+        try
+        {
+            // Send Cycle Start/Resume command (0x7E = '~')
+            _grblConnection.SendImmediate(0x7E);
+            IsProgramPaused = false;
+            AppendLog("Program resumed (Cycle Start)");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Resume failed: {ex.Message}");
+        }
+    }
+    
+    private bool CanResumeProgram()
+    {
+        return IsProgramRunning && IsProgramPaused;
+    }
+    
+    /// <summary>
+    /// Stop/Abort the currently running program
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanStopProgram))]
+    private void StopProgram()
+    {
+        if (!IsProgramRunning)
+        {
+            AppendLog("Error: No running program to stop");
+            return;
+        }
+        
+        try
+        {
+            // Cancel the execution loop
+            _executionCancellation?.Cancel();
+            
+            // Send Feed Hold to stop motion immediately
+            _grblConnection.SendImmediate(0x21);
+            
+            IsProgramRunning = false;
+            IsProgramPaused = false;
+            CurrentLine = 0;
+            
+            AppendLog("Program stopped");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Stop failed: {ex.Message}");
+        }
+    }
+    
+    private bool CanStopProgram()
+    {
+        return IsProgramRunning;
+    }
+    
+    /// <summary>
+    /// Send soft reset to GRBL (Ctrl-X)
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanResetGrbl))]
+    private void ResetGrbl()
+    {
+        if (!IsConnected)
+        {
+            AppendLog("Error: Not connected");
+            return;
+        }
+        
+        try
+        {
+            // Stop any running program first
+            if (IsProgramRunning)
+            {
+                _executionCancellation?.Cancel();
+                IsProgramRunning = false;
+                IsProgramPaused = false;
+                CurrentLine = 0;
+            }
+            
+            // Send soft reset command (0x18 = Ctrl-X)
+            _grblConnection.SendImmediate(0x18);
+            
+            AppendLog("GRBL reset sent (Ctrl-X)");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Reset failed: {ex.Message}");
+        }
+    }
+    
+    private bool CanResetGrbl()
+    {
+        return IsConnected;
+    }
+    
     public void Dispose()
     {
         if (!_disposed)
         {
+            // Stop any running program
+            _executionCancellation?.Cancel();
+            _executionCancellation?.Dispose();
+            
             // Unsubscribe from events
             _grblConnection.StatusChanged -= OnConnectionStatusChanged;
             _grblConnection.DataReceived -= OnDataReceived;

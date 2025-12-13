@@ -8,9 +8,9 @@ AvaloniaGRBL is the multi-platform version of LaserGRBL, designed to run on Wind
 
 ## Current Status
 
-**Initial UI Implementation** - The application currently provides a UI mockup that matches the layout of the original LaserGRBL application. The buttons and controls are for visual reference only and do not have functionality yet.
+**Core Functionality Implementation** - The application now includes working serial communication with GRBL controllers and G-Code preview rendering capabilities.
 
-### Implemented UI Elements
+### Implemented Features
 
 - **Menu Bar**: Complete menu structure matching LaserGRBL
   - Grbl menu (Connect, Disconnect, Configuration, etc.)
@@ -22,21 +22,36 @@ AvaloniaGRBL is the multi-platform version of LaserGRBL, designed to run on Wind
   - Tools menu
   - Help menu
 
-- **Status Bar**: Bottom status bar with placeholders for:
+- **Status Bar**: Bottom status bar with:
   - Line counters
   - Buffer status with progress bar
   - Estimated time
-  - Current status
+  - Current status display
 
 - **Split View Layout**:
   - **Left Panel**: Connection controls and Jog controls
     - COM port and baud rate selection
-    - Connect button
+    - Working Connect/Disconnect functionality
     - Directional jog buttons (8-way + home)
     - Speed and step size controls
   - **Right Panel**: G-Code preview area
-    - Toolbar with basic operation buttons
-    - Canvas for G-Code visualization (placeholder)
+    - Toolbar with operation buttons
+    - Working "Open" button to load G-Code files
+    - Real-time G-Code visualization canvas
+    - File statistics display
+
+### G-Code Preview Rendering
+
+The G-Code preview system includes:
+- **File Loading**: Support for .gcode, .nc, .ngc, and .txt files
+- **G-Code Parser**: Parses commands including G0/G1 (linear moves), G2/G3 (arcs), M3/M5 (spindle control)
+- **Visual Rendering**: 
+  - Red lines for laser-on movements
+  - Light blue lines for rapid movements (G0)
+  - Light gray lines for laser-off movements
+  - Grid overlay for scale reference
+  - Automatic scaling and centering to fit canvas
+- **Information Display**: Shows command count and dimensions (width x height)
 
 ## Building and Running
 
@@ -93,8 +108,8 @@ AvaloniaGRBL/
 ### Phase 2: Core Functionality (In Progress)
 - [x] Implement serial port communication
 - [x] Add GRBL connection logic
-- [ ] Implement G-Code file loading
-- [ ] Add G-Code preview rendering
+- [x] Implement G-Code file loading
+- [x] Add G-Code preview rendering
 - [ ] Implement jog controls functionality
 - [ ] Add status monitoring
 

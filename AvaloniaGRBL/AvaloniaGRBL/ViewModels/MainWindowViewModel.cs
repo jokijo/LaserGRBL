@@ -50,6 +50,23 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     [ObservableProperty]
     private string _gcodeStats = "";
     
+    [ObservableProperty]
+    private double _jogSpeed = 1000;
+    
+    [ObservableProperty]
+    private double _jogStep = 1;
+    
+    public List<double> JogStepOptions { get; } = new() { 0.1, 1, 10, 100 };
+    
+    [ObservableProperty]
+    private string _machinePosition = "X: 0.000  Y: 0.000  Z: 0.000";
+    
+    [ObservableProperty]
+    private string _workPosition = "X: 0.000  Y: 0.000  Z: 0.000";
+    
+    [ObservableProperty]
+    private string _grblState = "Unknown";
+    
     public MainWindowViewModel()
     {
         // Initialize serial communication and GRBL connection
@@ -59,6 +76,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         // Subscribe to connection events
         _grblConnection.StatusChanged += OnConnectionStatusChanged;
         _grblConnection.DataReceived += OnDataReceived;
+        _grblConnection.StatusReportReceived += OnStatusReportReceived;
         _grblConnection.ErrorOccurred += OnErrorOccurred;
         
         // Initialize port list
@@ -156,6 +174,16 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         });
     }
     
+    private void OnStatusReportReceived(object? sender, GrblStatus status)
+    {
+        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        {
+            GrblState = status.State;
+            MachinePosition = $"X: {status.MachineX:F3}  Y: {status.MachineY:F3}  Z: {status.MachineZ:F3}";
+            WorkPosition = $"X: {status.WorkX:F3}  Y: {status.WorkY:F3}  Z: {status.WorkZ:F3}";
+        });
+    }
+    
     private void AppendLog(string message)
     {
         var timestamp = DateTime.Now.ToString("HH:mm:ss.fff");
@@ -239,6 +267,141 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
                      $"Size: {bounds.Width:F2} x {bounds.Height:F2} mm";
     }
     
+    [RelayCommand]
+    private void JogNorthWest()
+    {
+        if (!IsConnected) return;
+        try
+        {
+            _grblConnection.Jog(JogDirection.NW, JogStep, JogSpeed);
+            AppendLog($"Jog NW: {JogStep}mm @ {JogSpeed}mm/min");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Jog failed: {ex.Message}");
+        }
+    }
+    
+    [RelayCommand]
+    private void JogNorth()
+    {
+        if (!IsConnected) return;
+        try
+        {
+            _grblConnection.Jog(JogDirection.N, JogStep, JogSpeed);
+            AppendLog($"Jog N: {JogStep}mm @ {JogSpeed}mm/min");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Jog failed: {ex.Message}");
+        }
+    }
+    
+    [RelayCommand]
+    private void JogNorthEast()
+    {
+        if (!IsConnected) return;
+        try
+        {
+            _grblConnection.Jog(JogDirection.NE, JogStep, JogSpeed);
+            AppendLog($"Jog NE: {JogStep}mm @ {JogSpeed}mm/min");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Jog failed: {ex.Message}");
+        }
+    }
+    
+    [RelayCommand]
+    private void JogWest()
+    {
+        if (!IsConnected) return;
+        try
+        {
+            _grblConnection.Jog(JogDirection.W, JogStep, JogSpeed);
+            AppendLog($"Jog W: {JogStep}mm @ {JogSpeed}mm/min");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Jog failed: {ex.Message}");
+        }
+    }
+    
+    [RelayCommand]
+    private void JogHome()
+    {
+        if (!IsConnected) return;
+        try
+        {
+            _grblConnection.Jog(JogDirection.Home, 0, 0);
+            AppendLog("Homing cycle started");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Homing failed: {ex.Message}");
+        }
+    }
+    
+    [RelayCommand]
+    private void JogEast()
+    {
+        if (!IsConnected) return;
+        try
+        {
+            _grblConnection.Jog(JogDirection.E, JogStep, JogSpeed);
+            AppendLog($"Jog E: {JogStep}mm @ {JogSpeed}mm/min");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Jog failed: {ex.Message}");
+        }
+    }
+    
+    [RelayCommand]
+    private void JogSouthWest()
+    {
+        if (!IsConnected) return;
+        try
+        {
+            _grblConnection.Jog(JogDirection.SW, JogStep, JogSpeed);
+            AppendLog($"Jog SW: {JogStep}mm @ {JogSpeed}mm/min");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Jog failed: {ex.Message}");
+        }
+    }
+    
+    [RelayCommand]
+    private void JogSouth()
+    {
+        if (!IsConnected) return;
+        try
+        {
+            _grblConnection.Jog(JogDirection.S, JogStep, JogSpeed);
+            AppendLog($"Jog S: {JogStep}mm @ {JogSpeed}mm/min");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Jog failed: {ex.Message}");
+        }
+    }
+    
+    [RelayCommand]
+    private void JogSouthEast()
+    {
+        if (!IsConnected) return;
+        try
+        {
+            _grblConnection.Jog(JogDirection.SE, JogStep, JogSpeed);
+            AppendLog($"Jog SE: {JogStep}mm @ {JogSpeed}mm/min");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Jog failed: {ex.Message}");
+        }
+    }
+    
     public void Dispose()
     {
         if (!_disposed)
@@ -246,6 +409,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
             // Unsubscribe from events
             _grblConnection.StatusChanged -= OnConnectionStatusChanged;
             _grblConnection.DataReceived -= OnDataReceived;
+            _grblConnection.StatusReportReceived -= OnStatusReportReceived;
             _grblConnection.ErrorOccurred -= OnErrorOccurred;
             
             // Dispose connection

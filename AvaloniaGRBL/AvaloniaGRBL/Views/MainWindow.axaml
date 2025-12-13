@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:AvaloniaGRBL.ViewModels"
+        xmlns:converters="using:AvaloniaGRBL.Converters"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="768"
@@ -114,7 +115,7 @@
                 <TextBlock Text="Buffer: 0" VerticalAlignment="Center"/>
                 <ProgressBar Width="100" Height="16" Value="0" Maximum="127" VerticalAlignment="Center"/>
                 <TextBlock Text="Estimated: 00:00:00" VerticalAlignment="Center"/>
-                <TextBlock Text="Status: Idle" VerticalAlignment="Center" FontWeight="Bold"/>
+                <TextBlock Text="{Binding StatusText, StringFormat='Status: {0}'}" VerticalAlignment="Center" FontWeight="Bold"/>
             </StackPanel>
         </Border>
 
@@ -135,21 +136,22 @@
                             <TextBlock Text="Connection" FontWeight="Bold" Margin="0,0,0,10"/>
                             <StackPanel Orientation="Horizontal" Spacing="5" Margin="0,0,0,5">
                                 <TextBlock Text="COM Port:" VerticalAlignment="Center" Width="80"/>
-                                <ComboBox Width="120" SelectedIndex="0">
-                                    <ComboBoxItem>COM1</ComboBoxItem>
-                                    <ComboBoxItem>COM2</ComboBoxItem>
-                                    <ComboBoxItem>COM3</ComboBoxItem>
-                                </ComboBox>
+                                <ComboBox Width="120" ItemsSource="{Binding AvailablePorts}" SelectedItem="{Binding SelectedPort}"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Spacing="5" Margin="0,0,0,10">
                                 <TextBlock Text="Baud Rate:" VerticalAlignment="Center" Width="80"/>
-                                <ComboBox Width="120" SelectedIndex="0">
-                                    <ComboBoxItem>115200</ComboBoxItem>
-                                    <ComboBoxItem>57600</ComboBoxItem>
-                                    <ComboBoxItem>9600</ComboBoxItem>
-                                </ComboBox>
+                                <ComboBox Width="120" ItemsSource="{Binding AvailableBaudRates}" SelectedItem="{Binding SelectedBaudRate}"/>
                             </StackPanel>
-                            <Button Content="Connect" HorizontalAlignment="Stretch"/>
+                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                <Button Content="{Binding IsConnected, Converter={x:Static converters:BoolToTextConverter.Instance}}" 
+                                        Command="{Binding ConnectCommand}" 
+                                        HorizontalAlignment="Stretch"
+                                        Width="150"/>
+                                <Button Content="↻" 
+                                        Command="{Binding RefreshPortsCommand}" 
+                                        Width="30" 
+                                        ToolTip.Tip="Refresh Ports"/>
+                            </StackPanel>
                         </StackPanel>
                     </Border>
 
@@ -221,14 +223,27 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- Preview Canvas -->
+                    <!-- Preview Canvas / Connection Log -->
                     <Border Grid.Row="1" Background="#FAFAFA" Margin="10">
-                        <Canvas Background="White">
-                            <TextBlock Canvas.Left="20" Canvas.Top="20" Text="G-Code Preview Area" 
-                                     FontSize="24" Foreground="#CCCCCC" FontWeight="Light"/>
-                            <TextBlock Canvas.Left="20" Canvas.Top="60" Text="Load a G-Code file to see the preview" 
-                                     FontSize="14" Foreground="#999999"/>
-                        </Canvas>
+                        <Grid>
+                            <Canvas Background="White" IsVisible="{Binding !IsConnected}">
+                                <TextBlock Canvas.Left="20" Canvas.Top="20" Text="G-Code Preview Area" 
+                                         FontSize="24" Foreground="#CCCCCC" FontWeight="Light"/>
+                                <TextBlock Canvas.Left="20" Canvas.Top="60" Text="Load a G-Code file to see the preview" 
+                                         FontSize="14" Foreground="#999999"/>
+                            </Canvas>
+                            <ScrollViewer Background="White" IsVisible="{Binding IsConnected}">
+                                <StackPanel Margin="10">
+                                    <TextBlock Text="Connection Log" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
+                                    <TextBox Text="{Binding ConnectionLog}" 
+                                             IsReadOnly="True" 
+                                             TextWrapping="Wrap"
+                                             FontFamily="Courier New"
+                                             MinHeight="400"
+                                             Background="#F5F5F5"/>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </Grid>
                     </Border>
                 </Grid>
             </Border>

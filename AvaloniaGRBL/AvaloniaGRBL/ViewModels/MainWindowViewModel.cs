@@ -502,13 +502,15 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         for (int i = 0; i < LoadedGCodeFile.Commands.Count && !cancellationToken.IsCancellationRequested; i++)
         {
             // Wait if paused using efficient event-based waiting
-            if (!_pauseEvent.Wait(0))
+            // This will return immediately if not paused, or wait until resumed/cancelled
+            try
             {
                 _pauseEvent.Wait(cancellationToken);
             }
-            
-            if (cancellationToken.IsCancellationRequested)
+            catch (OperationCanceledException)
+            {
                 break;
+            }
             
             var command = LoadedGCodeFile.Commands[i];
             
@@ -639,17 +641,23 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         
         try
         {
+            // Unblock pause event to prevent deadlock
+            _pauseEvent.Set();
+            
             // Cancel the execution loop
             _executionCancellation?.Cancel();
             
             // Send Feed Hold to stop motion immediately
             _grblConnection.SendImmediate(0x21);
             
+            // Turn off laser/spindle (M5 command)
+            _grblConnection.SendCommand("M5");
+            
             IsProgramRunning = false;
             IsProgramPaused = false;
             CurrentLine = 0;
             
-            AppendLog("Program stopped");
+            AppendLog("Program stopped (M5 sent to turn off laser)");
         }
         catch (Exception ex)
         {
@@ -679,6 +687,9 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
             // Stop any running program first
             if (IsProgramRunning)
             {
+                // Unblock pause event to prevent deadlock
+                _pauseEvent.Set();
+                
                 _executionCancellation?.Cancel();
                 IsProgramRunning = false;
                 IsProgramPaused = false;

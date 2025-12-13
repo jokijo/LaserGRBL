@@ -21,22 +21,22 @@
         <!-- Menu Bar -->
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_Grbl">
-                <MenuItem Header="Connect..."/>
-                <MenuItem Header="Disconnect"/>
-                <MenuItem Header="WiFi Discovery"/>
+                <MenuItem Header="Connect..." Command="{Binding ConnectCommand}"/>
+                <MenuItem Header="Disconnect" Command="{Binding DisconnectCommand}"/>
+                <MenuItem Header="WiFi Discovery" Command="{Binding WiFiDiscoveryCommand}"/>
                 <Separator/>
-                <MenuItem Header="Grbl Reset"/>
-                <MenuItem Header="Go Home"/>
-                <MenuItem Header="Unlock"/>
+                <MenuItem Header="Grbl Reset" Command="{Binding ResetGrblCommand}"/>
+                <MenuItem Header="Go Home" Command="{Binding GoHomeCommand}"/>
+                <MenuItem Header="Unlock" Command="{Binding UnlockCommand}"/>
                 <Separator/>
-                <MenuItem Header="Grbl Configuration"/>
-                <MenuItem Header="Settings"/>
-                <MenuItem Header="Material Database"/>
-                <MenuItem Header="Laser Usage Stats"/>
+                <MenuItem Header="Grbl Configuration" Command="{Binding GrblConfigurationCommand}"/>
+                <MenuItem Header="Settings" Command="{Binding SettingsCommand}"/>
+                <MenuItem Header="Material Database" Command="{Binding MaterialDatabaseCommand}"/>
+                <MenuItem Header="Laser Usage Stats" Command="{Binding LaserUsageStatsCommand}"/>
                 <Separator/>
-                <MenuItem Header="Hotkeys"/>
+                <MenuItem Header="Hotkeys" Command="{Binding HotkeysCommand}"/>
                 <Separator/>
-                <MenuItem Header="Exit"/>
+                <MenuItem Header="Exit" Command="{Binding ExitCommand}"/>
             </MenuItem>
             <MenuItem Header="_File">
                 <MenuItem Header="Open File..." Command="{Binding LoadGCodeFileCommand}"/>
@@ -53,58 +53,64 @@
                 <MenuItem Header="Run Multiple" Command="{Binding RunMultipleCommand}"/>
             </MenuItem>
             <MenuItem Header="_Generate">
-                <MenuItem Header="Power vs Speed"/>
-                <MenuItem Header="Cutting Test"/>
-                <MenuItem Header="Accuracy Test"/>
-                <MenuItem Header="Shake Test"/>
-                <MenuItem Header="ESP8266"/>
-                <MenuItem Header="Grbl Emulator"/>
+                <MenuItem Header="Power vs Speed" Command="{Binding PowerVsSpeedCommand}"/>
+                <MenuItem Header="Cutting Test" Command="{Binding CuttingTestCommand}"/>
+                <MenuItem Header="Accuracy Test" Command="{Binding AccuracyTestCommand}"/>
+                <MenuItem Header="Shake Test" Command="{Binding ShakeTestCommand}"/>
+                <MenuItem Header="ESP8266" Command="{Binding ESP8266Command}"/>
+                <MenuItem Header="Grbl Emulator" Command="{Binding GrblEmulatorCommand}"/>
             </MenuItem>
             <MenuItem Header="_Schema">
-                <MenuItem Header="CAD Style"/>
-                <MenuItem Header="CAD Dark"/>
-                <MenuItem Header="Blue Laser"/>
-                <MenuItem Header="Red Laser"/>
-                <MenuItem Header="Dark"/>
-                <MenuItem Header="Hacker"/>
-                <MenuItem Header="Nighty"/>
+                <MenuItem Header="CAD Style" Command="{Binding SetSchemaCommand}" CommandParameter="CAD Style"/>
+                <MenuItem Header="CAD Dark" Command="{Binding SetSchemaCommand}" CommandParameter="CAD Dark"/>
+                <MenuItem Header="Blue Laser" Command="{Binding SetSchemaCommand}" CommandParameter="Blue Laser"/>
+                <MenuItem Header="Red Laser" Command="{Binding SetSchemaCommand}" CommandParameter="Red Laser"/>
+                <MenuItem Header="Dark" Command="{Binding SetSchemaCommand}" CommandParameter="Dark"/>
+                <MenuItem Header="Hacker" Command="{Binding SetSchemaCommand}" CommandParameter="Hacker"/>
+                <MenuItem Header="Nighty" Command="{Binding SetSchemaCommand}" CommandParameter="Nighty"/>
             </MenuItem>
             <MenuItem Header="_Preview">
-                <MenuItem Header="Auto Size"/>
-                <MenuItem Header="Zoom In"/>
-                <MenuItem Header="Zoom Out"/>
+                <MenuItem Header="Auto Size" Command="{Binding AutoSizeCommand}"/>
+                <MenuItem Header="Zoom In" Command="{Binding ZoomInCommand}"/>
+                <MenuItem Header="Zoom Out" Command="{Binding ZoomOutCommand}"/>
                 <Separator/>
-                <MenuItem Header="Show Laser Off Movements"/>
-                <MenuItem Header="Show Executed Commands"/>
-                <MenuItem Header="Show Bounding Box"/>
-                <MenuItem Header="Cross Cursor"/>
+                <MenuItem Header="Show Laser Off Movements" Command="{Binding ToggleLaserOffMovementsCommand}" 
+                          IsChecked="{Binding ShowLaserOffMovements}"/>
+                <MenuItem Header="Show Executed Commands" Command="{Binding ToggleExecutedCommandsCommand}"
+                          IsChecked="{Binding ShowExecutedCommands}"/>
+                <MenuItem Header="Show Bounding Box" Command="{Binding ToggleBoundingBoxCommand}"
+                          IsChecked="{Binding ShowBoundingBox}"/>
+                <MenuItem Header="Cross Cursor" Command="{Binding ToggleCrossCursorCommand}"
+                          IsChecked="{Binding CrossCursor}"/>
             </MenuItem>
             <MenuItem Header="_Language">
-                <MenuItem Header="English"/>
-                <MenuItem Header="Italian"/>
-                <MenuItem Header="Spanish"/>
-                <MenuItem Header="French"/>
-                <MenuItem Header="German"/>
+                <MenuItem Header="English" Command="{Binding SetLanguageCommand}" CommandParameter="English"/>
+                <MenuItem Header="Italian" Command="{Binding SetLanguageCommand}" CommandParameter="Italian"/>
+                <MenuItem Header="Spanish" Command="{Binding SetLanguageCommand}" CommandParameter="Spanish"/>
+                <MenuItem Header="French" Command="{Binding SetLanguageCommand}" CommandParameter="French"/>
+                <MenuItem Header="German" Command="{Binding SetLanguageCommand}" CommandParameter="German"/>
             </MenuItem>
             <MenuItem Header="_Tools">
-                <MenuItem Header="Install CH340 Driver"/>
-                <MenuItem Header="Flash Grbl Firmware"/>
+                <MenuItem Header="Install CH340 Driver" Command="{Binding InstallCH340DriverCommand}"/>
+                <MenuItem Header="Flash Grbl Firmware" Command="{Binding FlashGrblFirmwareCommand}"/>
                 <Separator/>
-                <MenuItem Header="Configuration Wizard"/>
+                <MenuItem Header="Configuration Wizard" Command="{Binding ConfigurationWizardCommand}"/>
             </MenuItem>
             <MenuItem Header="_?">
-                <MenuItem Header="Auto Update"/>
-                <MenuItem Header="Check Now"/>
+                <MenuItem Header="Auto Update" Command="{Binding ToggleAutoUpdateCommand}"
+                          IsChecked="{Binding AutoUpdateEnabled}"/>
+                <MenuItem Header="Check Now" Command="{Binding CheckForUpdatesCommand}"/>
                 <Separator/>
-                <MenuItem Header="Open Session Log"/>
-                <MenuItem Header="Activate Extended Log"/>
+                <MenuItem Header="Open Session Log" Command="{Binding OpenSessionLogCommand}"/>
+                <MenuItem Header="Activate Extended Log" Command="{Binding ToggleExtendedLogCommand}"
+                          IsChecked="{Binding ExtendedLogEnabled}"/>
                 <Separator/>
-                <MenuItem Header="Help Online"/>
-                <MenuItem Header="About"/>
-                <MenuItem Header="Facebook Community"/>
+                <MenuItem Header="Help Online" Command="{Binding HelpOnlineCommand}"/>
+                <MenuItem Header="About" Command="{Binding AboutCommand}"/>
+                <MenuItem Header="Facebook Community" Command="{Binding FacebookCommunityCommand}"/>
                 <Separator/>
-                <MenuItem Header="Donate"/>
-                <MenuItem Header="License"/>
+                <MenuItem Header="Donate" Command="{Binding DonateCommand}"/>
+                <MenuItem Header="License" Command="{Binding LicenseCommand}"/>
             </MenuItem>
         </Menu>
 

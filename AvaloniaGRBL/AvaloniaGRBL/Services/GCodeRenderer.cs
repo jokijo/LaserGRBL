@@ -13,10 +13,14 @@ namespace AvaloniaGRBL.Services;
 public class GCodeRenderer
 {
     private readonly Canvas _canvas;
+    private readonly Canvas _contentCanvas; // Inner canvas for content that gets transformed
     private GCodeFile? _currentFile;
     private double _scale = 1.0;
     private double _offsetX = 0;
     private double _offsetY = 0;
+    private double _userZoom = 1.0; // User-controlled zoom multiplier
+    private double _baseScale = 1.0; // Auto-calculated base scale for fit
+    private ScaleTransform? _zoomTransform;
     
     // Colors for rendering
     private readonly IBrush _rapidMoveBrush = new SolidColorBrush(Colors.LightBlue);
@@ -26,22 +30,36 @@ public class GCodeRenderer
     
     private const double LineThickness = 1.0;
     private const double RapidMoveThickness = 0.5;
+    private const double ZoomIncrement = 1.1; // 10% zoom increment
     
     public GCodeRenderer(Canvas canvas)
     {
         _canvas = canvas;
+        
+        // Create inner canvas for content that will be transformed
+        _contentCanvas = new Canvas();
+        _canvas.Children.Add(_contentCanvas);
+        
+        // Set up zoom transform
+        _zoomTransform = new ScaleTransform(1.0, 1.0);
+        _contentCanvas.RenderTransform = _zoomTransform;
+        _contentCanvas.RenderTransformOrigin = new RelativePoint(0.5, 0.5, RelativeUnit.Relative);
     }
     
     public void RenderFile(GCodeFile file)
     {
         _currentFile = file;
-        _canvas.Children.Clear();
+        _contentCanvas.Children.Clear();
         
         if (file == null || file.IsEmpty || !file.Bounds.IsValid)
         {
             RenderEmptyState();
             return;
         }
+        
+        // Reset user zoom when loading new file
+        _userZoom = 1.0;
+        UpdateZoomTransform();
         
         CalculateScaleAndOffset();
         RenderGrid();
@@ -58,7 +76,7 @@ public class GCodeRenderer
             [Canvas.LeftProperty] = 20.0,
             [Canvas.TopProperty] = 20.0
         };
-        _canvas.Children.Add(text);
+        _contentCanvas.Children.Add(text);
     }
     
     private void CalculateScaleAndOffset()
@@ -80,7 +98,8 @@ public class GCodeRenderer
         var scaleY = bounds.Height > 0 ? availableHeight / bounds.Height : 1.0;
         
         // Use the smaller scale to maintain aspect ratio
-        _scale = Math.Min(scaleX, scaleY) * 0.95;
+        _baseScale = Math.Min(scaleX, scaleY) * 0.95;
+        _scale = _baseScale; // Don't apply user zoom here - it's handled by transform
         
         // Calculate offset to center the drawing
         var scaledWidth = bounds.Width * _scale;
@@ -122,7 +141,7 @@ public class GCodeRenderer
                 Stroke = _gridBrush,
                 StrokeThickness = 1
             };
-            _canvas.Children.Add(line);
+            _contentCanvas.Children.Add(line);
         }
         
         // Draw horizontal grid lines
@@ -138,7 +157,7 @@ public class GCodeRenderer
                 Stroke = _gridBrush,
                 StrokeThickness = 1
             };
-            _canvas.Children.Add(line);
+            _contentCanvas.Children.Add(line);
         }
     }
     
@@ -214,7 +233,7 @@ public class GCodeRenderer
                         StrokeThickness = thickness
                     };
                     
-                    _canvas.Children.Add(line);
+                    _contentCanvas.Children.Add(line);
                 }
                 
                 currentX = newX;
@@ -246,7 +265,7 @@ public class GCodeRenderer
                         StrokeDashArray = new Avalonia.Collections.AvaloniaList<double> { 3, 2 } // Dashed to indicate approximation
                     };
                     
-                    _canvas.Children.Add(line);
+                    _contentCanvas.Children.Add(line);
                 }
                 
                 currentX = newX;
@@ -257,7 +276,55 @@ public class GCodeRenderer
     
     public void Clear()
     {
-        _canvas.Children.Clear();
+        _contentCanvas.Children.Clear();
         _currentFile = null;
+    }
+    
+    /// <summary>
+    /// Zoom in by 10%
+    /// </summary>
+    public void ZoomIn()
+    {
+        _userZoom *= ZoomIncrement;
+        UpdateZoomTransform();
+    }
+    
+    /// <summary>
+    /// Zoom out by 10%
+    /// </summary>
+    public void ZoomOut()
+    {
+        _userZoom /= ZoomIncrement;
+        UpdateZoomTransform();
+    }
+    
+    /// <summary>
+    /// Reset zoom to auto-fit the drawing
+    /// </summary>
+    public void ZoomAuto()
+    {
+        _userZoom = 1.0;
+        UpdateZoomTransform();
+    }
+    
+    /// <summary>
+    /// Zoom by a specific factor (for mouse wheel support)
+    /// </summary>
+    public void ZoomBy(double factor)
+    {
+        _userZoom *= factor;
+        UpdateZoomTransform();
+    }
+    
+    /// <summary>
+    /// Update the zoom transform without redrawing
+    /// </summary>
+    private void UpdateZoomTransform()
+    {
+        if (_zoomTransform != null)
+        {
+            _zoomTransform.ScaleX = _userZoom;
+            _zoomTransform.ScaleY = _userZoom;
+        }
     }
 }

@@ -1,0 +1,297 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:AvaloniaGRBL.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="600"
+        x:Class="AvaloniaGRBL.Views.SettingsWindow"
+        x:DataType="vm:SettingsViewModel"
+        Title="Settings"
+        Width="700" Height="600"
+        WindowStartupLocation="CenterOwner">
+
+    <Design.DataContext>
+        <vm:SettingsViewModel/>
+    </Design.DataContext>
+
+    <Window.Styles>
+        <Style Selector="TabControl">
+            <Setter Property="Background" Value="#2D2D30"/>
+        </Style>
+        <Style Selector="TabItem">
+            <Setter Property="Foreground" Value="#F1F1F1"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+        <Style Selector="TextBlock">
+            <Setter Property="Foreground" Value="#F1F1F1"/>
+        </Style>
+        <Style Selector="CheckBox">
+            <Setter Property="Foreground" Value="#F1F1F1"/>
+        </Style>
+        <Style Selector="Label">
+            <Setter Property="Foreground" Value="#F1F1F1"/>
+        </Style>
+    </Window.Styles>
+
+    <DockPanel>
+        <!-- Bottom Buttons -->
+        <Border DockPanel.Dock="Bottom" Background="#252526" BorderBrush="#3F3F46" BorderThickness="0,1,0,0" Padding="10">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+                <Button Content="Save" Command="{Binding SaveCommand}" Width="100" Height="30"/>
+                <Button Content="Cancel" Command="{Binding CancelCommand}" Width="100" Height="30"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Main TabControl -->
+        <TabControl Background="#2D2D30">
+            <!-- Hardware Tab -->
+            <TabItem Header="Hardware">
+                <ScrollViewer>
+                    <StackPanel Margin="20" Spacing="15">
+                        <TextBlock Text="Firmware Configuration" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        
+                        <StackPanel Spacing="5">
+                            <TextBlock Text="Firmware Type:"/>
+                            <ComboBox ItemsSource="{Binding FirmwareTypes}" 
+                                      SelectedItem="{Binding SelectedFirmware}" 
+                                      Width="200" HorizontalAlignment="Left"/>
+                        </StackPanel>
+                        
+                        <CheckBox Content="Support Hardware PWM" IsChecked="{Binding SupportHardwarePWM}"/>
+                        
+                        <StackPanel Spacing="5">
+                            <TextBlock Text="Protocol:"/>
+                            <ComboBox ItemsSource="{Binding ProtocolTypes}" 
+                                      SelectedItem="{Binding SelectedProtocol}" 
+                                      Width="200" HorizontalAlignment="Left"/>
+                        </StackPanel>
+                        
+                        <StackPanel Spacing="5">
+                            <TextBlock Text="Streaming Mode:"/>
+                            <ComboBox ItemsSource="{Binding StreamingModes}" 
+                                      SelectedItem="{Binding SelectedStreamingMode}" 
+                                      Width="200" HorizontalAlignment="Left"/>
+                        </StackPanel>
+                        
+                        <StackPanel Spacing="5">
+                            <TextBlock Text="Threading Mode:"/>
+                            <ComboBox ItemsSource="{Binding ThreadingModes}" 
+                                      SelectedItem="{Binding SelectedThreadingMode}" 
+                                      Width="200" HorizontalAlignment="Left"/>
+                        </StackPanel>
+                        
+                        <Separator Margin="0,10"/>
+                        
+                        <TextBlock Text="Connection Options" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        
+                        <CheckBox Content="Show Issue Detector" IsChecked="{Binding ShowIssueDetector}"/>
+                        <CheckBox Content="Soft Reset on Connect" IsChecked="{Binding SoftResetOnConnect}"/>
+                        <CheckBox Content="Hard Reset on Connect" IsChecked="{Binding HardResetOnConnect}"/>
+                        <CheckBox Content="Query Machine Info ($I) at Connect" IsChecked="{Binding QueryMachineInfoOnConnect}"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Raster Import Tab -->
+            <TabItem Header="Raster Import">
+                <ScrollViewer>
+                    <StackPanel Margin="20" Spacing="15">
+                        <TextBlock Text="Raster Processing Options" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        
+                        <CheckBox Content="Unidirectional Engraving" IsChecked="{Binding UnidirectionalEngraving}"/>
+                        <TextBlock Text="Process engraving in one direction only (slower but more accurate)" 
+                                   FontSize="11" Foreground="#9E9E9E" Margin="25,0,0,0"/>
+                        
+                        <CheckBox Content="Disable G0 Fast Skip" IsChecked="{Binding DisableG0FastSkip}"/>
+                        <TextBlock Text="Disable optimization for fast G0 movements" 
+                                   FontSize="11" Foreground="#9E9E9E" Margin="25,0,0,0"/>
+                        
+                        <CheckBox Content="Hi-Res Raster" IsChecked="{Binding RasterHiRes}"/>
+                        <TextBlock Text="Use high resolution mode for raster engraving" 
+                                   FontSize="11" Foreground="#9E9E9E" Margin="25,0,0,0"/>
+                        
+                        <CheckBox Content="Disable Boundary Warning" IsChecked="{Binding DisableBoundaryWarning}"/>
+                        <TextBlock Text="Don't warn when design exceeds machine boundaries" 
+                                   FontSize="11" Foreground="#9E9E9E" Margin="25,0,0,0"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Vector Import Tab -->
+            <TabItem Header="Vector Import">
+                <ScrollViewer>
+                    <StackPanel Margin="20" Spacing="15">
+                        <TextBlock Text="Vector Processing Options" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        
+                        <CheckBox Content="Use Smart Bezier" IsChecked="{Binding UseSmartBezier}"/>
+                        <TextBlock Text="Enable intelligent Bezier curve processing for smoother vector paths" 
+                                   FontSize="11" Foreground="#9E9E9E" Margin="25,0,0,0"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Jog Control Tab -->
+            <TabItem Header="Jog Control">
+                <ScrollViewer>
+                    <StackPanel Margin="20" Spacing="15">
+                        <TextBlock Text="Jogging Options" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        
+                        <CheckBox Content="Enable Continuous Jog" IsChecked="{Binding EnableContinuousJog}"/>
+                        <TextBlock Text="Hold button for continuous jogging instead of stepping" 
+                                   FontSize="11" Foreground="#9E9E9E" Margin="25,0,0,0"/>
+                        
+                        <CheckBox Content="Enable Z Jog Control" IsChecked="{Binding EnableZJogControl}"/>
+                        <TextBlock Text="Enable jogging controls for Z axis" 
+                                   FontSize="11" Foreground="#9E9E9E" Margin="25,0,0,0"/>
+                        
+                        <CheckBox Content="Click and Jog" IsChecked="{Binding ClickAndJog}"/>
+                        <TextBlock Text="Double-click on preview to jog to that position" 
+                                   FontSize="11" Foreground="#9E9E9E" Margin="25,0,0,0"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Auto Cooling Tab -->
+            <TabItem Header="Auto Cooling">
+                <ScrollViewer>
+                    <StackPanel Margin="20" Spacing="15">
+                        <TextBlock Text="Automatic Cooling Settings" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        
+                        <CheckBox Content="Enable Auto Cooling" IsChecked="{Binding AutoCoolingEnabled}"/>
+                        <TextBlock Text="Automatically control cooling system during operation" 
+                                   FontSize="11" Foreground="#9E9E9E" Margin="25,0,0,0"/>
+                        
+                        <Separator Margin="0,10"/>
+                        
+                        <StackPanel Spacing="10" IsEnabled="{Binding AutoCoolingEnabled}">
+                            <TextBlock Text="Cooling ON Duration:" FontWeight="SemiBold"/>
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <ComboBox ItemsSource="{Binding MinuteOptions}" 
+                                          SelectedItem="{Binding CoolingOnMinutes}" 
+                                          Width="80"/>
+                                <TextBlock Text="min" VerticalAlignment="Center"/>
+                                <ComboBox ItemsSource="{Binding SecondOptions}" 
+                                          SelectedItem="{Binding CoolingOnSeconds}" 
+                                          Width="80"/>
+                                <TextBlock Text="sec" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            
+                            <TextBlock Text="Cooling OFF Duration:" FontWeight="SemiBold" Margin="0,10,0,0"/>
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <ComboBox ItemsSource="{Binding MinuteOptions}" 
+                                          SelectedItem="{Binding CoolingOffMinutes}" 
+                                          Width="80"/>
+                                <TextBlock Text="min" VerticalAlignment="Center"/>
+                                <ComboBox ItemsSource="{Binding SecondOptions}" 
+                                          SelectedItem="{Binding CoolingOffSeconds}" 
+                                          Width="80"/>
+                                <TextBlock Text="sec" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- GCode Settings Tab -->
+            <TabItem Header="G-Code">
+                <ScrollViewer>
+                    <StackPanel Margin="20" Spacing="15">
+                        <TextBlock Text="Custom G-Code Templates" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        
+                        <StackPanel Spacing="5">
+                            <TextBlock Text="Header (executed at start):"/>
+                            <TextBox Text="{Binding CustomHeader}" 
+                                     AcceptsReturn="True" 
+                                     TextWrapping="Wrap" 
+                                     Height="100" 
+                                     FontFamily="Courier New"/>
+                        </StackPanel>
+                        
+                        <StackPanel Spacing="5">
+                            <TextBlock Text="Pass Template (executed between passes):"/>
+                            <TextBox Text="{Binding CustomPasses}" 
+                                     AcceptsReturn="True" 
+                                     TextWrapping="Wrap" 
+                                     Height="100" 
+                                     FontFamily="Courier New"/>
+                        </StackPanel>
+                        
+                        <StackPanel Spacing="5">
+                            <TextBlock Text="Footer (executed at end):"/>
+                            <TextBox Text="{Binding CustomFooter}" 
+                                     AcceptsReturn="True" 
+                                     TextWrapping="Wrap" 
+                                     Height="100" 
+                                     FontFamily="Courier New"/>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Sound Settings Tab -->
+            <TabItem Header="Sound">
+                <ScrollViewer>
+                    <StackPanel Margin="20" Spacing="15">
+                        <TextBlock Text="Sound Notifications" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        
+                        <CheckBox Content="Play Success Sound" IsChecked="{Binding PlaySuccessSound}"/>
+                        <CheckBox Content="Play Warning Sound" IsChecked="{Binding PlayWarningSound}"/>
+                        <CheckBox Content="Play Fatal Error Sound" IsChecked="{Binding PlayFatalSound}"/>
+                        <CheckBox Content="Play Connect Sound" IsChecked="{Binding PlayConnectSound}"/>
+                        <CheckBox Content="Play Disconnect Sound" IsChecked="{Binding PlayDisconnectSound}"/>
+                        
+                        <Separator Margin="0,10"/>
+                        
+                        <TextBlock Text="Telegram Notifications" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        
+                        <CheckBox Content="Enable Telegram Notifications" IsChecked="{Binding TelegramNotificationEnabled}"/>
+                        
+                        <StackPanel Spacing="5" IsEnabled="{Binding TelegramNotificationEnabled}">
+                            <TextBlock Text="Telegram Bot Code:"/>
+                            <TextBox Text="{Binding TelegramCode}" Width="200" HorizontalAlignment="Left"/>
+                            
+                            <TextBlock Text="Notification Threshold (minutes):" Margin="0,10,0,0"/>
+                            <NumericUpDown Value="{Binding TelegramThreshold}" 
+                                           Minimum="1" 
+                                           Maximum="60" 
+                                           Width="100" 
+                                           HorizontalAlignment="Left"/>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Options Tab -->
+            <TabItem Header="Options">
+                <ScrollViewer>
+                    <StackPanel Margin="20" Spacing="15">
+                        <TextBlock Text="Application Options" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        
+                        <StackPanel Spacing="5">
+                            <TextBlock Text="Graphic Rendering Mode:"/>
+                            <ComboBox ItemsSource="{Binding GraphicModes}" 
+                                      SelectedItem="{Binding SelectedGraphicMode}" 
+                                      Width="200" HorizontalAlignment="Left"/>
+                            <TextBlock Text="Requires application restart" 
+                                       FontSize="11" Foreground="#9E9E9E" Margin="5,2,0,0"/>
+                        </StackPanel>
+                        
+                        <Separator Margin="0,10"/>
+                        
+                        <CheckBox Content="Disable Safety Countdown" IsChecked="{Binding DisableSafetyCountdown}"/>
+                        <TextBlock Text="Skip countdown before starting a job" 
+                                   FontSize="11" Foreground="#9E9E9E" Margin="25,0,0,0"/>
+                        
+                        <CheckBox Content="Quiet Safety Countdown" IsChecked="{Binding QuietSafetyCountdown}"/>
+                        <TextBlock Text="Don't play sound during safety countdown" 
+                                   FontSize="11" Foreground="#9E9E9E" Margin="25,0,0,0"/>
+                        
+                        <CheckBox Content="Use Legacy Icons" IsChecked="{Binding LegacyIcons}"/>
+                        <TextBlock Text="Use old-style icons (requires restart)" 
+                                   FontSize="11" Foreground="#9E9E9E" Margin="25,0,0,0"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>

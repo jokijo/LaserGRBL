@@ -256,6 +256,10 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
                     {
                         Patterns = new[] { "*.gcode", "*.nc", "*.ngc", "*.txt" }
                     },
+                    new Avalonia.Platform.Storage.FilePickerFileType("Vector Files")
+                    {
+                        Patterns = new[] { "*.svg" }
+                    },
                     new Avalonia.Platform.Storage.FilePickerFileType("All Files")
                     {
                         Patterns = new[] { "*.*" }
@@ -300,6 +304,73 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         var bounds = LoadedGCodeFile.Bounds;
         GcodeStats = $"Commands: {LoadedGCodeFile.CommandCount}\n" +
                      $"Size: {bounds.Width:F2} x {bounds.Height:F2} mm";
+    }
+    
+    /// <summary>
+    /// Loads a G-Code file from the specified path. This method can be called externally (e.g., from drag-and-drop).
+    /// </summary>
+    public async Task LoadGCodeFileFromPathAsync(string filePath)
+    {
+        try
+        {
+            var fileName = Path.GetFileName(filePath);
+            var extension = Path.GetExtension(filePath).ToLowerInvariant();
+            
+            // Check if it's an SVG file
+            if (extension == ".svg")
+            {
+                AppendLog($"Loading SVG file: {fileName}");
+                
+                // Convert SVG to G-Code on background thread
+                LoadedGCodeFile = await Task.Run(() =>
+                {
+                    var converter = new SvgToGCodeConverter
+                    {
+                        FeedRate = 1000,
+                        TravelSpeed = 3000,
+                        LaserPowerOn = 1000,
+                        LaserPowerOff = 0,
+                        Scale = 1.0
+                    };
+                    
+                    var gcode = converter.ConvertFile(filePath);
+                    
+                    // Create a temporary G-Code file from the converted content
+                    var tempFile = Path.GetTempFileName();
+                    File.WriteAllText(tempFile, gcode);
+                    
+                    var gcodeFile = GCodeFile.Load(tempFile);
+                    
+                    // Clean up temp file
+                    try { File.Delete(tempFile); } catch { }
+                    
+                    return gcodeFile;
+                });
+                
+                AppendLog($"SVG file converted to G-Code: {LoadedGCodeFile.CommandCount} commands");
+            }
+            else
+            {
+                AppendLog($"Loading G-Code file: {fileName}");
+                
+                // Load file on background thread to avoid blocking UI
+                LoadedGCodeFile = await Task.Run(() => GCodeFile.Load(filePath));
+                
+                AppendLog($"G-Code file loaded: {LoadedGCodeFile.CommandCount} commands");
+            }
+            
+            HasGCodeLoaded = true;
+            GcodeFileName = fileName;
+            _lastOpenedFilePath = filePath;
+            
+            UpdateGCodeStats();
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Error loading file: {ex.Message}");
+            HasGCodeLoaded = false;
+            LoadedGCodeFile = null;
+        }
     }
     
     [RelayCommand]
@@ -956,15 +1027,59 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     }
     
     [RelayCommand]
-    private void GrblConfiguration()
+    private async Task GrblConfigurationAsync()
     {
-        AppendLog("Grbl Configuration feature coming soon");
+        if (!IsConnected)
+        {
+            AppendLog("Error: Not connected. Please connect to GRBL device first.");
+            return;
+        }
+        
+        try
+        {
+            var window = Avalonia.Application.Current?.ApplicationLifetime as Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime;
+            var mainWindow = window?.MainWindow;
+            
+            if (mainWindow != null)
+            {
+                var configViewModel = new GrblConfigViewModel(_grblConnection, mainWindow.StorageProvider);
+                var configWindow = new Views.GrblConfigWindow
+                {
+                    DataContext = configViewModel
+                };
+                
+                await configWindow.ShowDialog(mainWindow);
+                AppendLog("GRBL Configuration window closed");
+            }
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Error opening GRBL Configuration: {ex.Message}");
+        }
     }
     
     [RelayCommand]
-    private void Settings()
+    private async Task SettingsAsync()
     {
-        AppendLog("Settings feature coming soon");
+        try
+        {
+            var settingsWindow = new Views.SettingsWindow
+            {
+                DataContext = new SettingsViewModel()
+            };
+            
+            var mainWindow = Avalonia.Application.Current?.ApplicationLifetime is 
+                Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop 
+                ? desktop.MainWindow 
+                : null;
+            
+            await settingsWindow.ShowDialog(mainWindow!);
+            AppendLog("Settings saved");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Error opening settings: {ex.Message}");
+        }
     }
     
     [RelayCommand]
@@ -1034,34 +1149,102 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     // ===== Schema Menu Commands =====
     
     [ObservableProperty]
-    private string _currentSchema = "CAD Style";
+    private string _currentSchema = "Dark";
+    
+    // Theme color properties
+    [ObservableProperty] private string _mainBackground = "#2A3647";
+    [ObservableProperty] private string _panelBackground = "#1E2936";
+    [ObservableProperty] private string _borderColor = "#0F1419";
+    [ObservableProperty] private string _canvasBackground = "#2D3E50";
+    [ObservableProperty] private string _buttonBackground = "#3C4A5C";
+    [ObservableProperty] private string _buttonForeground = "#CCCCCC";
+    [ObservableProperty] private string _buttonHoverBackground = "#4A5A6F";
+    [ObservableProperty] private string _buttonPressedBackground = "#2A3647";
+    [ObservableProperty] private string _buttonBorder = "#2A3647";
+    [ObservableProperty] private string _jogButtonForeground = "#8AB4F8";
+    [ObservableProperty] private string _jogButtonHoverForeground = "#AACCFF";
+    [ObservableProperty] private string _actionButtonForeground = "#FFD700";
+    [ObservableProperty] private string _actionButtonBorder = "#FFD700";
+    [ObservableProperty] private string _actionButtonHoverForeground = "#FFE44D";
+    [ObservableProperty] private string _primaryText = "#CCCCCC";
+    [ObservableProperty] private string _secondaryText = "#999999";
+    [ObservableProperty] private string _accentText = "#8AB4F8";
+    [ObservableProperty] private string _consoleText = "#00FF00";
+    [ObservableProperty] private string _sliderBackground = "#3C4A5C";
+    [ObservableProperty] private string _sliderForeground = "#8AB4F8";
+    [ObservableProperty] private string _comboBoxBackground = "#3C4A5C";
+    [ObservableProperty] private string _comboBoxForeground = "#CCCCCC";
+    [ObservableProperty] private string _separatorColor = "#3C4A5C";
+    [ObservableProperty] private string _infoBoxBackground = "#1E2936";
+    [ObservableProperty] private string _infoBoxBorder = "#3C4A5C";
     
     [RelayCommand]
     private void SetSchema(string schemaName)
     {
-        CurrentSchema = schemaName;
-        AppendLog($"Color schema changed to: {schemaName}");
-        // TODO: Apply the color schema to the UI
+        var themes = ColorTheme.GetAllThemes();
+        
+        if (themes.TryGetValue(schemaName, out var theme))
+        {
+            CurrentSchema = schemaName;
+            
+            // Apply all theme colors
+            MainBackground = theme.MainBackground;
+            PanelBackground = theme.PanelBackground;
+            BorderColor = theme.BorderColor;
+            CanvasBackground = theme.CanvasBackground;
+            ButtonBackground = theme.ButtonBackground;
+            ButtonForeground = theme.ButtonForeground;
+            ButtonHoverBackground = theme.ButtonHoverBackground;
+            ButtonPressedBackground = theme.ButtonPressedBackground;
+            ButtonBorder = theme.ButtonBorder;
+            JogButtonForeground = theme.JogButtonForeground;
+            JogButtonHoverForeground = theme.JogButtonHoverForeground;
+            ActionButtonForeground = theme.ActionButtonForeground;
+            ActionButtonBorder = theme.ActionButtonBorder;
+            ActionButtonHoverForeground = theme.ActionButtonHoverForeground;
+            PrimaryText = theme.PrimaryText;
+            SecondaryText = theme.SecondaryText;
+            AccentText = theme.AccentText;
+            ConsoleText = theme.ConsoleText;
+            SliderBackground = theme.SliderBackground;
+            SliderForeground = theme.SliderForeground;
+            ComboBoxBackground = theme.ComboBoxBackground;
+            ComboBoxForeground = theme.ComboBoxForeground;
+            SeparatorColor = theme.SeparatorColor;
+            InfoBoxBackground = theme.InfoBoxBackground;
+            InfoBoxBorder = theme.InfoBoxBorder;
+            
+            AppendLog($"Color schema changed to: {schemaName}");
+        }
+        else
+        {
+            AppendLog($"Error: Unknown schema '{schemaName}'");
+        }
     }
     
     // ===== Preview Menu Commands =====
     
+    public GCodeRenderer? Renderer { get; set; }
+    
     [RelayCommand]
     private void AutoSize()
     {
-        AppendLog("Auto Size preview feature coming soon");
+        Renderer?.ZoomAuto();
+        AppendLog("Zoom reset to auto-fit");
     }
     
     [RelayCommand]
     private void ZoomIn()
     {
-        AppendLog("Zoom In preview feature coming soon");
+        Renderer?.ZoomIn();
+        AppendLog("Zoomed in (+10%)");
     }
     
     [RelayCommand]
     private void ZoomOut()
     {
-        AppendLog("Zoom Out preview feature coming soon");
+        Renderer?.ZoomOut();
+        AppendLog("Zoomed out (-10%)");
     }
     
     [ObservableProperty]

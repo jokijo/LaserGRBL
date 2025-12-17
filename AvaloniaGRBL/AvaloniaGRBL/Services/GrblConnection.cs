@@ -309,6 +309,144 @@ public class GrblConnection : IDisposable
         return string.Join("", parts);
     }
     
+    /// <summary>
+    /// Read GRBL configuration parameters
+    /// </summary>
+    public async Task<Dictionary<int, string>> ReadConfigurationAsync()
+    {
+        if (!IsConnected)
+            throw new InvalidOperationException("Not connected");
+        
+        var config = new Dictionary<int, string>();
+        var tcs = new TaskCompletionSource<Dictionary<int, string>>();
+        var receivedLines = new List<string>();
+        var responseComplete = false;
+        
+        EventHandler<string>? handler = null;
+        handler = (sender, data) =>
+        {
+            receivedLines.Add(data);
+            
+            // Configuration lines start with $
+            if (data.StartsWith("$") && data.Contains("="))
+            {
+                try
+                {
+                    // Parse line like "$0=10" or "$110=5000.000"
+                    var parts = data.Substring(1).Split('=');
+                    if (parts.Length == 2 && int.TryParse(parts[0], out int number))
+                    {
+                        var value = parts[1].Trim();
+                        config[number] = value;
+                    }
+                }
+                catch
+                {
+                    // Ignore parse errors
+                }
+            }
+            else if (data.Equals("ok", StringComparison.OrdinalIgnoreCase) && !responseComplete)
+            {
+                responseComplete = true;
+                DataReceived -= handler;
+                tcs.TrySetResult(config);
+            }
+            else if (data.StartsWith("error:", StringComparison.OrdinalIgnoreCase))
+            {
+                DataReceived -= handler;
+                tcs.TrySetException(new InvalidOperationException($"GRBL error: {data}"));
+            }
+        };
+        
+        DataReceived += handler;
+        
+        try
+        {
+            // Send $$ command to request configuration
+            SendCommand("$$");
+            
+            // Wait for response with timeout
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            await using var _ = cts.Token.Register(() => tcs.TrySetException(new TimeoutException("Configuration read timeout")));
+            
+            return await tcs.Task;
+        }
+        catch
+        {
+            DataReceived -= handler;
+            throw;
+        }
+    }
+    
+    /// <summary>
+    /// Write GRBL configuration parameters
+    /// </summary>
+    public async Task WriteConfigurationAsync(Dictionary<int, string> config)
+    {
+        if (!IsConnected)
+            throw new InvalidOperationException("Not connected");
+        
+        var errors = new List<string>();
+        
+        foreach (var kvp in config)
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            var responseReceived = false;
+            
+            EventHandler<string>? handler = null;
+            handler = (sender, data) =>
+            {
+                if (!responseReceived)
+                {
+                    if (data.Equals("ok", StringComparison.OrdinalIgnoreCase))
+                    {
+                        responseReceived = true;
+                        DataReceived -= handler;
+                        tcs.TrySetResult(true);
+                    }
+                    else if (data.StartsWith("error:", StringComparison.OrdinalIgnoreCase))
+                    {
+                        responseReceived = true;
+                        DataReceived -= handler;
+                        errors.Add($"${kvp.Key}: {data}");
+                        tcs.TrySetResult(false);
+                    }
+                }
+            };
+            
+            DataReceived += handler;
+            
+            try
+            {
+                // Send configuration command like "$110=5000"
+                SendCommand($"${kvp.Key}={kvp.Value}");
+                
+                // Wait for response with timeout
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+                await using var _ = cts.Token.Register(() =>
+                {
+                    DataReceived -= handler;
+                    tcs.TrySetException(new TimeoutException($"Timeout writing ${kvp.Key}"));
+                });
+                
+                await tcs.Task;
+                
+                // Small delay between writes
+                await Task.Delay(50);
+            }
+            catch (Exception ex)
+            {
+                DataReceived -= handler;
+                errors.Add($"${kvp.Key}: {ex.Message}");
+            }
+        }
+        
+        if (errors.Count > 0)
+        {
+            throw new InvalidOperationException($"Errors writing configuration:\n{string.Join("\n", errors)}");
+        }
+    }
+    
     public void Dispose()
     {
         Disconnect();

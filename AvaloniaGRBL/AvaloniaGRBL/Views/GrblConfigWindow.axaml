@@ -1,0 +1,155 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:AvaloniaGRBL.ViewModels"
+        xmlns:models="using:AvaloniaGRBL.Models"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="650"
+        x:Class="AvaloniaGRBL.Views.GrblConfigWindow"
+        x:DataType="vm:GrblConfigViewModel"
+        Title="GRBL Configuration"
+        Width="900" Height="650"
+        MinWidth="800" MinHeight="500">
+
+    <Design.DataContext>
+        <vm:GrblConfigViewModel/>
+    </Design.DataContext>
+    
+    <Window.Styles>
+        <!-- DataGrid Styles -->
+        <Style Selector="DataGrid">
+            <Setter Property="BorderBrush" Value="#0F1419"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+        
+        <Style Selector="DataGridColumnHeader">
+            <Setter Property="Background" Value="#1E2936"/>
+            <Setter Property="Foreground" Value="#CCCCCC"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="8,4"/>
+        </Style>
+        
+        <Style Selector="DataGridCell">
+            <Setter Property="Foreground" Value="#CCCCCC"/>
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        
+        <Style Selector="DataGridCell TextBlock">
+            <Setter Property="Foreground" Value="#CCCCCC"/>
+        </Style>
+        
+        <Style Selector="DataGridRow">
+            <Setter Property="Background" Value="#2A3647"/>
+        </Style>
+        
+        <Style Selector="DataGridRow:selected /template/ Rectangle#BackgroundRectangle">
+            <Setter Property="Fill" Value="#3C4A5C"/>
+            <Setter Property="Opacity" Value="1"/>
+        </Style>
+        
+        <Style Selector="Button">
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        
+        <Style Selector="Button:pointerover">
+            <Setter Property="Background" Value="#4A5A6F"/>
+        </Style>
+    </Window.Styles>
+
+    <DockPanel>
+        <!-- Top Toolbar -->
+        <Border DockPanel.Dock="Top" Background="{Binding PanelBackground}" BorderBrush="{Binding BorderColor}" BorderThickness="0,0,0,1" Padding="10">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <Button Content="Read Configuration" Command="{Binding ReadConfigurationCommand}"
+                        IsEnabled="{Binding !IsLoading}"
+                        Background="{Binding ButtonBackground}"
+                        Foreground="{Binding ButtonForeground}"
+                        Width="150" Height="32"/>
+                <Button Content="Write Configuration" Command="{Binding WriteConfigurationCommand}"
+                        IsEnabled="{Binding !IsLoading}"
+                        Background="{Binding ButtonBackground}"
+                        Foreground="{Binding ButtonForeground}"
+                        Width="150" Height="32"/>
+                <Separator Width="1" Background="{Binding BorderColor}" Margin="5,0"/>
+                <Button Content="Export..." Command="{Binding ExportConfigurationCommand}"
+                        IsEnabled="{Binding !IsLoading}"
+                        Background="{Binding ButtonBackground}"
+                        Foreground="{Binding ButtonForeground}"
+                        Width="100" Height="32"/>
+                <Button Content="Import..." Command="{Binding ImportConfigurationCommand}"
+                        IsEnabled="{Binding !IsLoading}"
+                        Background="{Binding ButtonBackground}"
+                        Foreground="{Binding ButtonForeground}"
+                        Width="100" Height="32"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Status Bar -->
+        <Border DockPanel.Dock="Bottom" Background="{Binding PanelBackground}" BorderBrush="{Binding BorderColor}" BorderThickness="0,1,0,0" Padding="10">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="Status:" FontWeight="Bold" VerticalAlignment="Center" Foreground="{Binding PrimaryText}"/>
+                    <TextBlock Text="{Binding StatusMessage}" VerticalAlignment="Center" Foreground="{Binding SecondaryText}"/>
+                </StackPanel>
+                
+                <ProgressBar Grid.Column="1" IsIndeterminate="True" 
+                             IsVisible="{Binding IsLoading}"
+                             Foreground="{Binding AccentText}"
+                             Height="20" Margin="20,0"/>
+                
+                <Button Grid.Column="2" Content="Close" 
+                        Click="OnCloseClick"
+                        Background="{Binding ButtonBackground}"
+                        Foreground="{Binding ButtonForeground}"
+                        Width="80" Height="32"/>
+            </Grid>
+        </Border>
+
+        <!-- Main Content: DataGrid -->
+        <DataGrid ItemsSource="{Binding Parameters}"
+                  AutoGenerateColumns="False"
+                  GridLinesVisibility="All"
+                  IsReadOnly="False"
+                  CanUserReorderColumns="True"
+                  CanUserResizeColumns="True"
+                  CanUserSortColumns="True"
+                  HeadersVisibility="Column"
+                  Background="#2D3E50"
+                  Foreground="#CCCCCC"
+                  RowBackground="#2A3647"
+                  Margin="10">
+            
+            <DataGrid.Columns>
+                <!-- Dollar Number Column -->
+                <DataGridTextColumn Header="$" 
+                                    Binding="{Binding DollarNumber}"
+                                    IsReadOnly="True"
+                                    Width="60"/>
+                
+                <!-- Parameter Name Column -->
+                <DataGridTextColumn Header="Parameter" 
+                                    Binding="{Binding Parameter}"
+                                    IsReadOnly="True"
+                                    Width="200"/>
+                
+                <!-- Value Column (Editable) -->
+                <DataGridTextColumn Header="Value" 
+                                    Binding="{Binding Value}"
+                                    IsReadOnly="False"
+                                    Width="120"/>
+                
+                <!-- Unit Column -->
+                <DataGridTextColumn Header="Unit" 
+                                    Binding="{Binding Unit}"
+                                    IsReadOnly="True"
+                                    Width="100"/>
+                
+                <!-- Description Column -->
+                <DataGridTextColumn Header="Description" 
+                                    Binding="{Binding Description}"
+                                    IsReadOnly="True"
+                                    Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</Window>

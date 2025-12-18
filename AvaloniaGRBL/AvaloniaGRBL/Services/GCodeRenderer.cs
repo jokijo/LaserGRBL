@@ -21,6 +21,13 @@ public class GCodeRenderer
     private double _userZoom = 1.0; // User-controlled zoom multiplier
     private double _baseScale = 1.0; // Auto-calculated base scale for fit
     private ScaleTransform? _zoomTransform;
+    private TranslateTransform? _panTransform;
+    private TransformGroup? _transformGroup;
+    
+    // Panning state
+    private bool _isPanning = false;
+    private Point _panStartPoint;
+    private Point _panStartOffset;
     
     // Colors for rendering
     private readonly IBrush _rapidMoveBrush = new SolidColorBrush(Colors.LightBlue);
@@ -40,10 +47,19 @@ public class GCodeRenderer
         _contentCanvas = new Canvas();
         _canvas.Children.Add(_contentCanvas);
         
-        // Set up zoom transform
+        // Set up transform group for zoom and pan
+        _panTransform = new TranslateTransform(0, 0);
         _zoomTransform = new ScaleTransform(1.0, 1.0);
-        _contentCanvas.RenderTransform = _zoomTransform;
-        _contentCanvas.RenderTransformOrigin = new RelativePoint(0.5, 0.5, RelativeUnit.Relative);
+        _transformGroup = new TransformGroup();
+        _transformGroup.Children.Add(_panTransform);
+        _transformGroup.Children.Add(_zoomTransform);
+        _contentCanvas.RenderTransform = _transformGroup;
+        
+        // Set up mouse event handlers for panning
+        _canvas.PointerPressed += OnCanvasPointerPressed;
+        _canvas.PointerMoved += OnCanvasPointerMoved;
+        _canvas.PointerReleased += OnCanvasPointerReleased;
+        _canvas.PointerWheelChanged += OnCanvasPointerWheelChanged;
     }
     
     public void RenderFile(GCodeFile file)
@@ -281,21 +297,23 @@ public class GCodeRenderer
     }
     
     /// <summary>
-    /// Zoom in by 10%
+    /// Zoom in by 10% towards center
     /// </summary>
     public void ZoomIn()
     {
-        _userZoom *= ZoomIncrement;
-        UpdateZoomTransform();
+        var centerX = _canvas.Bounds.Width / 2;
+        var centerY = _canvas.Bounds.Height / 2;
+        ZoomToPoint(ZoomIncrement, new Point(centerX, centerY));
     }
     
     /// <summary>
-    /// Zoom out by 10%
+    /// Zoom out by 10% from center
     /// </summary>
     public void ZoomOut()
     {
-        _userZoom /= ZoomIncrement;
-        UpdateZoomTransform();
+        var centerX = _canvas.Bounds.Width / 2;
+        var centerY = _canvas.Bounds.Height / 2;
+        ZoomToPoint(1.0 / ZoomIncrement, new Point(centerX, centerY));
     }
     
     /// <summary>
@@ -304,16 +322,56 @@ public class GCodeRenderer
     public void ZoomAuto()
     {
         _userZoom = 1.0;
+        if (_panTransform != null)
+        {
+            _panTransform.X = 0;
+            _panTransform.Y = 0;
+        }
         UpdateZoomTransform();
     }
     
     /// <summary>
-    /// Zoom by a specific factor (for mouse wheel support)
+    /// Zoom by a specific factor towards center (for button support)
     /// </summary>
     public void ZoomBy(double factor)
     {
+        var centerX = _canvas.Bounds.Width / 2;
+        var centerY = _canvas.Bounds.Height / 2;
+        ZoomToPoint(factor, new Point(centerX, centerY));
+    }
+    
+    /// <summary>
+    /// Zoom towards a specific point on the canvas
+    /// </summary>
+    private void ZoomToPoint(double factor, Point canvasPoint)
+    {
+        if (_zoomTransform == null || _panTransform == null)
+            return;
+        
+        // Get the point in the content canvas coordinates before zoom
+        var pointBeforeZoom = new Point(
+            (canvasPoint.X - _panTransform.X) / _userZoom,
+            (canvasPoint.Y - _panTransform.Y) / _userZoom
+        );
+        
+        // Apply zoom
         _userZoom *= factor;
-        UpdateZoomTransform();
+        
+        // Clamp zoom to reasonable values
+        _userZoom = Math.Max(0.1, Math.Min(_userZoom, 20.0));
+        
+        // Update zoom transform
+        _zoomTransform.ScaleX = _userZoom;
+        _zoomTransform.ScaleY = _userZoom;
+        
+        // Adjust pan to keep the point under the cursor
+        var pointAfterZoom = new Point(
+            pointBeforeZoom.X * _userZoom,
+            pointBeforeZoom.Y * _userZoom
+        );
+        
+        _panTransform.X += canvasPoint.X - pointAfterZoom.X - _panTransform.X;
+        _panTransform.Y += canvasPoint.Y - pointAfterZoom.Y - _panTransform.Y;
     }
     
     /// <summary>
@@ -326,5 +384,68 @@ public class GCodeRenderer
             _zoomTransform.ScaleX = _userZoom;
             _zoomTransform.ScaleY = _userZoom;
         }
+    }
+    
+    /// <summary>
+    /// Handle mouse button press for panning
+    /// </summary>
+    private void OnCanvasPointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+    {
+        var properties = e.GetCurrentPoint(_canvas).Properties;
+        if (properties.IsLeftButtonPressed)
+        {
+            _isPanning = true;
+            _panStartPoint = e.GetPosition(_canvas);
+            if (_panTransform != null)
+            {
+                _panStartOffset = new Point(_panTransform.X, _panTransform.Y);
+            }
+            _canvas.Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand);
+            e.Handled = true;
+        }
+    }
+    
+    /// <summary>
+    /// Handle mouse move for panning
+    /// </summary>
+    private void OnCanvasPointerMoved(object? sender, Avalonia.Input.PointerEventArgs e)
+    {
+        if (_isPanning && _panTransform != null)
+        {
+            var currentPoint = e.GetPosition(_canvas);
+            var delta = currentPoint - _panStartPoint;
+            
+            _panTransform.X = _panStartOffset.X + delta.X;
+            _panTransform.Y = _panStartOffset.Y + delta.Y;
+            
+            e.Handled = true;
+        }
+    }
+    
+    /// <summary>
+    /// Handle mouse button release
+    /// </summary>
+    private void OnCanvasPointerReleased(object? sender, Avalonia.Input.PointerReleasedEventArgs e)
+    {
+        if (_isPanning)
+        {
+            _isPanning = false;
+            _canvas.Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Arrow);
+            e.Handled = true;
+        }
+    }
+    
+    /// <summary>
+    /// Handle mouse wheel for zoom towards cursor
+    /// </summary>
+    private void OnCanvasPointerWheelChanged(object? sender, Avalonia.Input.PointerWheelEventArgs e)
+    {
+        var delta = e.Delta.Y;
+        var factor = delta > 0 ? ZoomIncrement : 1.0 / ZoomIncrement;
+        
+        var mousePos = e.GetPosition(_canvas);
+        ZoomToPoint(factor, mousePos);
+        
+        e.Handled = true;
     }
 }

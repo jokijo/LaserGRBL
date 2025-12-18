@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -16,6 +17,7 @@ public class SvgToGCodeConverter
     private readonly StringBuilder _gcode;
     private double _currentX;
     private double _currentY;
+    private double _svgHeight; // Track SVG height for Y-axis inversion
     
     // G-Code generation settings
     public double FeedRate { get; set; } = 1000; // mm/min
@@ -51,6 +53,10 @@ public class SvgToGCodeConverter
         _currentX = 0;
         _currentY = 0;
         
+        // Get SVG viewbox/bounds for Y-axis inversion
+        var bounds = document.Bounds;
+        _svgHeight = bounds.Height;
+        
         // Add header
         AddHeader();
         
@@ -79,6 +85,15 @@ public class SvgToGCodeConverter
         _gcode.AppendLine($"M5 ; Laser off");
         _gcode.AppendLine("G0 X0 Y0 ; Return to origin");
         _gcode.AppendLine("M2 ; Program end");
+    }
+    
+    /// <summary>
+    /// Transform coordinates from SVG space to G-Code space
+    /// Handles Y-axis inversion (SVG Y goes down, G-Code Y goes up)
+    /// </summary>
+    private (double x, double y) TransformPoint(double x, double y)
+    {
+        return (x * Scale, (_svgHeight - y) * Scale);
     }
     
     private void ProcessElement(SvgElement element)
@@ -136,118 +151,119 @@ public class SvgToGCodeConverter
     {
         if (path.PathData == null)
             return;
-            
-        var pathData = path.PathData;
-        bool penDown = false;
         
-        foreach (var segment in pathData)
+        try
         {
-            if (segment is SvgMoveToSegment moveTo)
+            // Get the GraphicsPath with transforms applied
+            var graphicsPath = path.Path(null);
+            if (graphicsPath == null || graphicsPath.PointCount == 0)
+                return;
+            
+            // Apply element's transforms
+            if (path.Transforms != null && path.Transforms.Count > 0)
             {
-                if (penDown)
-                {
-                    LaserOff();
-                    penDown = false;
-                }
-                MoveTo(moveTo.End.X * Scale, moveTo.End.Y * Scale);
+                var matrix = path.Transforms.GetMatrix();
+                graphicsPath.Transform(matrix);
             }
-            else if (segment is SvgLineSegment lineTo)
+            
+            // Flatten the path (converts all curves to line segments)
+            graphicsPath.Flatten();
+            
+            // Extract flattened points and types
+            var points = graphicsPath.PathPoints;
+            var types = graphicsPath.PathTypes;
+            
+            bool penDown = false;
+            
+            for (int i = 0; i < points.Length; i++)
             {
-                if (!penDown)
+                var pointType = (System.Drawing.Drawing2D.PathPointType)(types[i] & 0x07);
+                
+                if (pointType == System.Drawing.Drawing2D.PathPointType.Start)
                 {
-                    LaserOn();
-                    penDown = true;
+                    if (penDown)
+                    {
+                        LaserOff();
+                        penDown = false;
+                    }
+                    var (x, y) = TransformPoint(points[i].X, points[i].Y);
+                    MoveTo(x, y);
                 }
-                LineTo(lineTo.End.X * Scale, lineTo.End.Y * Scale);
-            }
-            else if (segment is SvgCubicCurveSegment cubic)
-            {
-                if (!penDown)
+                else // Line or Bezier point (already flattened to lines)
                 {
-                    LaserOn();
-                    penDown = true;
+                    if (!penDown)
+                    {
+                        LaserOn();
+                        penDown = true;
+                    }
+                    var (x, y) = TransformPoint(points[i].X, points[i].Y);
+                    LineTo(x, y);
                 }
-                // Approximate cubic bezier with line segments
-                var points = ApproximateCubicBezier(
-                    _currentX, _currentY,
-                    cubic.FirstControlPoint.X * Scale, cubic.FirstControlPoint.Y * Scale,
-                    cubic.SecondControlPoint.X * Scale, cubic.SecondControlPoint.Y * Scale,
-                    cubic.End.X * Scale, cubic.End.Y * Scale,
-                    20);
-                    
-                foreach (var point in points)
+                
+                // Check if this closes a subpath
+                if ((types[i] & (byte)System.Drawing.Drawing2D.PathPointType.CloseSubpath) != 0)
                 {
-                    LineTo(point.Item1, point.Item2);
-                }
-            }
-            else if (segment is SvgQuadraticCurveSegment quad)
-            {
-                if (!penDown)
-                {
-                    LaserOn();
-                    penDown = true;
-                }
-                // Approximate quadratic bezier with line segments
-                var points = ApproximateQuadraticBezier(
-                    _currentX, _currentY,
-                    quad.ControlPoint.X * Scale, quad.ControlPoint.Y * Scale,
-                    quad.End.X * Scale, quad.End.Y * Scale,
-                    20);
-                    
-                foreach (var point in points)
-                {
-                    LineTo(point.Item1, point.Item2);
+                    // Subpath closed, but continue with pen state
                 }
             }
-            else if (segment is SvgClosePathSegment)
+            
+            if (penDown)
             {
-                // Path will be closed automatically by returning to start
+                LaserOff();
             }
         }
-        
-        if (penDown)
+        catch (Exception ex)
         {
-            LaserOff();
+            // Log error but continue processing other elements
+            Console.WriteLine($"Error processing path: {ex.Message}");
         }
     }
     
     private void ProcessLine(SvgLine line)
     {
-        MoveTo(line.StartX.Value * Scale, line.StartY.Value * Scale);
+        var (x1, y1) = TransformPoint(line.StartX.Value, line.StartY.Value);
+        var (x2, y2) = TransformPoint(line.EndX.Value, line.EndY.Value);
+        MoveTo(x1, y1);
         LaserOn();
-        LineTo(line.EndX.Value * Scale, line.EndY.Value * Scale);
+        LineTo(x2, y2);
         LaserOff();
     }
     
     private void ProcessRectangle(SvgRectangle rect)
     {
-        double x = rect.X.Value * Scale;
-        double y = rect.Y.Value * Scale;
-        double w = rect.Width.Value * Scale;
-        double h = rect.Height.Value * Scale;
+        double x = rect.X.Value;
+        double y = rect.Y.Value;
+        double w = rect.Width.Value;
+        double h = rect.Height.Value;
         
-        MoveTo(x, y);
+        var (x1, y1) = TransformPoint(x, y);
+        var (x2, y2) = TransformPoint(x + w, y);
+        var (x3, y3) = TransformPoint(x + w, y + h);
+        var (x4, y4) = TransformPoint(x, y + h);
+        
+        MoveTo(x1, y1);
         LaserOn();
-        LineTo(x + w, y);
-        LineTo(x + w, y + h);
-        LineTo(x, y + h);
-        LineTo(x, y);
+        LineTo(x2, y2);
+        LineTo(x3, y3);
+        LineTo(x4, y4);
+        LineTo(x1, y1);
         LaserOff();
     }
     
     private void ProcessCircle(SvgCircle circle)
     {
-        double cx = circle.CenterX.Value * Scale;
-        double cy = circle.CenterY.Value * Scale;
-        double r = circle.Radius.Value * Scale;
+        double cx = circle.CenterX.Value;
+        double cy = circle.CenterY.Value;
+        double r = circle.Radius.Value;
         
         // Approximate circle with line segments
         int segments = 64;
         for (int i = 0; i <= segments; i++)
         {
             double angle = 2 * Math.PI * i / segments;
-            double x = cx + r * Math.Cos(angle);
-            double y = cy + r * Math.Sin(angle);
+            double svgX = cx + r * Math.Cos(angle);
+            double svgY = cy + r * Math.Sin(angle);
+            var (x, y) = TransformPoint(svgX, svgY);
             
             if (i == 0)
             {
@@ -264,18 +280,19 @@ public class SvgToGCodeConverter
     
     private void ProcessEllipse(SvgEllipse ellipse)
     {
-        double cx = ellipse.CenterX.Value * Scale;
-        double cy = ellipse.CenterY.Value * Scale;
-        double rx = ellipse.RadiusX.Value * Scale;
-        double ry = ellipse.RadiusY.Value * Scale;
+        double cx = ellipse.CenterX.Value;
+        double cy = ellipse.CenterY.Value;
+        double rx = ellipse.RadiusX.Value;
+        double ry = ellipse.RadiusY.Value;
         
         // Approximate ellipse with line segments
         int segments = 64;
         for (int i = 0; i <= segments; i++)
         {
             double angle = 2 * Math.PI * i / segments;
-            double x = cx + rx * Math.Cos(angle);
-            double y = cy + ry * Math.Sin(angle);
+            double svgX = cx + rx * Math.Cos(angle);
+            double svgY = cy + ry * Math.Sin(angle);
+            var (x, y) = TransformPoint(svgX, svgY);
             
             if (i == 0)
             {
@@ -300,8 +317,7 @@ public class SvgToGCodeConverter
             if (i + 1 >= polyline.Points.Count)
                 break;
                 
-            double x = polyline.Points[i] * Scale;
-            double y = polyline.Points[i + 1] * Scale;
+            var (x, y) = TransformPoint(polyline.Points[i], polyline.Points[i + 1]);
             
             if (i == 0)
             {
@@ -327,8 +343,7 @@ public class SvgToGCodeConverter
             if (i + 1 >= polygon.Points.Count)
                 break;
                 
-            double x = polygon.Points[i] * Scale;
-            double y = polygon.Points[i + 1] * Scale;
+            var (x, y) = TransformPoint(polygon.Points[i], polygon.Points[i + 1]);
             
             if (i == 0)
             {

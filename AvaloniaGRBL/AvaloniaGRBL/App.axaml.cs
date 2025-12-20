@@ -4,6 +4,7 @@ using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
 using Avalonia.Markup.Xaml;
+using AvaloniaGRBL.Services;
 using AvaloniaGRBL.ViewModels;
 using AvaloniaGRBL.Views;
 
@@ -14,6 +15,9 @@ public partial class App : Application
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
+        
+        // Load saved language preference before any UI is created
+        LocalizationService.LoadSavedLanguage();
     }
 
     public override void OnFrameworkInitializationCompleted()

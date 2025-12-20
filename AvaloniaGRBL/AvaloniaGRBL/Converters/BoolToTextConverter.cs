@@ -1,6 +1,7 @@
 using Avalonia.Data.Converters;
 using System;
 using System.Globalization;
+using AvaloniaGRBL.Services;
 
 namespace AvaloniaGRBL.Converters;
 
@@ -15,9 +16,11 @@ public class BoolToTextConverter : IValueConverter
     {
         if (value is bool isConnected)
         {
-            return isConnected ? "Disconnect" : "Connect";
+            return isConnected 
+                ? LocalizationManager.Instance["Disconnect"] 
+                : LocalizationManager.Instance["Connect"];
         }
-        return "Connect";
+        return LocalizationManager.Instance["Connect"];
     }
     
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" use="optional" msdata:Ordinal="5" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="LanguageRequireRestart" xml:space="preserve">
+    <value>Restart required</value>
+  </data>
+  <data name="LanguageRequireRestartNow" xml:space="preserve">
+    <value>The application needs to restart to apply the language change. Do you want to restart now?</value>
+  </data>
+  <data name="Connect" xml:space="preserve">
+    <value>Connect</value>
+  </data>
+  <data name="Disconnect" xml:space="preserve">
+    <value>Disconnect</value>
+  </data>
+  <data name="Connected" xml:space="preserve">
+    <value>Connected</value>
+  </data>
+  <data name="NotConnected" xml:space="preserve">
+    <value>Not Connected</value>
+  </data>
+  <data name="COMPort" xml:space="preserve">
+    <value>COM</value>
+  </data>
+  <data name="BaudRate" xml:space="preserve">
+    <value>Baud</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="RefreshPorts" xml:space="preserve">
+    <value>Refresh Ports</value>
+  </data>
+  <data name="MenuGrbl" xml:space="preserve">
+    <value>_Grbl</value>
+  </data>
+  <data name="MenuFile" xml:space="preserve">
+    <value>_File</value>
+  </data>
+  <data name="MenuGenerate" xml:space="preserve">
+    <value>_Generate</value>
+  </data>
+  <data name="MenuSchema" xml:space="preserve">
+    <value>_Schema</value>
+  </data>
+  <data name="MenuPreview" xml:space="preserve">
+    <value>_Preview</value>
+  </data>
+  <data name="MenuLanguage" xml:space="preserve">
+    <value>_Language</value>
+  </data>
+  <data name="MenuTools" xml:space="preserve">
+    <value>_Tools</value>
+  </data>
+  <data name="MenuHelp" xml:space="preserve">
+    <value>_?</value>
+  </data>
+  <data name="ConnectMenu" xml:space="preserve">
+    <value>Connect...</value>
+  </data>
+  <data name="DisconnectMenu" xml:space="preserve">
+    <value>Disconnect</value>
+  </data>
+  <data name="OpenFile" xml:space="preserve">
+    <value>Open File...</value>
+  </data>
+  <data name="SaveProgram" xml:space="preserve">
+    <value>Save Program</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="WiFiDiscovery" xml:space="preserve">
+    <value>WiFi Discovery</value>
+  </data>
+  <data name="GrblReset" xml:space="preserve">
+    <value>Grbl Reset</value>
+  </data>
+  <data name="GoHome" xml:space="preserve">
+    <value>Go Home</value>
+  </data>
+  <data name="Unlock" xml:space="preserve">
+    <value>Unlock</value>
+  </data>
+  <data name="GrblConfiguration" xml:space="preserve">
+    <value>Grbl Configuration</value>
+  </data>
+  <data name="MaterialDatabase" xml:space="preserve">
+    <value>Material Database</value>
+  </data>
+  <data name="LaserUsageStats" xml:space="preserve">
+    <value>Laser Usage Stats</value>
+  </data>
+  <data name="Hotkeys" xml:space="preserve">
+    <value>Hotkeys</value>
+  </data>
+  <data name="AppendFile" xml:space="preserve">
+    <value>Append File...</value>
+  </data>
+  <data name="ReOpenFile" xml:space="preserve">
+    <value>Re-Open File</value>
+  </data>
+  <data name="AdvancedSave" xml:space="preserve">
+    <value>Advanced Save</value>
+  </data>
+  <data name="SaveProject" xml:space="preserve">
+    <value>Save Project</value>
+  </data>
+  <data name="SendFile" xml:space="preserve">
+    <value>Send File</value>
+  </data>
+  <data name="StartFromPosition" xml:space="preserve">
+    <value>Start From Position</value>
+  </data>
+  <data name="RunMultiple" xml:space="preserve">
+    <value>Run Multiple</value>
+  </data>
+  <data name="NoFileLoaded" xml:space="preserve">
+    <value>No file loaded</value>
+  </data>
+  <data name="Idle" xml:space="preserve">
+    <value>Idle</value>
+  </data>
+  <data name="Connecting" xml:space="preserve">
+    <value>Connecting</value>
+  </data>
+  <data name="PowerVsSpeed" xml:space="preserve">
+    <value>Power vs Speed</value>
+  </data>
+  <data name="CuttingTest" xml:space="preserve">
+    <value>Cutting Test</value>
+  </data>
+  <data name="AccuracyTest" xml:space="preserve">
+    <value>Accuracy Test</value>
+  </data>
+  <data name="ShakeTest" xml:space="preserve">
+    <value>Shake Test</value>
+  </data>
+  <data name="GrblEmulator" xml:space="preserve">
+    <value>Grbl Emulator</value>
+  </data>
+  <data name="AutoSize" xml:space="preserve">
+    <value>Auto Size</value>
+  </data>
+  <data name="ZoomIn" xml:space="preserve">
+    <value>Zoom In</value>
+  </data>
+  <data name="ZoomOut" xml:space="preserve">
+    <value>Zoom Out</value>
+  </data>
+  <data name="ShowLaserOffMovements" xml:space="preserve">
+    <value>Show Laser Off Movements</value>
+  </data>
+  <data name="ShowExecutedCommands" xml:space="preserve">
+    <value>Show Executed Commands</value>
+  </data>
+  <data name="ShowBoundingBox" xml:space="preserve">
+    <value>Show Bounding Box</value>
+  </data>
+  <data name="CrossCursor" xml:space="preserve">
+    <value>Cross Cursor</value>
+  </data>
+  <data name="InstallCH340Driver" xml:space="preserve">
+    <value>Install CH340 Driver</value>
+  </data>
+  <data name="FlashGrblFirmware" xml:space="preserve">
+    <value>Flash Grbl Firmware</value>
+  </data>
+  <data name="ConfigurationWizard" xml:space="preserve">
+    <value>Configuration Wizard</value>
+  </data>
+  <data name="AutoUpdate" xml:space="preserve">
+    <value>Auto Update</value>
+  </data>
+  <data name="CheckNow" xml:space="preserve">
+    <value>Check Now</value>
+  </data>
+  <data name="OpenSessionLog" xml:space="preserve">
+    <value>Open Session Log</value>
+  </data>
+  <data name="ActivateExtendedLog" xml:space="preserve">
+    <value>Activate Extended Log</value>
+  </data>
+  <data name="HelpOnline" xml:space="preserve">
+    <value>Help Online</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="FacebookCommunity" xml:space="preserve">
+    <value>Facebook Community</value>
+  </data>
+  <data name="Donate" xml:space="preserve">
+    <value>Donate</value>
+  </data>
+  <data name="License" xml:space="preserve">
+    <value>License</value>
+  </data>
+  <data name="Run" xml:space="preserve">
+    <value>Run</value>
+  </data>
+  <data name="Pause" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="Stop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="Alarm" xml:space="preserve">
+    <value>Alarm</value>
+  </data>
+  <data name="Hold" xml:space="preserve">
+    <value>Hold</value>
+  </data>
+  <data name="Door" xml:space="preserve">
+    <value>Door</value>
+  </data>
+  <data name="Check" xml:space="preserve">
+    <value>Check</value>
+  </data>
+  <data name="Jog" xml:space="preserve">
+    <value>Jog</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Disconnected" xml:space="preserve">
+    <value>Disconnected</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="GCodePreviewArea" xml:space="preserve">
+    <value>G-Code Preview Area</value>
+  </data>
+  <data name="LoadGCodeToSeePreview" xml:space="preserve">
+    <value>Load a G-Code file to see the preview</value>
+  </data>
+  <data name="BasicUsage" xml:space="preserve">
+    <value>Basic usage</value>
+  </data>
+  <data name="ZoomHelp" xml:space="preserve">
+    <value>ZOOM: Use mouse wheel (or two-finger gesture)</value>
+  </data>
+  <data name="PanHelp" xml:space="preserve">
+    <value>PAN:  Click and drag (or touch and drag)</value>
+  </data>
+  <data name="JogHelp" xml:space="preserve">
+    <value>JOG:  Double click in any point (or double tap)</value>
+  </data>
+  <data name="KeyboardShortcuts" xml:space="preserve">
+    <value>Keyboard Shortcuts</value>
+  </data>
+  <data name="ZoomAutoShortcut" xml:space="preserve">
+    <value>Ctrl A: Zoom Auto (100%)</value>
+  </data>
+  <data name="ZoomInShortcut" xml:space="preserve">
+    <value>Ctrl +: Zoom In   (+10%)</value>
+  </data>
+  <data name="ZoomOutShortcut" xml:space="preserve">
+    <value>Ctrl -: Zoom Out  (-10%)</value>
+  </data>
+</root>

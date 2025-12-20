@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" use="optional" msdata:Ordinal="5" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="LanguageRequireRestart" xml:space="preserve">
+    <value>Reinicio requerido</value>
+  </data>
+  <data name="LanguageRequireRestartNow" xml:space="preserve">
+    <value>La aplicación necesita reiniciarse para aplicar el cambio de idioma. ¿Quieres reiniciar ahora?</value>
+  </data>
+  <data name="Connect" xml:space="preserve">
+    <value>Conectar</value>
+  </data>
+  <data name="Disconnect" xml:space="preserve">
+    <value>Desconectar</value>
+  </data>
+  <data name="Connected" xml:space="preserve">
+    <value>Conectado</value>
+  </data>
+  <data name="NotConnected" xml:space="preserve">
+    <value>No conectado</value>
+  </data>
+  <data name="COMPort" xml:space="preserve">
+    <value>COM</value>
+  </data>
+  <data name="BaudRate" xml:space="preserve">
+    <value>Baud</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Estado</value>
+  </data>
+  <data name="RefreshPorts" xml:space="preserve">
+    <value>Actualizar puertos</value>
+  </data>
+  <data name="MenuGrbl" xml:space="preserve">
+    <value>_Grbl</value>
+  </data>
+  <data name="MenuFile" xml:space="preserve">
+    <value>_Archivo</value>
+  </data>
+  <data name="MenuGenerate" xml:space="preserve">
+    <value>_Generar</value>
+  </data>
+  <data name="MenuSchema" xml:space="preserve">
+    <value>_Esquema</value>
+  </data>
+  <data name="MenuPreview" xml:space="preserve">
+    <value>_Vista previa</value>
+  </data>
+  <data name="MenuLanguage" xml:space="preserve">
+    <value>_Idioma</value>
+  </data>
+  <data name="MenuTools" xml:space="preserve">
+    <value>_Herramientas</value>
+  </data>
+  <data name="MenuHelp" xml:space="preserve">
+    <value>_?</value>
+  </data>
+  <data name="ConnectMenu" xml:space="preserve">
+    <value>Conectar...</value>
+  </data>
+  <data name="DisconnectMenu" xml:space="preserve">
+    <value>Desconectar</value>
+  </data>
+  <data name="OpenFile" xml:space="preserve">
+    <value>Abrir archivo...</value>
+  </data>
+  <data name="SaveProgram" xml:space="preserve">
+    <value>Guardar programa</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Configuración</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>Salir</value>
+  </data>
+  <data name="WiFiDiscovery" xml:space="preserve">
+    <value>Descubrimiento WiFi</value>
+  </data>
+  <data name="GrblReset" xml:space="preserve">
+    <value>Reinicio Grbl</value>
+  </data>
+  <data name="GoHome" xml:space="preserve">
+    <value>Ir a Inicio</value>
+  </data>
+  <data name="Unlock" xml:space="preserve">
+    <value>Desbloquear</value>
+  </data>
+  <data name="GrblConfiguration" xml:space="preserve">
+    <value>Configuración Grbl</value>
+  </data>
+  <data name="MaterialDatabase" xml:space="preserve">
+    <value>Base de Datos de Materiales</value>
+  </data>
+  <data name="LaserUsageStats" xml:space="preserve">
+    <value>Estadísticas de Uso del Láser</value>
+  </data>
+  <data name="Hotkeys" xml:space="preserve">
+    <value>Teclas de Acceso Rápido</value>
+  </data>
+  <data name="AppendFile" xml:space="preserve">
+    <value>Agregar Archivo...</value>
+  </data>
+  <data name="ReOpenFile" xml:space="preserve">
+    <value>Reabrir</value>
+  </data>
+  <data name="AdvancedSave" xml:space="preserve">
+    <value>Guardado Avanzado</value>
+  </data>
+  <data name="SaveProject" xml:space="preserve">
+    <value>Guardar Proyecto</value>
+  </data>
+  <data name="SendFile" xml:space="preserve">
+    <value>Enviar Archivo</value>
+  </data>
+  <data name="StartFromPosition" xml:space="preserve">
+    <value>Iniciar desde Posición</value>
+  </data>
+  <data name="RunMultiple" xml:space="preserve">
+    <value>Ejecutar Múltiple</value>
+  </data>
+  <data name="NoFileLoaded" xml:space="preserve">
+    <value>No hay Archivo Cargado</value>
+  </data>
+  <data name="Idle" xml:space="preserve">
+    <value>Inactivo</value>
+  </data>
+  <data name="Connecting" xml:space="preserve">
+    <value>Conectando</value>
+  </data>
+  <data name="PowerVsSpeed" xml:space="preserve">
+    <value>Potencia vs Velocidad</value>
+  </data>
+  <data name="CuttingTest" xml:space="preserve">
+    <value>Prueba de Corte</value>
+  </data>
+  <data name="AccuracyTest" xml:space="preserve">
+    <value>Prueba de Precisión</value>
+  </data>
+  <data name="ShakeTest" xml:space="preserve">
+    <value>Prueba de Vibración</value>
+  </data>
+  <data name="GrblEmulator" xml:space="preserve">
+    <value>Emulador Grbl</value>
+  </data>
+  <data name="AutoSize" xml:space="preserve">
+    <value>Tamaño Automático</value>
+  </data>
+  <data name="ZoomIn" xml:space="preserve">
+    <value>Ampliar</value>
+  </data>
+  <data name="ZoomOut" xml:space="preserve">
+    <value>Reducir</value>
+  </data>
+  <data name="ShowLaserOffMovements" xml:space="preserve">
+    <value>Mostrar Movimientos Láser Apagado</value>
+  </data>
+  <data name="ShowExecutedCommands" xml:space="preserve">
+    <value>Mostrar Comandos Ejecutados</value>
+  </data>
+  <data name="ShowBoundingBox" xml:space="preserve">
+    <value>Mostrar Cuadro Delimitador</value>
+  </data>
+  <data name="CrossCursor" xml:space="preserve">
+    <value>Cursor en Cruz</value>
+  </data>
+  <data name="InstallCH340Driver" xml:space="preserve">
+    <value>Instalar Controlador CH340</value>
+  </data>
+  <data name="FlashGrblFirmware" xml:space="preserve">
+    <value>Flashear Firmware Grbl</value>
+  </data>
+  <data name="ConfigurationWizard" xml:space="preserve">
+    <value>Asistente de Configuración</value>
+  </data>
+  <data name="AutoUpdate" xml:space="preserve">
+    <value>Actualización Automática</value>
+  </data>
+  <data name="CheckNow" xml:space="preserve">
+    <value>Comprobar Ahora</value>
+  </data>
+  <data name="OpenSessionLog" xml:space="preserve">
+    <value>Abrir Registro de Sesión</value>
+  </data>
+  <data name="ActivateExtendedLog" xml:space="preserve">
+    <value>Activar Registro Extendido</value>
+  </data>
+  <data name="HelpOnline" xml:space="preserve">
+    <value>Ayuda en Línea</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>Acerca de</value>
+  </data>
+  <data name="FacebookCommunity" xml:space="preserve">
+    <value>Comunidad de Facebook</value>
+  </data>
+  <data name="Donate" xml:space="preserve">
+    <value>Donar</value>
+  </data>
+  <data name="License" xml:space="preserve">
+    <value>Licencia</value>
+  </data>
+  <data name="Run" xml:space="preserve">
+    <value>Ejecutar</value>
+  </data>
+  <data name="Pause" xml:space="preserve">
+    <value>Pausar</value>
+  </data>
+  <data name="Stop" xml:space="preserve">
+    <value>Detener</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>Reiniciar</value>
+  </data>
+  <data name="Alarm" xml:space="preserve">
+    <value>Alarma</value>
+  </data>
+  <data name="Hold" xml:space="preserve">
+    <value>Retener</value>
+  </data>
+  <data name="Door" xml:space="preserve">
+    <value>Puerta</value>
+  </data>
+  <data name="Check" xml:space="preserve">
+    <value>Verificar</value>
+  </data>
+  <data name="Jog" xml:space="preserve">
+    <value>Jog</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Inicio</value>
+  </data>
+  <data name="Disconnected" xml:space="preserve">
+    <value>Desconectado</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>Desconocido</value>
+  </data>
+  <data name="GCodePreviewArea" xml:space="preserve">
+    <value>Área de Vista Previa de G-Code</value>
+  </data>
+  <data name="LoadGCodeToSeePreview" xml:space="preserve">
+    <value>Carga un archivo G-Code para ver la vista previa</value>
+  </data>
+  <data name="BasicUsage" xml:space="preserve">
+    <value>Uso básico</value>
+  </data>
+  <data name="ZoomHelp" xml:space="preserve">
+    <value>ZOOM: Usa rueda del ratón (o gesto de dos dedos)</value>
+  </data>
+  <data name="PanHelp" xml:space="preserve">
+    <value>PAN:  Haz clic y arrastra (o toca y arrastra)</value>
+  </data>
+  <data name="JogHelp" xml:space="preserve">
+    <value>JOG:  Doble clic en cualquier punto</value>
+  </data>
+  <data name="KeyboardShortcuts" xml:space="preserve">
+    <value>Atajos de Teclado</value>
+  </data>
+  <data name="ZoomAutoShortcut" xml:space="preserve">
+    <value>Ctrl A: Zoom Automático (100%)</value>
+  </data>
+  <data name="ZoomInShortcut" xml:space="preserve">
+    <value>Ctrl +: Ampliar (+10%)</value>
+  </data>
+  <data name="ZoomOutShortcut" xml:space="preserve">
+    <value>Ctrl -: Reducir (-10%)</value>
+  </data>
+</root>

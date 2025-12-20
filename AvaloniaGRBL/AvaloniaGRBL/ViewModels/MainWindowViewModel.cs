@@ -21,6 +21,9 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     private const string FacebookCommunityUrl = "https://www.facebook.com/groups/486886768471991";
     private const string CH340DriversSearchUrl = "https://www.google.com/search?q=ch340+drivers";
     
+    // Localization manager for dynamic language switching
+    public LocalizationManager Localization => LocalizationManager.Instance;
+    
     private readonly GrblConnection _grblConnection;
     private readonly Queue<string> _logQueue = new(1000);
     private bool _disposed;
@@ -215,6 +218,10 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
             GrblState = status.State;
             MachinePosition = $"X: {status.MachineX:F3}  Y: {status.MachineY:F3}  Z: {status.MachineZ:F3}";
             WorkPosition = $"X: {status.WorkX:F3}  Y: {status.WorkY:F3}  Z: {status.WorkZ:F3}";
+            
+            // Update laser position indicator on canvas using machine coordinates
+            // (machine coordinates match the G-code preview coordinate system)
+            Renderer?.UpdateLaserPosition(status.MachineX, status.MachineY);
         });
     }
     
@@ -694,6 +701,30 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     }
     
     /// <summary>
+    /// Set current position as origin (0,0,0)
+    /// </summary>
+    [RelayCommand]
+    private void SetOrigin()
+    {
+        if (!IsConnected)
+        {
+            AppendLog("Error: Not connected to GRBL");
+            return;
+        }
+        
+        try
+        {
+            // Send G92 X0 Y0 Z0 command to set current position as origin
+            _grblConnection.SendCommand("G92 X0 Y0 Z0");
+            AppendLog("Work origin set to current position (G92 X0 Y0 Z0)");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Set origin failed: {ex.Message}");
+        }
+    }
+    
+    /// <summary>
     /// Start executing the loaded G-code program
     /// </summary>
     [RelayCommand(CanExecute = nameof(CanStartProgram))]
@@ -874,17 +905,22 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         
         try
         {
+            // Update state first before sending commands
+            IsProgramPaused = false;
+            
             // Send Cycle Start/Resume command (0x7E = '~')
             _grblConnection.SendImmediate(0x7E);
             
             // Unblock the execution loop
             _pauseEvent.Set();
-            IsProgramPaused = false;
+            
             AppendLog("Program resumed (Cycle Start)");
         }
         catch (Exception ex)
         {
             AppendLog($"Resume failed: {ex.Message}");
+            // Restore paused state on error
+            IsProgramPaused = true;
         }
     }
     
@@ -1095,9 +1131,32 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     }
     
     [RelayCommand]
-    private void Hotkeys()
+    private async Task HotkeysAsync()
     {
-        AppendLog("Hotkeys configuration feature coming soon");
+        try
+        {
+            var window = new Views.HotkeyConfigWindow();
+            
+            // Get the main window
+            var mainWindow = Avalonia.Application.Current?.ApplicationLifetime is 
+                Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop 
+                ? desktop.MainWindow 
+                : null;
+            
+            if (mainWindow != null)
+            {
+                await window.ShowDialog(mainWindow);
+                AppendLog("Hotkey configuration window closed");
+            }
+            else
+            {
+                window.Show();
+            }
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Error opening hotkey configuration: {ex.Message}");
+        }
     }
     
     [RelayCommand]
@@ -1295,9 +1354,19 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     [RelayCommand]
     private void SetLanguage(string languageName)
     {
-        CurrentLanguage = languageName;
-        AppendLog($"Language changed to: {languageName}. Application restart required.");
-        // TODO: Implement language change with application restart
+        // Find the language by display name
+        var language = LocalizationService.AvailableLanguages
+            .FirstOrDefault(l => l.DisplayName.Equals(languageName, StringComparison.OrdinalIgnoreCase));
+        
+        if (language == null)
+        {
+            AppendLog($"Language not found: {languageName}");
+            return;
+        }
+        
+        CurrentLanguage = language.DisplayName;
+        LocalizationService.SetLanguage(language.CultureCode);
+        AppendLog($"Language changed to: {languageName} - Applied immediately!");
     }
     
     // ===== Tools Menu Commands =====

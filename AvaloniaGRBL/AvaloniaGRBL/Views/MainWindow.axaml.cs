@@ -37,6 +37,11 @@ public partial class MainWindow : Window
             {
                 viewModel.PropertyChanged += ViewModel_PropertyChanged;
                 viewModel.Renderer = _renderer;
+                
+                // Sync initial state from ViewModel to Renderer
+                _renderer.ShowCrossCursor = viewModel.CrossCursor;
+                _renderer.ShowLaserOffMovements = viewModel.ShowLaserOffMovements;
+                _renderer.ShowBoundingBox = viewModel.ShowBoundingBox;
             }
             
             // Add mouse wheel event handler for zoom
@@ -69,6 +74,27 @@ public partial class MainWindow : Window
                 {
                     _renderer.Clear();
                 }
+            }
+        }
+        else if (e.PropertyName == nameof(MainWindowViewModel.CrossCursor))
+        {
+            if (sender is MainWindowViewModel viewModel && _renderer != null)
+            {
+                _renderer.ShowCrossCursor = viewModel.CrossCursor;
+            }
+        }
+        else if (e.PropertyName == nameof(MainWindowViewModel.ShowLaserOffMovements))
+        {
+            if (sender is MainWindowViewModel viewModel && _renderer != null)
+            {
+                _renderer.ShowLaserOffMovements = viewModel.ShowLaserOffMovements;
+            }
+        }
+        else if (e.PropertyName == nameof(MainWindowViewModel.ShowBoundingBox))
+        {
+            if (sender is MainWindowViewModel viewModel && _renderer != null)
+            {
+                _renderer.ShowBoundingBox = viewModel.ShowBoundingBox;
             }
         }
     }

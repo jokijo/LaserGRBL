@@ -42,10 +42,14 @@
         <Style Selector="Button.jog-button:pointerover /template/ ContentPresenter">
             <Setter Property="Background" Value="{Binding ButtonHoverBackground}"/>
             <Setter Property="Foreground" Value="{Binding JogButtonHoverForeground}"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
         <Style Selector="Button.jog-button:pressed /template/ ContentPresenter">
             <Setter Property="Background" Value="{Binding ButtonPressedBackground}"/>
             <Setter Property="Foreground" Value="{Binding JogButtonForeground}"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
         
         <Style Selector="Button.jog-home">
@@ -63,10 +67,14 @@
         <Style Selector="Button.jog-home:pointerover /template/ ContentPresenter">
             <Setter Property="Background" Value="{Binding ButtonHoverBackground}"/>
             <Setter Property="Foreground" Value="White"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
         <Style Selector="Button.jog-home:pressed /template/ ContentPresenter">
             <Setter Property="Background" Value="{Binding ButtonPressedBackground}"/>
             <Setter Property="Foreground" Value="{Binding PrimaryText}"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
         
         <!-- Action Button Style (Yellow highlight) -->
@@ -85,10 +93,14 @@
         <Style Selector="Button.action-button:pointerover /template/ ContentPresenter">
             <Setter Property="Background" Value="{Binding ButtonHoverBackground}"/>
             <Setter Property="Foreground" Value="{Binding ActionButtonHoverForeground}"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
         <Style Selector="Button.action-button:pressed /template/ ContentPresenter">
             <Setter Property="Background" Value="{Binding ButtonPressedBackground}"/>
             <Setter Property="Foreground" Value="{Binding ActionButtonForeground}"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
         
         <!-- Toolbar Buttons -->
@@ -106,10 +118,14 @@
         <Style Selector="Button.toolbar-button:pointerover /template/ ContentPresenter">
             <Setter Property="Background" Value="{Binding ButtonHoverBackground}"/>
             <Setter Property="Foreground" Value="White"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
         <Style Selector="Button.toolbar-button:pressed /template/ ContentPresenter">
             <Setter Property="Background" Value="{Binding ButtonPressedBackground}"/>
             <Setter Property="Foreground" Value="{Binding PrimaryText}"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
         
         <Style Selector="Button.connect-button">
@@ -124,10 +140,14 @@
         <Style Selector="Button.connect-button:pointerover /template/ ContentPresenter">
             <Setter Property="Background" Value="{Binding ButtonHoverBackground}"/>
             <Setter Property="Foreground" Value="White"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
         <Style Selector="Button.connect-button:pressed /template/ ContentPresenter">
             <Setter Property="Background" Value="{Binding ButtonPressedBackground}"/>
             <Setter Property="Foreground" Value="{Binding PrimaryText}"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
         
         <Style Selector="Button.refresh-button">
@@ -142,57 +162,61 @@
         <Style Selector="Button.refresh-button:pointerover /template/ ContentPresenter">
             <Setter Property="Background" Value="{Binding ButtonHoverBackground}"/>
             <Setter Property="Foreground" Value="White"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
         <Style Selector="Button.refresh-button:pressed /template/ ContentPresenter">
             <Setter Property="Background" Value="{Binding ButtonPressedBackground}"/>
             <Setter Property="Foreground" Value="{Binding PrimaryText}"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
     </Window.Styles>
 
     <DockPanel>
         <!-- Menu Bar -->
         <Menu DockPanel.Dock="Top">
-            <MenuItem Header="_Grbl">
-                <MenuItem Header="Connect..." Command="{Binding ConnectCommand}"/>
-                <MenuItem Header="Disconnect" Command="{Binding DisconnectCommand}"/>
-                <MenuItem Header="WiFi Discovery" Command="{Binding WiFiDiscoveryCommand}"/>
+            <MenuItem Header="{Binding Localization[MenuGrbl]}">
+                <MenuItem Header="{Binding Localization[ConnectMenu]}" Command="{Binding ConnectCommand}"/>
+                <MenuItem Header="{Binding Localization[DisconnectMenu]}" Command="{Binding DisconnectCommand}"/>
+                <MenuItem Header="{Binding Localization[WiFiDiscovery]}" Command="{Binding WiFiDiscoveryCommand}"/>
                 <Separator/>
-                <MenuItem Header="Grbl Reset" Command="{Binding ResetGrblCommand}"/>
-                <MenuItem Header="Go Home" Command="{Binding GoHomeCommand}"/>
-                <MenuItem Header="Unlock" Command="{Binding UnlockCommand}"/>
+                <MenuItem Header="{Binding Localization[GrblReset]}" Command="{Binding ResetGrblCommand}"/>
+                <MenuItem Header="{Binding Localization[GoHome]}" Command="{Binding GoHomeCommand}"/>
+                <MenuItem Header="{Binding Localization[Unlock]}" Command="{Binding UnlockCommand}"/>
                 <Separator/>
-                <MenuItem Header="Grbl Configuration" Command="{Binding GrblConfigurationCommand}"/>
-                <MenuItem Header="Settings" Command="{Binding SettingsCommand}"/>
-                <MenuItem Header="Material Database" Command="{Binding MaterialDatabaseCommand}"/>
-                <MenuItem Header="Laser Usage Stats" Command="{Binding LaserUsageStatsCommand}"/>
+                <MenuItem Header="{Binding Localization[GrblConfiguration]}" Command="{Binding GrblConfigurationCommand}"/>
+                <MenuItem Header="{Binding Localization[Settings]}" Command="{Binding SettingsCommand}"/>
+                <MenuItem Header="{Binding Localization[MaterialDatabase]}" Command="{Binding MaterialDatabaseCommand}"/>
+                <MenuItem Header="{Binding Localization[LaserUsageStats]}" Command="{Binding LaserUsageStatsCommand}"/>
                 <Separator/>
-                <MenuItem Header="Hotkeys" Command="{Binding HotkeysCommand}"/>
+                <MenuItem Header="{Binding Localization[Hotkeys]}" Command="{Binding HotkeysCommand}"/>
                 <Separator/>
-                <MenuItem Header="Exit" Command="{Binding ExitCommand}"/>
+                <MenuItem Header="{Binding Localization[Exit]}" Command="{Binding ExitCommand}"/>
             </MenuItem>
-            <MenuItem Header="_File">
-                <MenuItem Header="Open File..." Command="{Binding LoadGCodeFileCommand}"/>
-                <MenuItem Header="Append File..." Command="{Binding AppendGCodeFileCommand}"/>
-                <MenuItem Header="Re-Open File" Command="{Binding ReOpenGCodeFileCommand}"/>
-                <MenuItem Header="Save Program" Command="{Binding SaveProgramCommand}"/>
-                <MenuItem Header="Advanced Save" Command="{Binding AdvancedSaveCommand}"/>
+            <MenuItem Header="{Binding Localization[MenuFile]}">
+                <MenuItem Header="{Binding Localization[OpenFile]}" Command="{Binding LoadGCodeFileCommand}"/>
+                <MenuItem Header="{Binding Localization[AppendFile]}" Command="{Binding AppendGCodeFileCommand}"/>
+                <MenuItem Header="{Binding Localization[ReOpenFile]}" Command="{Binding ReOpenGCodeFileCommand}"/>
+                <MenuItem Header="{Binding Localization[SaveProgram]}" Command="{Binding SaveProgramCommand}"/>
+                <MenuItem Header="{Binding Localization[AdvancedSave]}" Command="{Binding AdvancedSaveCommand}"/>
                 <Separator/>
-                <MenuItem Header="Save Project" Command="{Binding SaveProjectCommand}"/>
+                <MenuItem Header="{Binding Localization[SaveProject]}" Command="{Binding SaveProjectCommand}"/>
                 <Separator/>
-                <MenuItem Header="Send File" Command="{Binding StartProgramCommand}"/>
-                <MenuItem Header="Start From Position" Command="{Binding StartFromPositionCommand}"/>
+                <MenuItem Header="{Binding Localization[SendFile]}" Command="{Binding StartProgramCommand}"/>
+                <MenuItem Header="{Binding Localization[StartFromPosition]}" Command="{Binding StartFromPositionCommand}"/>
                 <Separator/>
-                <MenuItem Header="Run Multiple" Command="{Binding RunMultipleCommand}"/>
+                <MenuItem Header="{Binding Localization[RunMultiple]}" Command="{Binding RunMultipleCommand}"/>
             </MenuItem>
-            <MenuItem Header="_Generate">
-                <MenuItem Header="Power vs Speed" Command="{Binding PowerVsSpeedCommand}"/>
-                <MenuItem Header="Cutting Test" Command="{Binding CuttingTestCommand}"/>
-                <MenuItem Header="Accuracy Test" Command="{Binding AccuracyTestCommand}"/>
-                <MenuItem Header="Shake Test" Command="{Binding ShakeTestCommand}"/>
+            <MenuItem Header="{Binding Localization[MenuGenerate]}">
+                <MenuItem Header="{Binding Localization[PowerVsSpeed]}" Command="{Binding PowerVsSpeedCommand}"/>
+                <MenuItem Header="{Binding Localization[CuttingTest]}" Command="{Binding CuttingTestCommand}"/>
+                <MenuItem Header="{Binding Localization[AccuracyTest]}" Command="{Binding AccuracyTestCommand}"/>
+                <MenuItem Header="{Binding Localization[ShakeTest]}" Command="{Binding ShakeTestCommand}"/>
                 <MenuItem Header="ESP8266" Command="{Binding ESP8266Command}"/>
-                <MenuItem Header="Grbl Emulator" Command="{Binding GrblEmulatorCommand}"/>
+                <MenuItem Header="{Binding Localization[GrblEmulator]}" Command="{Binding GrblEmulatorCommand}"/>
             </MenuItem>
-            <MenuItem Header="_Schema">
+            <MenuItem Header="{Binding Localization[MenuSchema]}">
                 <MenuItem Header="CAD Style" Command="{Binding SetSchemaCommand}" CommandParameter="CAD Style"/>
                 <MenuItem Header="CAD Dark" Command="{Binding SetSchemaCommand}" CommandParameter="CAD Dark"/>
                 <MenuItem Header="Blue Laser" Command="{Binding SetSchemaCommand}" CommandParameter="Blue Laser"/>
@@ -201,48 +225,64 @@
                 <MenuItem Header="Hacker" Command="{Binding SetSchemaCommand}" CommandParameter="Hacker"/>
                 <MenuItem Header="Nighty" Command="{Binding SetSchemaCommand}" CommandParameter="Nighty"/>
             </MenuItem>
-            <MenuItem Header="_Preview">
-                <MenuItem Header="Auto Size" Command="{Binding AutoSizeCommand}" InputGesture="Ctrl+A"/>
-                <MenuItem Header="Zoom In" Command="{Binding ZoomInCommand}" InputGesture="Ctrl++"/>
-                <MenuItem Header="Zoom Out" Command="{Binding ZoomOutCommand}" InputGesture="Ctrl+-"/>
+            <MenuItem Header="{Binding Localization[MenuPreview]}">
+                <MenuItem Header="{Binding Localization[AutoSize]}" Command="{Binding AutoSizeCommand}" InputGesture="Ctrl+A"/>
+                <MenuItem Header="{Binding Localization[ZoomIn]}" Command="{Binding ZoomInCommand}" InputGesture="Ctrl++"/>
+                <MenuItem Header="{Binding Localization[ZoomOut]}" Command="{Binding ZoomOutCommand}" InputGesture="Ctrl+-"/>
                 <Separator/>
-                <MenuItem Header="Show Laser Off Movements" Command="{Binding ToggleLaserOffMovementsCommand}" 
-                          IsChecked="{Binding ShowLaserOffMovements}"/>
-                <MenuItem Header="Show Executed Commands" Command="{Binding ToggleExecutedCommandsCommand}"
-                          IsChecked="{Binding ShowExecutedCommands}"/>
-                <MenuItem Header="Show Bounding Box" Command="{Binding ToggleBoundingBoxCommand}"
-                          IsChecked="{Binding ShowBoundingBox}"/>
-                <MenuItem Header="Cross Cursor" Command="{Binding ToggleCrossCursorCommand}"
-                          IsChecked="{Binding CrossCursor}"/>
+                <MenuItem ToggleType="CheckBox" Header="{Binding Localization[ShowLaserOffMovements]}" 
+                          IsChecked="{Binding ShowLaserOffMovements, Mode=TwoWay}"/>
+                <MenuItem ToggleType="CheckBox" Header="{Binding Localization[ShowExecutedCommands]}"
+                          IsChecked="{Binding ShowExecutedCommands, Mode=TwoWay}"/>
+                <MenuItem ToggleType="CheckBox" Header="{Binding Localization[ShowBoundingBox]}"
+                          IsChecked="{Binding ShowBoundingBox, Mode=TwoWay}"/>
+                <MenuItem ToggleType="CheckBox" Header="{Binding Localization[CrossCursor]}"
+                          IsChecked="{Binding CrossCursor, Mode=TwoWay}"/>
             </MenuItem>
-            <MenuItem Header="_Language">
+            <MenuItem Header="{Binding Localization[MenuLanguage]}">
                 <MenuItem Header="English" Command="{Binding SetLanguageCommand}" CommandParameter="English"/>
                 <MenuItem Header="Italian" Command="{Binding SetLanguageCommand}" CommandParameter="Italian"/>
                 <MenuItem Header="Spanish" Command="{Binding SetLanguageCommand}" CommandParameter="Spanish"/>
                 <MenuItem Header="French" Command="{Binding SetLanguageCommand}" CommandParameter="French"/>
                 <MenuItem Header="German" Command="{Binding SetLanguageCommand}" CommandParameter="German"/>
+                <MenuItem Header="Finnish" Command="{Binding SetLanguageCommand}" CommandParameter="Finnish"/>
+                <MenuItem Header="Danish" Command="{Binding SetLanguageCommand}" CommandParameter="Danish"/>
+                <MenuItem Header="Brazilian Portuguese" Command="{Binding SetLanguageCommand}" CommandParameter="Brazilian Portuguese"/>
+                <MenuItem Header="Russian" Command="{Binding SetLanguageCommand}" CommandParameter="Russian"/>
+                <MenuItem Header="Chinese (Simplified)" Command="{Binding SetLanguageCommand}" CommandParameter="Chinese (Simplified)"/>
+                <MenuItem Header="Chinese (Traditional)" Command="{Binding SetLanguageCommand}" CommandParameter="Chinese (Traditional)"/>
+                <MenuItem Header="Slovak" Command="{Binding SetLanguageCommand}" CommandParameter="Slovak"/>
+                <MenuItem Header="Hungarian" Command="{Binding SetLanguageCommand}" CommandParameter="Hungarian"/>
+                <MenuItem Header="Czech" Command="{Binding SetLanguageCommand}" CommandParameter="Czech"/>
+                <MenuItem Header="Polish" Command="{Binding SetLanguageCommand}" CommandParameter="Polish"/>
+                <MenuItem Header="Greek" Command="{Binding SetLanguageCommand}" CommandParameter="Greek"/>
+                <MenuItem Header="Turkish" Command="{Binding SetLanguageCommand}" CommandParameter="Turkish"/>
+                <MenuItem Header="Romanian" Command="{Binding SetLanguageCommand}" CommandParameter="Romanian"/>
+                <MenuItem Header="Dutch" Command="{Binding SetLanguageCommand}" CommandParameter="Dutch"/>
+                <MenuItem Header="Ukrainian" Command="{Binding SetLanguageCommand}" CommandParameter="Ukrainian"/>
+                <MenuItem Header="Japanese" Command="{Binding SetLanguageCommand}" CommandParameter="Japanese"/>
             </MenuItem>
-            <MenuItem Header="_Tools">
-                <MenuItem Header="Install CH340 Driver" Command="{Binding InstallCH340DriverCommand}"/>
-                <MenuItem Header="Flash Grbl Firmware" Command="{Binding FlashGrblFirmwareCommand}"/>
+            <MenuItem Header="{Binding Localization[MenuTools]}">
+                <MenuItem Header="{Binding Localization[InstallCH340Driver]}" Command="{Binding InstallCH340DriverCommand}"/>
+                <MenuItem Header="{Binding Localization[FlashGrblFirmware]}" Command="{Binding FlashGrblFirmwareCommand}"/>
                 <Separator/>
-                <MenuItem Header="Configuration Wizard" Command="{Binding ConfigurationWizardCommand}"/>
+                <MenuItem Header="{Binding Localization[ConfigurationWizard]}" Command="{Binding ConfigurationWizardCommand}"/>
             </MenuItem>
-            <MenuItem Header="_?">
-                <MenuItem Header="Auto Update" Command="{Binding ToggleAutoUpdateCommand}"
+            <MenuItem Header="{Binding Localization[MenuHelp]}">
+                <MenuItem Header="{Binding Localization[AutoUpdate]}" Command="{Binding ToggleAutoUpdateCommand}"
                           IsChecked="{Binding AutoUpdateEnabled}"/>
-                <MenuItem Header="Check Now" Command="{Binding CheckForUpdatesCommand}"/>
+                <MenuItem Header="{Binding Localization[CheckNow]}" Command="{Binding CheckForUpdatesCommand}"/>
                 <Separator/>
-                <MenuItem Header="Open Session Log" Command="{Binding OpenSessionLogCommand}"/>
-                <MenuItem Header="Activate Extended Log" Command="{Binding ToggleExtendedLogCommand}"
+                <MenuItem Header="{Binding Localization[OpenSessionLog]}" Command="{Binding OpenSessionLogCommand}"/>
+                <MenuItem Header="{Binding Localization[ActivateExtendedLog]}" Command="{Binding ToggleExtendedLogCommand}"
                           IsChecked="{Binding ExtendedLogEnabled}"/>
                 <Separator/>
-                <MenuItem Header="Help Online" Command="{Binding HelpOnlineCommand}"/>
-                <MenuItem Header="About" Command="{Binding AboutCommand}"/>
-                <MenuItem Header="Facebook Community" Command="{Binding FacebookCommunityCommand}"/>
+                <MenuItem Header="{Binding Localization[HelpOnline]}" Command="{Binding HelpOnlineCommand}"/>
+                <MenuItem Header="{Binding Localization[About]}" Command="{Binding AboutCommand}"/>
+                <MenuItem Header="{Binding Localization[FacebookCommunity]}" Command="{Binding FacebookCommunityCommand}"/>
                 <Separator/>
-                <MenuItem Header="Donate" Command="{Binding DonateCommand}"/>
-                <MenuItem Header="License" Command="{Binding LicenseCommand}"/>
+                <MenuItem Header="{Binding Localization[Donate]}" Command="{Binding DonateCommand}"/>
+                <MenuItem Header="{Binding Localization[License]}" Command="{Binding LicenseCommand}"/>
             </MenuItem>
         </Menu>
 
@@ -300,12 +340,12 @@
                     <!-- Connection Controls -->
                     <Border Grid.Row="0" Background="{Binding MainBackground}" BorderBrush="{Binding BorderColor}" BorderThickness="0,0,0,1" Padding="10">
                         <StackPanel Spacing="8">
-                            <TextBlock Text="COM" FontWeight="Bold" Foreground="{Binding PrimaryText}" FontSize="12"/>
+                            <TextBlock Text="{Binding Localization[COMPort]}" FontWeight="Bold" Foreground="{Binding PrimaryText}" FontSize="12"/>
                             <ComboBox Width="230" ItemsSource="{Binding AvailablePorts}" 
                                       SelectedItem="{Binding SelectedPort}"
                                       Background="{Binding ComboBoxBackground}" Foreground="{Binding ComboBoxForeground}"/>
                             
-                            <TextBlock Text="Baud" FontWeight="Bold" Foreground="{Binding PrimaryText}" FontSize="12" Margin="0,5,0,0"/>
+                            <TextBlock Text="{Binding Localization[BaudRate]}" FontWeight="Bold" Foreground="{Binding PrimaryText}" FontSize="12" Margin="0,5,0,0"/>
                             <ComboBox Width="230" ItemsSource="{Binding AvailableBaudRates}" 
                                       SelectedItem="{Binding SelectedBaudRate}"
                                       Background="{Binding ComboBoxBackground}" Foreground="{Binding ComboBoxForeground}"/>
@@ -318,7 +358,7 @@
                                 <Button Content="↻" 
                                         Command="{Binding RefreshPortsCommand}" 
                                         Width="35" 
-                                        ToolTip.Tip="Refresh Ports"
+                                        ToolTip.Tip="{Binding Localization[RefreshPorts]}"
                                         Classes="refresh-button"/>
                             </StackPanel>
                             
@@ -450,27 +490,27 @@
                     
                     <!-- Help Text (Bottom Right) -->
                     <StackPanel HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="20">
-                        <TextBlock Text="Basic usage" Foreground="{Binding SecondaryText}" FontSize="12" FontWeight="Bold"/>
-                        <TextBlock Text="ZOOM: Use mouse wheel (or two-finger gesture)" 
+                        <TextBlock Text="{Binding Localization[BasicUsage]}" Foreground="{Binding SecondaryText}" FontSize="12" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding Localization[ZoomHelp]}" 
                                    Foreground="{Binding SecondaryText}" FontSize="11"/>
-                        <TextBlock Text="PAN:  Click and drag (or touch and drag)" 
+                        <TextBlock Text="{Binding Localization[PanHelp]}" 
                                    Foreground="{Binding SecondaryText}" FontSize="11"/>
-                        <TextBlock Text="JOG:  Double click in any point (or double tap)" 
+                        <TextBlock Text="{Binding Localization[JogHelp]}" 
                                    Foreground="{Binding SecondaryText}" FontSize="11"/>
                         <TextBlock Text="" Foreground="{Binding SecondaryText}" FontSize="11" Margin="0,5,0,0"/>
-                        <TextBlock Text="Keyboard Shortcuts" Foreground="{Binding SecondaryText}" FontSize="12" FontWeight="Bold"/>
-                        <TextBlock Text="Ctrl A: Zoom Auto (100%)" Foreground="{Binding SecondaryText}" FontSize="11"/>
-                        <TextBlock Text="Ctrl +: Zoom In   (+10%)" Foreground="{Binding SecondaryText}" FontSize="11"/>
-                        <TextBlock Text="Ctrl -: Zoom Out  (-10%)" Foreground="{Binding SecondaryText}" FontSize="11"/>
+                        <TextBlock Text="{Binding Localization[KeyboardShortcuts]}" Foreground="{Binding SecondaryText}" FontSize="12" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding Localization[ZoomAutoShortcut]}" Foreground="{Binding SecondaryText}" FontSize="11"/>
+                        <TextBlock Text="{Binding Localization[ZoomInShortcut]}" Foreground="{Binding SecondaryText}" FontSize="11"/>
+                        <TextBlock Text="{Binding Localization[ZoomOutShortcut]}" Foreground="{Binding SecondaryText}" FontSize="11"/>
                     </StackPanel>
                     
                     <!-- Placeholder message -->
                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" 
                                 IsVisible="{Binding !HasGCodeLoaded}">
-                        <TextBlock Text="G-Code Preview Area" 
+                        <TextBlock Text="{Binding Localization[GCodePreviewArea]}" 
                                    FontSize="28" Foreground="{Binding SecondaryText}" FontWeight="Light"
                                    TextAlignment="Center"/>
-                        <TextBlock Text="Load a G-Code file to see the preview" 
+                        <TextBlock Text="{Binding Localization[LoadGCodeToSeePreview]}" 
                                    FontSize="16" Foreground="{Binding SecondaryText}" Margin="0,10,0,0"
                                    TextAlignment="Center"/>
                     </StackPanel>
@@ -487,7 +527,7 @@
                     <Border Width="10" Background="Transparent"/>
                     
                     <!-- Additional Control Buttons -->
-                    <Button Content="🎯" Classes="toolbar-button" ToolTip.Tip="Center"/>
+                    <Button Content="🎯" Classes="toolbar-button" ToolTip.Tip="Set Origin (Zero XY)" Command="{Binding SetOriginCommand}"/>
                     <Button Content="⚙" Classes="toolbar-button" ToolTip.Tip="Settings"/>
                     <Button Content="🔲" Classes="toolbar-button" ToolTip.Tip="Frame"/>
                     <Button Content="⊕" Classes="toolbar-button" ToolTip.Tip="Target"/>

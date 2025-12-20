@@ -25,6 +25,7 @@ public class SvgToGCodeConverter
     public int LaserPowerOn { get; set; } = 1000; // S value for laser on
     public int LaserPowerOff { get; set; } = 0; // S value for laser off
     public double Scale { get; set; } = 1.0; // Scaling factor
+    public double DPI { get; set; } = 96.0; // SVG DPI (default 96)
     
     public SvgToGCodeConverter()
     {
@@ -90,10 +91,13 @@ public class SvgToGCodeConverter
     /// <summary>
     /// Transform coordinates from SVG space to G-Code space
     /// Handles Y-axis inversion (SVG Y goes down, G-Code Y goes up)
+    /// Converts from SVG pixels to millimeters using DPI
     /// </summary>
     private (double x, double y) TransformPoint(double x, double y)
     {
-        return (x * Scale, (_svgHeight - y) * Scale);
+        // Convert from SVG pixels to millimeters: 1 inch = 25.4mm, DPI pixels = 1 inch
+        double pixelsToMm = 25.4 / DPI;
+        return (x * pixelsToMm * Scale, (_svgHeight - y) * pixelsToMm * Scale);
     }
     
     private void ProcessElement(SvgElement element)

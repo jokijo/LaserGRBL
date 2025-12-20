@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" use="optional" msdata:Ordinal="5" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="LanguageRequireRestart" xml:space="preserve">
+    <value>Uudelleenkäynnistys vaaditaan</value>
+  </data>
+  <data name="LanguageRequireRestartNow" xml:space="preserve">
+    <value>Sovellus on käynnistettävä uudelleen, jotta kielimuutos tulee voimaan. Haluatko käynnistää uudelleen nyt?</value>
+  </data>
+  <data name="Connect" xml:space="preserve">
+    <value>Yhdistä</value>
+  </data>
+  <data name="Disconnect" xml:space="preserve">
+    <value>Katkaise yhteys</value>
+  </data>
+  <data name="Connected" xml:space="preserve">
+    <value>Yhdistetty</value>
+  </data>
+  <data name="NotConnected" xml:space="preserve">
+    <value>Ei yhteyttä</value>
+  </data>
+  <data name="COMPort" xml:space="preserve">
+    <value>COM</value>
+  </data>
+  <data name="BaudRate" xml:space="preserve">
+    <value>Baud</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Tila</value>
+  </data>
+  <data name="RefreshPorts" xml:space="preserve">
+    <value>Päivitä portit</value>
+  </data>
+  <data name="MenuGrbl" xml:space="preserve">
+    <value>_Grbl</value>
+  </data>
+  <data name="MenuFile" xml:space="preserve">
+    <value>_Tiedosto</value>
+  </data>
+  <data name="MenuGenerate" xml:space="preserve">
+    <value>_Luo</value>
+  </data>
+  <data name="MenuSchema" xml:space="preserve">
+    <value>_Teema</value>
+  </data>
+  <data name="MenuPreview" xml:space="preserve">
+    <value>_Esikatselu</value>
+  </data>
+  <data name="MenuLanguage" xml:space="preserve">
+    <value>_Kieli</value>
+  </data>
+  <data name="MenuTools" xml:space="preserve">
+    <value>_Työkalut</value>
+  </data>
+  <data name="MenuHelp" xml:space="preserve">
+    <value>_?</value>
+  </data>
+  <data name="ConnectMenu" xml:space="preserve">
+    <value>Yhdistä...</value>
+  </data>
+  <data name="DisconnectMenu" xml:space="preserve">
+    <value>Katkaise yhteys</value>
+  </data>
+  <data name="OpenFile" xml:space="preserve">
+    <value>Avaa tiedosto...</value>
+  </data>
+  <data name="SaveProgram" xml:space="preserve">
+    <value>Tallenna ohjelma</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Asetukset</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>Poistu</value>
+  </data>
+  <data name="WiFiDiscovery" xml:space="preserve">
+    <value>WiFi-haku</value>
+  </data>
+  <data name="GrblReset" xml:space="preserve">
+    <value>Grbl-nollaus</value>
+  </data>
+  <data name="GoHome" xml:space="preserve">
+    <value>Siirry alkuun</value>
+  </data>
+  <data name="Unlock" xml:space="preserve">
+    <value>Vapauta</value>
+  </data>
+  <data name="GrblConfiguration" xml:space="preserve">
+    <value>Grbl-asetukset</value>
+  </data>
+  <data name="MaterialDatabase" xml:space="preserve">
+    <value>Materiaalitietokanta</value>
+  </data>
+  <data name="LaserUsageStats" xml:space="preserve">
+    <value>Laserin käyttötilastot</value>
+  </data>
+  <data name="Hotkeys" xml:space="preserve">
+    <value>Pikanäppäimet</value>
+  </data>
+  <data name="AppendFile" xml:space="preserve">
+    <value>Lisää tiedosto...</value>
+  </data>
+  <data name="ReOpenFile" xml:space="preserve">
+    <value>Avaa uudelleen</value>
+  </data>
+  <data name="AdvancedSave" xml:space="preserve">
+    <value>Lisätallennus</value>
+  </data>
+  <data name="SaveProject" xml:space="preserve">
+    <value>Tallenna projekti</value>
+  </data>
+  <data name="SendFile" xml:space="preserve">
+    <value>Lähetä tiedosto</value>
+  </data>
+  <data name="StartFromPosition" xml:space="preserve">
+    <value>Aloita sijainnista</value>
+  </data>
+  <data name="RunMultiple" xml:space="preserve">
+    <value>Suorita useita</value>
+  </data>
+  <data name="NoFileLoaded" xml:space="preserve">
+    <value>Ei ladattua tiedostoa</value>
+  </data>
+  <data name="Idle" xml:space="preserve">
+    <value>Joutokäynnillä</value>
+  </data>
+  <data name="Connecting" xml:space="preserve">
+    <value>Yhdistetään</value>
+  </data>
+  <data name="PowerVsSpeed" xml:space="preserve">
+    <value>Teho vs Nopeus</value>
+  </data>
+  <data name="CuttingTest" xml:space="preserve">
+    <value>Leikkaustesti</value>
+  </data>
+  <data name="AccuracyTest" xml:space="preserve">
+    <value>Tarkkuustesti</value>
+  </data>
+  <data name="ShakeTest" xml:space="preserve">
+    <value>Tärinätesti</value>
+  </data>
+  <data name="GrblEmulator" xml:space="preserve">
+    <value>Grbl-emulaattori</value>
+  </data>
+  <data name="AutoSize" xml:space="preserve">
+    <value>Automaattinen koko</value>
+  </data>
+  <data name="ZoomIn" xml:space="preserve">
+    <value>Lähennä</value>
+  </data>
+  <data name="ZoomOut" xml:space="preserve">
+    <value>Loitonna</value>
+  </data>
+  <data name="ShowLaserOffMovements" xml:space="preserve">
+    <value>Näytä laserin pois-liikkeet</value>
+  </data>
+  <data name="ShowExecutedCommands" xml:space="preserve">
+    <value>Näytä suoritetut komennot</value>
+  </data>
+  <data name="ShowBoundingBox" xml:space="preserve">
+    <value>Näytä rajauskehys</value>
+  </data>
+  <data name="CrossCursor" xml:space="preserve">
+    <value>Ristikko-osoitin</value>
+  </data>
+  <data name="InstallCH340Driver" xml:space="preserve">
+    <value>Asenna CH340-ajuri</value>
+  </data>
+  <data name="FlashGrblFirmware" xml:space="preserve">
+    <value>Päivitä Grbl-laiteohjelmisto</value>
+  </data>
+  <data name="ConfigurationWizard" xml:space="preserve">
+    <value>Asetusvelho</value>
+  </data>
+  <data name="AutoUpdate" xml:space="preserve">
+    <value>Automaattinen päivitys</value>
+  </data>
+  <data name="CheckNow" xml:space="preserve">
+    <value>Tarkista nyt</value>
+  </data>
+  <data name="OpenSessionLog" xml:space="preserve">
+    <value>Avaa istuntoloki</value>
+  </data>
+  <data name="ActivateExtendedLog" xml:space="preserve">
+    <value>Aktivoi laajennettu loki</value>
+  </data>
+  <data name="HelpOnline" xml:space="preserve">
+    <value>Online-ohje</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>Tietoja</value>
+  </data>
+  <data name="FacebookCommunity" xml:space="preserve">
+    <value>Facebook-yhteisö</value>
+  </data>
+  <data name="Donate" xml:space="preserve">
+    <value>Lahjoita</value>
+  </data>
+  <data name="License" xml:space="preserve">
+    <value>Lisenssi</value>
+  </data>
+  <data name="Run" xml:space="preserve">
+    <value>Suorita</value>
+  </data>
+  <data name="Pause" xml:space="preserve">
+    <value>Pysäytä</value>
+  </data>
+  <data name="Stop" xml:space="preserve">
+    <value>Lopeta</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>Nollaa</value>
+  </data>
+  <data name="Alarm" xml:space="preserve">
+    <value>Hälytys</value>
+  </data>
+  <data name="Hold" xml:space="preserve">
+    <value>Pito</value>
+  </data>
+  <data name="Door" xml:space="preserve">
+    <value>Ovi</value>
+  </data>
+  <data name="Check" xml:space="preserve">
+    <value>Tarkista</value>
+  </data>
+  <data name="Jog" xml:space="preserve">
+    <value>Käsikäyttö</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Alkuasema</value>
+  </data>
+  <data name="Disconnected" xml:space="preserve">
+    <value>Yhteys katkaistu</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>Tuntematon</value>
+  </data>
+  <data name="GCodePreviewArea" xml:space="preserve">
+    <value>G-koodin esikatselualue</value>
+  </data>
+  <data name="LoadGCodeToSeePreview" xml:space="preserve">
+    <value>Lataa G-koodi-tiedosto nähdäksesi esikatselun</value>
+  </data>
+  <data name="BasicUsage" xml:space="preserve">
+    <value>Peruskäyttö</value>
+  </data>
+  <data name="ZoomHelp" xml:space="preserve">
+    <value>ZOOM: Käytä hiiren rullaa (tai kahden sormen ele)</value>
+  </data>
+  <data name="PanHelp" xml:space="preserve">
+    <value>PAN:  Klikkaa ja vedä (tai kosketa ja vedä)</value>
+  </data>
+  <data name="JogHelp" xml:space="preserve">
+    <value>JOG:  Kaksoisklikkaa mihin tahansa pisteeseen</value>
+  </data>
+  <data name="KeyboardShortcuts" xml:space="preserve">
+    <value>Näppäinoikotiet</value>
+  </data>
+  <data name="ZoomAutoShortcut" xml:space="preserve">
+    <value>Ctrl A: Automaattinen zoomaus (100%)</value>
+  </data>
+  <data name="ZoomInShortcut" xml:space="preserve">
+    <value>Ctrl +: Lähennä (+10%)</value>
+  </data>
+  <data name="ZoomOutShortcut" xml:space="preserve">
+    <value>Ctrl -: Loitonna (-10%)</value>
+  </data>
+</root>

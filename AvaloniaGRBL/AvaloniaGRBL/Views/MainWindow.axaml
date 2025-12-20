@@ -1,4 +1,4 @@
-<Window xmlns="https://github.com/avaloniaui"
+﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:AvaloniaGRBL.ViewModels"
         xmlns:converters="using:AvaloniaGRBL.Converters"
@@ -28,146 +28,146 @@
     <Window.Styles>
         <!-- Jog Control Buttons (Bottom Toolbar Style) -->
         <Style Selector="Button.jog-button">
-            <Setter Property="Background" Value="{Binding ButtonBackground}"/>
-            <Setter Property="Foreground" Value="{Binding JogButtonForeground}"/>
+            <Setter Property="Background" Value="{Binding Theme.ButtonBackground}"/>
+            <Setter Property="Foreground" Value="{Binding Theme.JogButtonForeground}"/>
             <Setter Property="FontSize" Value="24"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Width" Value="50"/>
             <Setter Property="Height" Value="50"/>
-            <Setter Property="BorderBrush" Value="{Binding ButtonBorder}"/>
+            <Setter Property="BorderBrush" Value="{Binding Theme.ButtonBorder}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
         <Style Selector="Button.jog-button:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="{Binding ButtonHoverBackground}"/>
-            <Setter Property="Foreground" Value="{Binding JogButtonHoverForeground}"/>
+            <Setter Property="Background" Value="{Binding Theme.ButtonHoverBackground}"/>
+            <Setter Property="Foreground" Value="{Binding Theme.JogButtonHoverForeground}"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
         <Style Selector="Button.jog-button:pressed /template/ ContentPresenter">
-            <Setter Property="Background" Value="{Binding ButtonPressedBackground}"/>
-            <Setter Property="Foreground" Value="{Binding JogButtonForeground}"/>
+            <Setter Property="Background" Value="{Binding Theme.ButtonPressedBackground}"/>
+            <Setter Property="Foreground" Value="{Binding Theme.JogButtonForeground}"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
         
         <Style Selector="Button.jog-home">
-            <Setter Property="Background" Value="{Binding ButtonBackground}"/>
-            <Setter Property="Foreground" Value="{Binding PrimaryText}"/>
+            <Setter Property="Background" Value="{Binding Theme.ButtonBackground}"/>
+            <Setter Property="Foreground" Value="{Binding Theme.PrimaryText}"/>
             <Setter Property="FontSize" Value="24"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Width" Value="50"/>
             <Setter Property="Height" Value="50"/>
-            <Setter Property="BorderBrush" Value="{Binding ButtonBorder}"/>
+            <Setter Property="BorderBrush" Value="{Binding Theme.ButtonBorder}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
         <Style Selector="Button.jog-home:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="{Binding ButtonHoverBackground}"/>
+            <Setter Property="Background" Value="{Binding Theme.ButtonHoverBackground}"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
         <Style Selector="Button.jog-home:pressed /template/ ContentPresenter">
-            <Setter Property="Background" Value="{Binding ButtonPressedBackground}"/>
-            <Setter Property="Foreground" Value="{Binding PrimaryText}"/>
+            <Setter Property="Background" Value="{Binding Theme.ButtonPressedBackground}"/>
+            <Setter Property="Foreground" Value="{Binding Theme.PrimaryText}"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
         
         <!-- Action Button Style (Yellow highlight) -->
         <Style Selector="Button.action-button">
-            <Setter Property="Background" Value="{Binding ButtonBackground}"/>
-            <Setter Property="Foreground" Value="{Binding ActionButtonForeground}"/>
+            <Setter Property="Background" Value="{Binding Theme.ButtonBackground}"/>
+            <Setter Property="Foreground" Value="{Binding Theme.ActionButtonForeground}"/>
             <Setter Property="FontSize" Value="24"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Width" Value="50"/>
             <Setter Property="Height" Value="50"/>
-            <Setter Property="BorderBrush" Value="{Binding ActionButtonBorder}"/>
+            <Setter Property="BorderBrush" Value="{Binding Theme.ActionButtonBorder}"/>
             <Setter Property="BorderThickness" Value="2"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
         <Style Selector="Button.action-button:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="{Binding ButtonHoverBackground}"/>
-            <Setter Property="Foreground" Value="{Binding ActionButtonHoverForeground}"/>
+            <Setter Property="Background" Value="{Binding Theme.ButtonHoverBackground}"/>
+            <Setter Property="Foreground" Value="{Binding Theme.ActionButtonHoverForeground}"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
         <Style Selector="Button.action-button:pressed /template/ ContentPresenter">
-            <Setter Property="Background" Value="{Binding ButtonPressedBackground}"/>
-            <Setter Property="Foreground" Value="{Binding ActionButtonForeground}"/>
+            <Setter Property="Background" Value="{Binding Theme.ButtonPressedBackground}"/>
+            <Setter Property="Foreground" Value="{Binding Theme.ActionButtonForeground}"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
         
         <!-- Toolbar Buttons -->
         <Style Selector="Button.toolbar-button">
-            <Setter Property="Background" Value="{Binding ButtonBackground}"/>
-            <Setter Property="Foreground" Value="{Binding PrimaryText}"/>
+            <Setter Property="Background" Value="{Binding Theme.ButtonBackground}"/>
+            <Setter Property="Foreground" Value="{Binding Theme.PrimaryText}"/>
             <Setter Property="FontSize" Value="20"/>
             <Setter Property="Width" Value="50"/>
             <Setter Property="Height" Value="50"/>
-            <Setter Property="BorderBrush" Value="{Binding ButtonBorder}"/>
+            <Setter Property="BorderBrush" Value="{Binding Theme.ButtonBorder}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
         <Style Selector="Button.toolbar-button:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="{Binding ButtonHoverBackground}"/>
+            <Setter Property="Background" Value="{Binding Theme.ButtonHoverBackground}"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
         <Style Selector="Button.toolbar-button:pressed /template/ ContentPresenter">
-            <Setter Property="Background" Value="{Binding ButtonPressedBackground}"/>
-            <Setter Property="Foreground" Value="{Binding PrimaryText}"/>
+            <Setter Property="Background" Value="{Binding Theme.ButtonPressedBackground}"/>
+            <Setter Property="Foreground" Value="{Binding Theme.PrimaryText}"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
         
         <Style Selector="Button.connect-button">
-            <Setter Property="Background" Value="{Binding ButtonBackground}"/>
-            <Setter Property="Foreground" Value="{Binding PrimaryText}"/>
+            <Setter Property="Background" Value="{Binding Theme.ButtonBackground}"/>
+            <Setter Property="Foreground" Value="{Binding Theme.PrimaryText}"/>
             <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="BorderBrush" Value="{Binding ButtonBorder}"/>
+            <Setter Property="BorderBrush" Value="{Binding Theme.ButtonBorder}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
         <Style Selector="Button.connect-button:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="{Binding ButtonHoverBackground}"/>
+            <Setter Property="Background" Value="{Binding Theme.ButtonHoverBackground}"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
         <Style Selector="Button.connect-button:pressed /template/ ContentPresenter">
-            <Setter Property="Background" Value="{Binding ButtonPressedBackground}"/>
-            <Setter Property="Foreground" Value="{Binding PrimaryText}"/>
+            <Setter Property="Background" Value="{Binding Theme.ButtonPressedBackground}"/>
+            <Setter Property="Foreground" Value="{Binding Theme.PrimaryText}"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
         
         <Style Selector="Button.refresh-button">
-            <Setter Property="Background" Value="{Binding ButtonBackground}"/>
-            <Setter Property="Foreground" Value="{Binding PrimaryText}"/>
+            <Setter Property="Background" Value="{Binding Theme.ButtonBackground}"/>
+            <Setter Property="Foreground" Value="{Binding Theme.PrimaryText}"/>
             <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="BorderBrush" Value="{Binding ButtonBorder}"/>
+            <Setter Property="BorderBrush" Value="{Binding Theme.ButtonBorder}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
         <Style Selector="Button.refresh-button:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="{Binding ButtonHoverBackground}"/>
+            <Setter Property="Background" Value="{Binding Theme.ButtonHoverBackground}"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
         <Style Selector="Button.refresh-button:pressed /template/ ContentPresenter">
-            <Setter Property="Background" Value="{Binding ButtonPressedBackground}"/>
-            <Setter Property="Foreground" Value="{Binding PrimaryText}"/>
+            <Setter Property="Background" Value="{Binding Theme.ButtonPressedBackground}"/>
+            <Setter Property="Foreground" Value="{Binding Theme.PrimaryText}"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
         </Style>
@@ -287,7 +287,7 @@
         </Menu>
 
         <!-- Main Content Area -->
-        <Grid Background="{Binding MainBackground}">
+        <Grid Background="{Binding Theme.MainBackground}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
@@ -300,7 +300,7 @@
             </Grid.ColumnDefinitions>
 
             <!-- Top Toolbar -->
-            <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Background="{Binding PanelBackground}" BorderBrush="{Binding BorderColor}" BorderThickness="0,0,0,1" Padding="5">
+            <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Background="{Binding Theme.PanelBackground}" BorderBrush="{Binding Theme.BorderColor}" BorderThickness="0,0,0,1" Padding="5">
                 <StackPanel Orientation="Horizontal" Spacing="5">
                     <Button Content="📄" Width="40" Height="40" Command="{Binding LoadGCodeFileCommand}" 
                             Classes="toolbar-button" ToolTip.Tip="Open File"/>
@@ -310,26 +310,26 @@
                             Classes="toolbar-button" ToolTip.Tip="Pause"/>
                     <Button Content="⏹" Width="40" Height="40" Command="{Binding StopProgramCommand}" 
                             Classes="toolbar-button" ToolTip.Tip="Stop"/>
-                    <Border Width="1" Background="{Binding SeparatorColor}" Margin="5,0"/>
+                    <Border Width="1" Background="{Binding Theme.SeparatorColor}" Margin="5,0"/>
                     <Button Content="🔄" Width="40" Height="40" Command="{Binding ResetGrblCommand}" 
                             Classes="toolbar-button" ToolTip.Tip="Reset"/>
                     <Border Width="20" Background="Transparent"/>
                     <TextBlock Text="{Binding GcodeFileName, FallbackValue='No file loaded'}" 
                                VerticalAlignment="Center" Margin="10,0,0,0" FontWeight="SemiBold" 
-                               Foreground="{Binding PrimaryText}" FontSize="14"/>
+                               Foreground="{Binding Theme.PrimaryText}" FontSize="14"/>
                     <TextBlock Text="{Binding CurrentLine, StringFormat='Line: {0}'}" 
                                VerticalAlignment="Center" Margin="10,0,0,0" 
                                IsVisible="{Binding IsProgramRunning}" 
-                               Foreground="{Binding AccentText}"/>
+                               Foreground="{Binding Theme.AccentText}"/>
                     <TextBlock Text="{Binding TotalLines, StringFormat='/ {0}'}" 
                                VerticalAlignment="Center" 
                                IsVisible="{Binding IsProgramRunning}" 
-                               Foreground="{Binding AccentText}"/>
+                               Foreground="{Binding Theme.AccentText}"/>
                 </StackPanel>
             </Border>
 
             <!-- Left Panel: Connection Log -->
-            <Border Grid.Row="1" Grid.Column="0" Background="{Binding PanelBackground}" BorderBrush="{Binding BorderColor}" BorderThickness="0,0,1,0">
+            <Border Grid.Row="1" Grid.Column="0" Background="{Binding Theme.PanelBackground}" BorderBrush="{Binding Theme.BorderColor}" BorderThickness="0,0,1,0">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -338,17 +338,17 @@
                     </Grid.RowDefinitions>
                     
                     <!-- Connection Controls -->
-                    <Border Grid.Row="0" Background="{Binding MainBackground}" BorderBrush="{Binding BorderColor}" BorderThickness="0,0,0,1" Padding="10">
+                    <Border Grid.Row="0" Background="{Binding Theme.MainBackground}" BorderBrush="{Binding Theme.BorderColor}" BorderThickness="0,0,0,1" Padding="10">
                         <StackPanel Spacing="8">
-                            <TextBlock Text="{Binding Localization[COMPort]}" FontWeight="Bold" Foreground="{Binding PrimaryText}" FontSize="12"/>
+                            <TextBlock Text="{Binding Localization[COMPort]}" FontWeight="Bold" Foreground="{Binding Theme.PrimaryText}" FontSize="12"/>
                             <ComboBox Width="230" ItemsSource="{Binding AvailablePorts}" 
                                       SelectedItem="{Binding SelectedPort}"
-                                      Background="{Binding ComboBoxBackground}" Foreground="{Binding ComboBoxForeground}"/>
+                                      Background="{Binding Theme.ComboBoxBackground}" Foreground="{Binding Theme.ComboBoxForeground}"/>
                             
-                            <TextBlock Text="{Binding Localization[BaudRate]}" FontWeight="Bold" Foreground="{Binding PrimaryText}" FontSize="12" Margin="0,5,0,0"/>
+                            <TextBlock Text="{Binding Localization[BaudRate]}" FontWeight="Bold" Foreground="{Binding Theme.PrimaryText}" FontSize="12" Margin="0,5,0,0"/>
                             <ComboBox Width="230" ItemsSource="{Binding AvailableBaudRates}" 
                                       SelectedItem="{Binding SelectedBaudRate}"
-                                      Background="{Binding ComboBoxBackground}" Foreground="{Binding ComboBoxForeground}"/>
+                                      Background="{Binding Theme.ComboBoxBackground}" Foreground="{Binding Theme.ComboBoxForeground}"/>
                             
                             <StackPanel Orientation="Horizontal" Spacing="5" Margin="0,10,0,0">
                                 <Button Content="{Binding IsConnected, Converter={x:Static converters:BoolToTextConverter.Instance}}" 
@@ -363,50 +363,50 @@
                             </StackPanel>
                             
                             <!-- Status Info -->
-                            <Separator Margin="0,10" Background="{Binding SeparatorColor}"/>
+                            <Separator Margin="0,10" Background="{Binding Theme.SeparatorColor}"/>
                             <TextBlock Text="{Binding GrblState, FallbackValue='Idle'}" 
                                        FontSize="14" FontWeight="Bold" 
-                                       Foreground="{Binding AccentText}" TextAlignment="Center"/>
+                                       Foreground="{Binding Theme.AccentText}" TextAlignment="Center"/>
                             <TextBlock Text="{Binding MachinePosition, FallbackValue='MPos: X:0.000 Y:0.000 Z:0.000'}" 
                                        FontFamily="Courier New" FontSize="10" 
-                                       Foreground="{Binding SecondaryText}" Margin="0,5,0,0"/>
+                                       Foreground="{Binding Theme.SecondaryText}" Margin="0,5,0,0"/>
                             <TextBlock Text="{Binding WorkPosition, FallbackValue='WPos: X:0.000 Y:0.000 Z:0.000'}" 
                                        FontFamily="Courier New" FontSize="10" 
-                                       Foreground="{Binding SecondaryText}"/>
+                                       Foreground="{Binding Theme.SecondaryText}"/>
                         </StackPanel>
                     </Border>
                     
                     <!-- Connection Log / Console -->
-                    <ScrollViewer Grid.Row="1" Background="{Binding PanelBackground}">
+                    <ScrollViewer Grid.Row="1" Background="{Binding Theme.PanelBackground}">
                         <TextBox Text="{Binding ConnectionLog}" 
                                  IsReadOnly="True" 
                                  TextWrapping="Wrap"
                                  FontFamily="Courier New"
                                  FontSize="11"
-                                 Background="{Binding PanelBackground}"
-                                 Foreground="{Binding ConsoleText}"
+                                 Background="{Binding Theme.PanelBackground}"
+                                 Foreground="{Binding Theme.ConsoleText}"
                                  BorderThickness="0"
                                  Padding="10"/>
                     </ScrollViewer>
 
-                    <Border Grid.Row="2" Background="{Binding MainBackground}" BorderBrush="{Binding BorderColor}" BorderThickness="0,0,0,1" Padding="10">
+                    <Border Grid.Row="2" Background="{Binding Theme.MainBackground}" BorderBrush="{Binding Theme.BorderColor}" BorderThickness="0,0,0,1" Padding="10">
 
                     <!-- Jog Controls -->
                     <StackPanel Orientation="Horizontal" Spacing="5">
                         <!-- Speed Setting -->
                         <StackPanel Spacing="3" HorizontalAlignment="Center">
                             <TextBlock Text="{Binding JogSpeed, StringFormat='{}{0:F0}'}" 
-                                       Foreground="{Binding PrimaryText}" FontSize="11" 
+                                       Foreground="{Binding Theme.PrimaryText}" FontSize="11" 
                                        HorizontalAlignment="Center" FontFamily="Courier New"/>
                             <Slider Value="{Binding JogSpeed}" 
                                     Minimum="100" Maximum="3000" 
                                     Orientation="Vertical" 
                                     Height="130"
                                     Width="30"
-                                    Background="{Binding SliderBackground}"
-                                    Foreground="{Binding SliderForeground}"/>
+                                    Background="{Binding Theme.SliderBackground}"
+                                    Foreground="{Binding Theme.SliderForeground}"/>
                             <TextBlock Text="Speed" 
-                                       Foreground="{Binding SecondaryText}" FontSize="9" 
+                                       Foreground="{Binding Theme.SecondaryText}" FontSize="9" 
                                        HorizontalAlignment="Center"/>
                         </StackPanel>
 
@@ -434,7 +434,7 @@
                         <!-- Step Setting -->
                         <StackPanel Spacing="3" HorizontalAlignment="Center">
                             <TextBlock Text="{Binding #stepSlider.Value, Converter={x:Static converters:JogStepIndexConverter.Instance}, StringFormat='{}{0:G}'}" 
-                                       Foreground="{Binding PrimaryText}" FontSize="11" 
+                                       Foreground="{Binding Theme.PrimaryText}" FontSize="11" 
                                        HorizontalAlignment="Center" FontFamily="Courier New"/>
                             <Slider x:Name="stepSlider"
                                     Value="{Binding JogStep, Converter={x:Static converters:JogStepIndexConverter.Instance}}" 
@@ -442,13 +442,13 @@
                                     Orientation="Vertical" 
                                     Height="130"
                                     Width="30"
-                                    Background="{Binding SliderBackground}"
-                                    Foreground="{Binding SliderForeground}"
+                                    Background="{Binding Theme.SliderBackground}"
+                                    Foreground="{Binding Theme.SliderForeground}"
                                     TickFrequency="1"
                                     IsSnapToTickEnabled="True"
                                     TickPlacement="None"/>
                             <TextBlock Text="Step" 
-                                       Foreground="{Binding SecondaryText}" FontSize="9" 
+                                       Foreground="{Binding Theme.SecondaryText}" FontSize="9" 
                                        HorizontalAlignment="Center"/>
                         </StackPanel>
                     </StackPanel>
@@ -457,31 +457,31 @@
             </Border>
 
             <!-- Splitter -->
-            <GridSplitter Grid.Row="1" Grid.Column="1" Background="{Binding BorderColor}" ResizeDirection="Columns"/>
+            <GridSplitter Grid.Row="1" Grid.Column="1" Background="{Binding Theme.BorderColor}" ResizeDirection="Columns"/>
 
             <!-- Main Canvas Area -->
-            <Border Grid.Row="1" Grid.Column="2" Background="{Binding CanvasBackground}">
+            <Border Grid.Row="1" Grid.Column="2" Background="{Binding Theme.CanvasBackground}">
                 <Grid>
                     <!-- G-Code Preview Canvas with Grid -->
-                    <Canvas Name="PreviewCanvas" Background="{Binding CanvasBackground}" ClipToBounds="True">
+                    <Canvas Name="PreviewCanvas" Background="{Binding Theme.CanvasBackground}" ClipToBounds="True">
                         <!-- Grid lines will be drawn here -->
                     </Canvas>
                     
                     <!-- Coordinate Display (Top Right) -->
                     <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" Margin="20">
-                        <Border Background="{Binding InfoBoxBackground}" BorderBrush="{Binding InfoBoxBorder}" BorderThickness="1" Padding="10">
+                        <Border Background="{Binding Theme.InfoBoxBackground}" BorderBrush="{Binding Theme.InfoBoxBorder}" BorderThickness="1" Padding="10">
                             <StackPanel>
                                 <TextBlock Text="{Binding WorkPosition, FallbackValue='WCO     17,600    -52,000'}" 
                                            FontFamily="Courier New" FontSize="14" 
-                                           Foreground="{Binding PrimaryText}" TextAlignment="Right"/>
+                                           Foreground="{Binding Theme.PrimaryText}" TextAlignment="Right"/>
                                 <Grid ColumnDefinitions="Auto,Auto" Margin="0,5,0,0">
                                     <StackPanel Grid.Column="0" Spacing="2" Margin="0,0,10,0">
-                                        <TextBlock Text="F" Foreground="{Binding SecondaryText}" FontSize="12"/>
-                                        <TextBlock Text="S" Foreground="{Binding SecondaryText}" FontSize="12"/>
+                                        <TextBlock Text="F" Foreground="{Binding Theme.SecondaryText}" FontSize="12"/>
+                                        <TextBlock Text="S" Foreground="{Binding Theme.SecondaryText}" FontSize="12"/>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1" Spacing="2">
-                                        <TextBlock Text="0" Foreground="{Binding PrimaryText}" FontSize="12" TextAlignment="Right"/>
-                                        <TextBlock Text="0" Foreground="{Binding PrimaryText}" FontSize="12" TextAlignment="Right"/>
+                                        <TextBlock Text="0" Foreground="{Binding Theme.PrimaryText}" FontSize="12" TextAlignment="Right"/>
+                                        <TextBlock Text="0" Foreground="{Binding Theme.PrimaryText}" FontSize="12" TextAlignment="Right"/>
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>
@@ -490,35 +490,35 @@
                     
                     <!-- Help Text (Bottom Right) -->
                     <StackPanel HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="20">
-                        <TextBlock Text="{Binding Localization[BasicUsage]}" Foreground="{Binding SecondaryText}" FontSize="12" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding Localization[BasicUsage]}" Foreground="{Binding Theme.SecondaryText}" FontSize="12" FontWeight="Bold"/>
                         <TextBlock Text="{Binding Localization[ZoomHelp]}" 
-                                   Foreground="{Binding SecondaryText}" FontSize="11"/>
+                                   Foreground="{Binding Theme.SecondaryText}" FontSize="11"/>
                         <TextBlock Text="{Binding Localization[PanHelp]}" 
-                                   Foreground="{Binding SecondaryText}" FontSize="11"/>
+                                   Foreground="{Binding Theme.SecondaryText}" FontSize="11"/>
                         <TextBlock Text="{Binding Localization[JogHelp]}" 
-                                   Foreground="{Binding SecondaryText}" FontSize="11"/>
-                        <TextBlock Text="" Foreground="{Binding SecondaryText}" FontSize="11" Margin="0,5,0,0"/>
-                        <TextBlock Text="{Binding Localization[KeyboardShortcuts]}" Foreground="{Binding SecondaryText}" FontSize="12" FontWeight="Bold"/>
-                        <TextBlock Text="{Binding Localization[ZoomAutoShortcut]}" Foreground="{Binding SecondaryText}" FontSize="11"/>
-                        <TextBlock Text="{Binding Localization[ZoomInShortcut]}" Foreground="{Binding SecondaryText}" FontSize="11"/>
-                        <TextBlock Text="{Binding Localization[ZoomOutShortcut]}" Foreground="{Binding SecondaryText}" FontSize="11"/>
+                                   Foreground="{Binding Theme.SecondaryText}" FontSize="11"/>
+                        <TextBlock Text="" Foreground="{Binding Theme.SecondaryText}" FontSize="11" Margin="0,5,0,0"/>
+                        <TextBlock Text="{Binding Localization[KeyboardShortcuts]}" Foreground="{Binding Theme.SecondaryText}" FontSize="12" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding Localization[ZoomAutoShortcut]}" Foreground="{Binding Theme.SecondaryText}" FontSize="11"/>
+                        <TextBlock Text="{Binding Localization[ZoomInShortcut]}" Foreground="{Binding Theme.SecondaryText}" FontSize="11"/>
+                        <TextBlock Text="{Binding Localization[ZoomOutShortcut]}" Foreground="{Binding Theme.SecondaryText}" FontSize="11"/>
                     </StackPanel>
                     
                     <!-- Placeholder message -->
                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" 
                                 IsVisible="{Binding !HasGCodeLoaded}">
                         <TextBlock Text="{Binding Localization[GCodePreviewArea]}" 
-                                   FontSize="28" Foreground="{Binding SecondaryText}" FontWeight="Light"
+                                   FontSize="28" Foreground="{Binding Theme.SecondaryText}" FontWeight="Light"
                                    TextAlignment="Center"/>
                         <TextBlock Text="{Binding Localization[LoadGCodeToSeePreview]}" 
-                                   FontSize="16" Foreground="{Binding SecondaryText}" Margin="0,10,0,0"
+                                   FontSize="16" Foreground="{Binding Theme.SecondaryText}" Margin="0,10,0,0"
                                    TextAlignment="Center"/>
                     </StackPanel>
                 </Grid>
             </Border>
 
             <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" 
-                    Background="{Binding PanelBackground}" BorderBrush="{Binding BorderColor}" BorderThickness="0,1,0,0" 
+                    Background="{Binding Theme.PanelBackground}" BorderBrush="{Binding Theme.BorderColor}" BorderThickness="0,1,0,0" 
                     Padding="10">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="15">
                     <!-- Jog Controls -->
@@ -543,3 +543,5 @@
     </DockPanel>
 
 </Window>
+
+

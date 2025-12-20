@@ -16,26 +16,26 @@
 
     <Window.Styles>
         <Style Selector="TabControl">
-            <Setter Property="Background" Value="#2D2D30"/>
+            <Setter Property="Background" Value="{Binding Theme.PanelBackground}"/>
         </Style>
         <Style Selector="TabItem">
-            <Setter Property="Foreground" Value="#F1F1F1"/>
+            <Setter Property="Foreground" Value="{Binding Theme.PrimaryText}"/>
             <Setter Property="FontSize" Value="13"/>
         </Style>
         <Style Selector="TextBlock">
-            <Setter Property="Foreground" Value="#F1F1F1"/>
+            <Setter Property="Foreground" Value="{Binding Theme.PrimaryText}"/>
         </Style>
         <Style Selector="CheckBox">
-            <Setter Property="Foreground" Value="#F1F1F1"/>
+            <Setter Property="Foreground" Value="{Binding Theme.PrimaryText}"/>
         </Style>
         <Style Selector="Label">
-            <Setter Property="Foreground" Value="#F1F1F1"/>
+            <Setter Property="Foreground" Value="{Binding Theme.PrimaryText}"/>
         </Style>
     </Window.Styles>
 
     <DockPanel>
         <!-- Bottom Buttons -->
-        <Border DockPanel.Dock="Bottom" Background="#252526" BorderBrush="#3F3F46" BorderThickness="0,1,0,0" Padding="10">
+        <Border DockPanel.Dock="Bottom" Background="{Binding Theme.ButtonBackground}" BorderBrush="{Binding Theme.BorderColor}" BorderThickness="0,1,0,0" Padding="10">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
                 <Button Content="Save" Command="{Binding SaveCommand}" Width="100" Height="30"/>
                 <Button Content="Cancel" Command="{Binding CancelCommand}" Width="100" Height="30"/>
@@ -43,7 +43,7 @@
         </Border>
 
         <!-- Main TabControl -->
-        <TabControl Background="#2D2D30">
+        <TabControl Background="{Binding Theme.PanelBackground}">
             <!-- Hardware Tab -->
             <TabItem Header="Hardware">
                 <ScrollViewer>
@@ -100,19 +100,19 @@
                         
                         <CheckBox Content="Unidirectional Engraving" IsChecked="{Binding UnidirectionalEngraving}"/>
                         <TextBlock Text="Process engraving in one direction only (slower but more accurate)" 
-                                   FontSize="11" Foreground="#9E9E9E" Margin="25,0,0,0"/>
+                                   FontSize="11" Foreground="{Binding Theme.SecondaryText}" Margin="25,0,0,0"/>
                         
                         <CheckBox Content="Disable G0 Fast Skip" IsChecked="{Binding DisableG0FastSkip}"/>
                         <TextBlock Text="Disable optimization for fast G0 movements" 
-                                   FontSize="11" Foreground="#9E9E9E" Margin="25,0,0,0"/>
+                                   FontSize="11" Foreground="{Binding Theme.SecondaryText}" Margin="25,0,0,0"/>
                         
                         <CheckBox Content="Hi-Res Raster" IsChecked="{Binding RasterHiRes}"/>
                         <TextBlock Text="Use high resolution mode for raster engraving" 
-                                   FontSize="11" Foreground="#9E9E9E" Margin="25,0,0,0"/>
+                                   FontSize="11" Foreground="{Binding Theme.SecondaryText}" Margin="25,0,0,0"/>
                         
                         <CheckBox Content="Disable Boundary Warning" IsChecked="{Binding DisableBoundaryWarning}"/>
                         <TextBlock Text="Don't warn when design exceeds machine boundaries" 
-                                   FontSize="11" Foreground="#9E9E9E" Margin="25,0,0,0"/>
+                                   FontSize="11" Foreground="{Binding Theme.SecondaryText}" Margin="25,0,0,0"/>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
@@ -125,7 +125,7 @@
                         
                         <CheckBox Content="Use Smart Bezier" IsChecked="{Binding UseSmartBezier}"/>
                         <TextBlock Text="Enable intelligent Bezier curve processing for smoother vector paths" 
-                                   FontSize="11" Foreground="#9E9E9E" Margin="25,0,0,0"/>
+                                   FontSize="11" Foreground="{Binding Theme.SecondaryText}" Margin="25,0,0,0"/>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
@@ -138,15 +138,15 @@
                         
                         <CheckBox Content="Enable Continuous Jog" IsChecked="{Binding EnableContinuousJog}"/>
                         <TextBlock Text="Hold button for continuous jogging instead of stepping" 
-                                   FontSize="11" Foreground="#9E9E9E" Margin="25,0,0,0"/>
+                                   FontSize="11" Foreground="{Binding Theme.SecondaryText}" Margin="25,0,0,0"/>
                         
                         <CheckBox Content="Enable Z Jog Control" IsChecked="{Binding EnableZJogControl}"/>
                         <TextBlock Text="Enable jogging controls for Z axis" 
-                                   FontSize="11" Foreground="#9E9E9E" Margin="25,0,0,0"/>
+                                   FontSize="11" Foreground="{Binding Theme.SecondaryText}" Margin="25,0,0,0"/>
                         
                         <CheckBox Content="Click and Jog" IsChecked="{Binding ClickAndJog}"/>
                         <TextBlock Text="Double-click on preview to jog to that position" 
-                                   FontSize="11" Foreground="#9E9E9E" Margin="25,0,0,0"/>
+                                   FontSize="11" Foreground="{Binding Theme.SecondaryText}" Margin="25,0,0,0"/>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
@@ -273,22 +273,22 @@
                                       SelectedItem="{Binding SelectedGraphicMode}" 
                                       Width="200" HorizontalAlignment="Left"/>
                             <TextBlock Text="Requires application restart" 
-                                       FontSize="11" Foreground="#9E9E9E" Margin="5,2,0,0"/>
+                                       FontSize="11" Foreground="{Binding Theme.SecondaryText}" Margin="5,2,0,0"/>
                         </StackPanel>
                         
                         <Separator Margin="0,10"/>
                         
                         <CheckBox Content="Disable Safety Countdown" IsChecked="{Binding DisableSafetyCountdown}"/>
                         <TextBlock Text="Skip countdown before starting a job" 
-                                   FontSize="11" Foreground="#9E9E9E" Margin="25,0,0,0"/>
+                                   FontSize="11" Foreground="{Binding Theme.SecondaryText}" Margin="25,0,0,0"/>
                         
                         <CheckBox Content="Quiet Safety Countdown" IsChecked="{Binding QuietSafetyCountdown}"/>
                         <TextBlock Text="Don't play sound during safety countdown" 
-                                   FontSize="11" Foreground="#9E9E9E" Margin="25,0,0,0"/>
+                                   FontSize="11" Foreground="{Binding Theme.SecondaryText}" Margin="25,0,0,0"/>
                         
                         <CheckBox Content="Use Legacy Icons" IsChecked="{Binding LegacyIcons}"/>
                         <TextBlock Text="Use old-style icons (requires restart)" 
-                                   FontSize="11" Foreground="#9E9E9E" Margin="25,0,0,0"/>
+                                   FontSize="11" Foreground="{Binding Theme.SecondaryText}" Margin="25,0,0,0"/>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>

@@ -1119,15 +1119,70 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     }
     
     [RelayCommand]
-    private void MaterialDatabase()
+    private async Task MaterialDatabaseAsync()
     {
-        AppendLog("Material Database feature coming soon");
+        try
+        {
+            var window = new Views.MaterialDatabaseWindow();
+            
+            // Get the main window
+            var mainWindow = Avalonia.Application.Current?.ApplicationLifetime is 
+                Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop 
+                ? desktop.MainWindow 
+                : null;
+            
+            if (mainWindow != null)
+            {
+                await window.ShowDialog(mainWindow);
+                AppendLog("Material database window closed");
+            }
+            else
+            {
+                window.Show();
+            }
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Error opening material database: {ex.Message}");
+        }
     }
     
     [RelayCommand]
-    private void LaserUsageStats()
+    private async Task LaserUsageStatsAsync()
     {
-        AppendLog("Laser Usage Stats feature coming soon");
+        try
+        {
+            var window = new Views.LaserUsageStatsWindow
+            {
+                DataContext = new LaserUsageStatsViewModel()
+            };
+            
+            // Set up close command
+            if (window.DataContext is LaserUsageStatsViewModel viewModel)
+            {
+                viewModel.CloseCommand = new RelayCommand(() => window.Close());
+            }
+            
+            // Get the main window
+            var mainWindow = Avalonia.Application.Current?.ApplicationLifetime is 
+                Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop 
+                ? desktop.MainWindow 
+                : null;
+            
+            if (mainWindow != null)
+            {
+                await window.ShowDialog(mainWindow);
+                AppendLog("Laser usage stats window closed");
+            }
+            else
+            {
+                window.Show();
+            }
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Error opening laser usage stats: {ex.Message}");
+        }
     }
     
     [RelayCommand]
@@ -1210,69 +1265,39 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     [ObservableProperty]
     private string _currentSchema = "Dark";
     
-    // Theme color properties
-    [ObservableProperty] private string _mainBackground = "#2A3647";
-    [ObservableProperty] private string _panelBackground = "#1E2936";
-    [ObservableProperty] private string _borderColor = "#0F1419";
-    [ObservableProperty] private string _canvasBackground = "#2D3E50";
-    [ObservableProperty] private string _buttonBackground = "#3C4A5C";
-    [ObservableProperty] private string _buttonForeground = "#CCCCCC";
-    [ObservableProperty] private string _buttonHoverBackground = "#4A5A6F";
-    [ObservableProperty] private string _buttonPressedBackground = "#2A3647";
-    [ObservableProperty] private string _buttonBorder = "#2A3647";
-    [ObservableProperty] private string _jogButtonForeground = "#8AB4F8";
-    [ObservableProperty] private string _jogButtonHoverForeground = "#AACCFF";
-    [ObservableProperty] private string _actionButtonForeground = "#FFD700";
-    [ObservableProperty] private string _actionButtonBorder = "#FFD700";
-    [ObservableProperty] private string _actionButtonHoverForeground = "#FFE44D";
-    [ObservableProperty] private string _primaryText = "#CCCCCC";
-    [ObservableProperty] private string _secondaryText = "#999999";
-    [ObservableProperty] private string _accentText = "#8AB4F8";
-    [ObservableProperty] private string _consoleText = "#00FF00";
-    [ObservableProperty] private string _sliderBackground = "#3C4A5C";
-    [ObservableProperty] private string _sliderForeground = "#8AB4F8";
-    [ObservableProperty] private string _comboBoxBackground = "#3C4A5C";
-    [ObservableProperty] private string _comboBoxForeground = "#CCCCCC";
-    [ObservableProperty] private string _separatorColor = "#3C4A5C";
-    [ObservableProperty] private string _infoBoxBackground = "#1E2936";
-    [ObservableProperty] private string _infoBoxBorder = "#3C4A5C";
+    // Theme color properties - delegated to ThemeService
+    public string MainBackground => Theme.MainBackground;
+    public string PanelBackground => Theme.PanelBackground;
+    public string BorderColor => Theme.BorderColor;
+    public string CanvasBackground => Theme.CanvasBackground;
+    public string ButtonBackground => Theme.ButtonBackground;
+    public string ButtonForeground => Theme.ButtonForeground;
+    public string ButtonHoverBackground => Theme.ButtonHoverBackground;
+    public string ButtonPressedBackground => Theme.ButtonPressedBackground;
+    public string ButtonBorder => Theme.ButtonBorder;
+    public string JogButtonForeground => Theme.JogButtonForeground;
+    public string JogButtonHoverForeground => Theme.JogButtonHoverForeground;
+    public string ActionButtonForeground => Theme.ActionButtonForeground;
+    public string ActionButtonBorder => Theme.ActionButtonBorder;
+    public string ActionButtonHoverForeground => Theme.ActionButtonHoverForeground;
+    public string PrimaryText => Theme.PrimaryText;
+    public string SecondaryText => Theme.SecondaryText;
+    public string AccentText => Theme.AccentText;
+    public string ConsoleText => Theme.ConsoleText;
+    public string SliderBackground => Theme.SliderBackground;
+    public string SliderForeground => Theme.SliderForeground;
+    public string ComboBoxBackground => Theme.ComboBoxBackground;
+    public string ComboBoxForeground => Theme.ComboBoxForeground;
+    public string SeparatorColor => Theme.SeparatorColor;
+    public string InfoBoxBackground => Theme.InfoBoxBackground;
+    public string InfoBoxBorder => Theme.InfoBoxBorder;
     
     [RelayCommand]
     private void SetSchema(string schemaName)
     {
-        var themes = ColorTheme.GetAllThemes();
-        
-        if (themes.TryGetValue(schemaName, out var theme))
+        if (Theme.SetTheme(schemaName))
         {
             CurrentSchema = schemaName;
-            
-            // Apply all theme colors
-            MainBackground = theme.MainBackground;
-            PanelBackground = theme.PanelBackground;
-            BorderColor = theme.BorderColor;
-            CanvasBackground = theme.CanvasBackground;
-            ButtonBackground = theme.ButtonBackground;
-            ButtonForeground = theme.ButtonForeground;
-            ButtonHoverBackground = theme.ButtonHoverBackground;
-            ButtonPressedBackground = theme.ButtonPressedBackground;
-            ButtonBorder = theme.ButtonBorder;
-            JogButtonForeground = theme.JogButtonForeground;
-            JogButtonHoverForeground = theme.JogButtonHoverForeground;
-            ActionButtonForeground = theme.ActionButtonForeground;
-            ActionButtonBorder = theme.ActionButtonBorder;
-            ActionButtonHoverForeground = theme.ActionButtonHoverForeground;
-            PrimaryText = theme.PrimaryText;
-            SecondaryText = theme.SecondaryText;
-            AccentText = theme.AccentText;
-            ConsoleText = theme.ConsoleText;
-            SliderBackground = theme.SliderBackground;
-            SliderForeground = theme.SliderForeground;
-            ComboBoxBackground = theme.ComboBoxBackground;
-            ComboBoxForeground = theme.ComboBoxForeground;
-            SeparatorColor = theme.SeparatorColor;
-            InfoBoxBackground = theme.InfoBoxBackground;
-            InfoBoxBorder = theme.InfoBoxBorder;
-            
             AppendLog($"Color schema changed to: {schemaName}");
         }
         else

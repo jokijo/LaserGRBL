@@ -1,0 +1,197 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:AvaloniaGRBL.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="600"
+        x:Class="AvaloniaGRBL.Views.LaserUsageStatsWindow"
+        x:DataType="vm:LaserUsageStatsViewModel"
+        Title="Laser Lifespan - Monitoring Tool"
+        Width="1000" Height="600"
+        WindowStartupLocation="CenterOwner">
+
+    <Design.DataContext>
+        <vm:LaserUsageStatsViewModel/>
+    </Design.DataContext>
+
+    <Window.Styles>
+        <Style Selector="Button.action-button">
+            <Setter Property="Background" Value="{Binding Theme.ButtonBackground}"/>
+            <Setter Property="Foreground" Value="{Binding Theme.PrimaryText}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderBrush" Value="#555"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="MinWidth" Value="100"/>
+        </Style>
+        <Style Selector="Button.action-button:pointerover">
+            <Setter Property="Background" Value="{Binding Theme.ButtonHoverBackground}"/>
+        </Style>
+        <Style Selector="Button.action-button:pressed">
+            <Setter Property="Background" Value="{Binding Theme.ButtonPressedBackground}"/>
+        </Style>
+        <Style Selector="Button.action-button:disabled">
+            <Setter Property="Opacity" Value="0.5"/>
+        </Style>
+        <Style Selector="TextBlock">
+            <Setter Property="Foreground" Value="{Binding Theme.PrimaryText}"/>
+        </Style>
+        <Style Selector="DataGrid">
+            <Setter Property="Foreground" Value="{Binding Theme.PrimaryText}"/>
+            <Setter Property="Background" Value="{Binding Theme.PanelBackground}"/>
+            <Setter Property="RowBackground" Value="{Binding Theme.PanelBackground}"/>
+        </Style>
+        <Style Selector="DataGridColumnHeader">
+            <Setter Property="Foreground" Value="{Binding Theme.PrimaryText}"/>
+            <Setter Property="Background" Value="{Binding Theme.ButtonBackground}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+    </Window.Styles>
+
+    <Grid Background="{Binding Theme.MainBackground}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="{Binding Theme.PanelBackground}" 
+                BorderBrush="{Binding Theme.BorderColor}" BorderThickness="0,0,0,1" 
+                Padding="20">
+            <StackPanel Spacing="5">
+                <TextBlock Text="Laser Lifespan - Monitoring Tool" 
+                           FontSize="20" FontWeight="Bold" 
+                           Foreground="{Binding Theme.PrimaryText}"/>
+                <TextBlock Text="Track laser usage time, power consumption, and lifespan" 
+                           FontSize="12" 
+                           Foreground="{Binding Theme.SecondaryText}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content - DataGrid -->
+        <Border Grid.Row="1" Background="{Binding Theme.PanelBackground}" 
+                BorderBrush="{Binding Theme.BorderColor}" BorderThickness="0,0,0,1"
+                Margin="0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- DataGrid -->
+                <DataGrid Grid.Column="0" 
+                          ItemsSource="{Binding Lasers}"
+                          SelectedItem="{Binding SelectedLaser}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          GridLinesVisibility="All"
+                          BorderThickness="0"
+                          Background="{Binding Theme.PanelBackground}"
+                          RowBackground="{Binding Theme.PanelBackground}"
+                          CanUserReorderColumns="False"
+                          CanUserResizeColumns="True"
+                          CanUserSortColumns="True"
+                          SelectionMode="Single"
+                          Margin="10">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="120"/>
+                        <DataGridTextColumn Header="Brand" Binding="{Binding Brand}" Width="100"/>
+                        <DataGridTextColumn Header="Model" Binding="{Binding Model}" Width="100"/>
+                        <DataGridTextColumn Header="Run Time" Binding="{Binding RunTimeFormatted}" Width="100"/>
+                        <DataGridTextColumn Header="Power Time" Binding="{Binding PowerTimeFormatted}" Width="100"/>
+                        <DataGridTextColumn Header="Stress Time" Binding="{Binding StressTimeFormatted}" Width="100"/>
+                        <DataGridTextColumn Header="Avg Power" Binding="{Binding AveragePowerFormatted}" Width="90"/>
+                        <DataGridTextColumn Header="Purchase Date" Binding="{Binding PurchaseDateFormatted}" Width="110"/>
+                        <DataGridTextColumn Header="Start Monitoring" Binding="{Binding MonitoringDateFormatted}" Width="130"/>
+                        <DataGridTextColumn Header="End Life" Binding="{Binding DeathDateFormatted}" Width="100"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <!-- Action Buttons Panel -->
+                <Border Grid.Column="1" Background="{Binding Theme.ButtonBackground}" 
+                        BorderBrush="{Binding Theme.BorderColor}" BorderThickness="1,0,0,0"
+                        Padding="10" MinWidth="150">
+                    <StackPanel Spacing="10" VerticalAlignment="Top">
+                        <Button Content="Add New" 
+                                Command="{Binding AddNewCommand}"
+                                Classes="action-button"
+                                HorizontalAlignment="Stretch"/>
+                        
+                        <Button Content="Edit" 
+                                Command="{Binding EditCommand}"
+                                IsEnabled="{Binding CanEdit}"
+                                Classes="action-button"
+                                HorizontalAlignment="Stretch"/>
+                        
+                        <Button Content="Remove" 
+                                Command="{Binding RemoveCommand}"
+                                IsEnabled="{Binding CanRemove}"
+                                Classes="action-button"
+                                HorizontalAlignment="Stretch"/>
+                        
+                        <Separator Background="{Binding Theme.SeparatorColor}" Margin="0,5"/>
+                        
+                        <Button Content="Mark as Death" 
+                                Command="{Binding MarkDeathCommand}"
+                                IsEnabled="{Binding CanMarkDeath}"
+                                IsVisible="{Binding ShowMarkDeath}"
+                                Classes="action-button"
+                                HorizontalAlignment="Stretch"/>
+                        
+                        <Button Content="Restore" 
+                                Command="{Binding UnmarkDeathCommand}"
+                                IsEnabled="{Binding CanUnmarkDeath}"
+                                IsVisible="{Binding !ShowMarkDeath}"
+                                Classes="action-button"
+                                HorizontalAlignment="Stretch"/>
+                        
+                        <!-- Laser Preview Placeholder -->
+                        <Border Background="{Binding Theme.InfoBoxBackground}" 
+                                BorderBrush="{Binding Theme.InfoBoxBorder}" 
+                                BorderThickness="1"
+                                Padding="10"
+                                Margin="0,20,0,0"
+                                MinHeight="200">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Laser Statistics" 
+                                           FontWeight="Bold" 
+                                           Foreground="{Binding Theme.PrimaryText}"
+                                           FontSize="14"/>
+                                <Separator Background="{Binding Theme.SeparatorColor}"/>
+                                
+                                <TextBlock Text="{Binding SelectedLaserInfo}" 
+                                           TextWrapping="Wrap"
+                                           Foreground="{Binding Theme.SecondaryText}"
+                                           FontSize="11"
+                                           FontFamily="Courier New"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Info Text -->
+        <Border Grid.Row="2" Background="{Binding Theme.PanelBackground}" 
+                BorderBrush="{Binding Theme.BorderColor}" BorderThickness="0,0,0,1"
+                Padding="20,10">
+            <TextBlock TextWrapping="Wrap" 
+                       Foreground="{Binding Theme.SecondaryText}"
+                       FontSize="11">
+                <Run Text="Track your laser module usage over time. Monitor total runtime, power-normalized time, and stress time (>90% power). "/>
+                <Run Text="This helps estimate lifespan and plan maintenance or replacement."/>
+            </TextBlock>
+        </Border>
+
+        <!-- Bottom Buttons -->
+        <Border Grid.Row="3" Background="{Binding Theme.PanelBackground}" 
+                Padding="20,10">
+            <Button Content="Close" 
+                    Command="{Binding CloseCommand}"
+                    Classes="action-button"
+                    HorizontalAlignment="Right"/>
+        </Border>
+    </Grid>
+</Window>

@@ -9,8 +9,8 @@
         Title="Hotkey Configuration"
         Width="700" Height="500"
         WindowStartupLocation="CenterOwner"
-        Background="#2A3647"
-        Foreground="#E0E0E0">
+        Background="{Binding Theme.MainBackground}"
+        Foreground="{Binding Theme.PrimaryText}">
 
     <Design.DataContext>
         <vm:HotkeyConfigViewModel/>
@@ -26,14 +26,14 @@
 
         <!-- Title and Instructions -->
         <StackPanel Grid.Row="0" Margin="0,0,0,15">
-            <TextBlock Text="Hotkey Configuration" FontSize="20" FontWeight="Bold" Margin="0,0,0,10" Foreground="#E0E0E0"/>
-            <TextBlock Text="{Binding StatusMessage}" FontSize="13" TextWrapping="Wrap" Foreground="#4CAF50"/>
+            <TextBlock Text="Hotkey Configuration" FontSize="20" FontWeight="Bold" Margin="0,0,0,10" Foreground="{Binding Theme.PrimaryText}"/>
+            <TextBlock Text="{Binding StatusMessage}" FontSize="13" TextWrapping="Wrap" Foreground="{Binding Theme.AccentText}"/>
             <TextBlock Text="Instructions: Select a row and press the desired key combination. Press Delete to clear a hotkey." 
-                       FontSize="12" Foreground="#B0B0B0" Margin="0,5,0,0" TextWrapping="Wrap"/>
+                       FontSize="12" Foreground="{Binding Theme.SecondaryText}" Margin="0,5,0,0" TextWrapping="Wrap"/>
         </StackPanel>
 
         <!-- Hotkeys DataGrid -->
-        <Border Grid.Row="1" BorderBrush="#3D4F5F" BorderThickness="1" CornerRadius="4" Background="#1E2936">
+        <Border Grid.Row="1" BorderBrush="{Binding Theme.BorderColor}" BorderThickness="1" CornerRadius="4" Background="{Binding Theme.PanelBackground}">
             <DataGrid x:Name="HotkeysGrid"
                       ItemsSource="{Binding Hotkeys}"
                       SelectedItem="{Binding SelectedHotkey}"
@@ -42,8 +42,8 @@
                       CanUserSortColumns="True"
                       GridLinesVisibility="Horizontal"
                       HeadersVisibility="Column"
-                      Background="#1E2936"
-                      Foreground="#E0E0E0"
+                      Background="{Binding Theme.PanelBackground}"
+                      Foreground="{Binding Theme.PrimaryText}"
                       BorderThickness="0">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Action" 

@@ -1,0 +1,146 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:AvaloniaGRBL.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="600"
+        x:Class="AvaloniaGRBL.Views.MaterialDatabaseWindow"
+        x:DataType="vm:MaterialDatabaseViewModel"
+        x:CompileBindings="True"
+        Title="Material Database"
+        Width="1000" Height="600"
+        WindowStartupLocation="CenterOwner"
+        Background="{Binding Theme.MainBackground}"
+        Foreground="{Binding Theme.PrimaryText}">
+
+    <Design.DataContext>
+        <vm:MaterialDatabaseViewModel/>
+    </Design.DataContext>
+
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Title -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,15">
+            <TextBlock Text="Material Database" FontSize="20" FontWeight="Bold" Margin="0,0,0,10" Foreground="{Binding Theme.PrimaryText}"/>
+            <TextBlock Text="{Binding StatusMessage}" FontSize="13" TextWrapping="Wrap" Foreground="{Binding Theme.AccentText}"/>
+        </StackPanel>
+
+        <!-- Filter Bar -->
+        <Border Grid.Row="1" Background="{Binding Theme.PanelBackground}" BorderBrush="{Binding Theme.BorderColor}" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,0,0,10">
+            <Grid ColumnDefinitions="Auto,*,Auto,*,Auto,*,Auto">
+                <TextBlock Grid.Column="0" Text="Model:" VerticalAlignment="Center" Margin="0,0,10,0" Foreground="{Binding Theme.PrimaryText}"/>
+                <TextBox Grid.Column="1" Text="{Binding FilterModel}" Watermark="Filter by model..." Margin="0,0,10,0"/>
+                
+                <TextBlock Grid.Column="2" Text="Material:" VerticalAlignment="Center" Margin="0,0,10,0" Foreground="{Binding Theme.PrimaryText}"/>
+                <TextBox Grid.Column="3" Text="{Binding FilterMaterial}" Watermark="Filter by material..." Margin="0,0,10,0"/>
+                
+                <TextBlock Grid.Column="4" Text="Action:" VerticalAlignment="Center" Margin="0,0,10,0" Foreground="{Binding Theme.PrimaryText}"/>
+                <TextBox Grid.Column="5" Text="{Binding FilterAction}" Watermark="Filter by action..." Margin="0,0,10,0"/>
+                
+                <Button Grid.Column="6" Content="Clear" Command="{Binding ClearFilterCommand}" 
+                        Background="#FF9800" Foreground="White" Padding="10,5"/>
+            </Grid>
+        </Border>
+
+        <!-- Materials DataGrid -->
+        <Border Grid.Row="2" BorderBrush="{Binding Theme.BorderColor}" BorderThickness="1" CornerRadius="4" Background="{Binding Theme.PanelBackground}">
+            <DataGrid x:Name="MaterialsGrid"
+                      x:CompileBindings="False"
+                      ItemsSource="{Binding Materials}"
+                      SelectedItem="{Binding SelectedMaterial}"
+                      IsReadOnly="False"
+                      CanUserResizeColumns="True"
+                      CanUserSortColumns="True"
+                      GridLinesVisibility="Horizontal"
+                      HeadersVisibility="Column"
+                      Background="{Binding Theme.PanelBackground}"
+                      Foreground="{Binding Theme.PrimaryText}"
+                      BorderThickness="0"
+                      AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridCheckBoxColumn Header="Visible" 
+                                           Binding="{Binding Visible}" 
+                                           Width="70"/>
+                    <DataGridTextColumn Header="Model" 
+                                        Binding="{Binding Model}" 
+                                        Width="150"/>
+                    <DataGridTextColumn Header="Material" 
+                                        Binding="{Binding MaterialName}" 
+                                        Width="150"/>
+                    <DataGridTextColumn Header="Thickness" 
+                                        Binding="{Binding Thickness}" 
+                                        Width="100"/>
+                    <DataGridTextColumn Header="Action" 
+                                        Binding="{Binding Action}" 
+                                        Width="100"/>
+                    <DataGridTextColumn Header="Power (%)" 
+                                        Binding="{Binding Power}" 
+                                        Width="90"/>
+                    <DataGridTextColumn Header="Speed (mm/min)" 
+                                        Binding="{Binding Speed}" 
+                                        Width="120"/>
+                    <DataGridTextColumn Header="Cycles" 
+                                        Binding="{Binding Cycles}" 
+                                        Width="70"/>
+                    <DataGridTextColumn Header="Remarks" 
+                                        Binding="{Binding Remarks}" 
+                                        Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <!-- Action Buttons -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,15,0,15" Spacing="10">
+            <Button Content="Add Material" 
+                    Command="{Binding AddMaterialCommand}"
+                    Padding="15,8"
+                    Background="#4CAF50"
+                    Foreground="White"
+                    BorderThickness="0"/>
+            <Button Content="Delete Selected" 
+                    Command="{Binding DeleteMaterialCommand}"
+                    Padding="15,8"
+                    Background="#F44336"
+                    Foreground="White"
+                    BorderThickness="0"/>
+            <Button Content="Duplicate Selected" 
+                    Command="{Binding DuplicateMaterialCommand}"
+                    Padding="15,8"
+                    Background="#2196F3"
+                    Foreground="White"
+                    BorderThickness="0"/>
+            <Button Content="Reload" 
+                    Command="{Binding ReloadMaterialsCommand}"
+                    Padding="15,8"
+                    Background="#FF9800"
+                    Foreground="White"
+                    BorderThickness="0"/>
+        </StackPanel>
+
+        <!-- Dialog Buttons -->
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+            <Button Content="Save Changes" 
+                    Command="{Binding SaveChangesCommand}"
+                    Padding="20,10"
+                    Background="#4CAF50"
+                    Foreground="White"
+                    BorderThickness="0"
+                    FontWeight="Bold"
+                    IsDefault="True"/>
+            <Button Content="Close" 
+                    Command="{Binding CloseCommand}"
+                    Padding="20,10"
+                    Background="#757575"
+                    Foreground="White"
+                    BorderThickness="0"
+                    IsCancel="True"/>
+        </StackPanel>
+    </Grid>
+</Window>

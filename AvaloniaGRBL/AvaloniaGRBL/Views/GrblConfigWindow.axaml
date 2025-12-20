@@ -18,32 +18,32 @@
     <Window.Styles>
         <!-- DataGrid Styles -->
         <Style Selector="DataGrid">
-            <Setter Property="BorderBrush" Value="#0F1419"/>
+            <Setter Property="BorderBrush" Value="{Binding Theme.BorderColor}"/>
             <Setter Property="BorderThickness" Value="1"/>
         </Style>
         
         <Style Selector="DataGridColumnHeader">
-            <Setter Property="Background" Value="#1E2936"/>
-            <Setter Property="Foreground" Value="#CCCCCC"/>
+            <Setter Property="Background" Value="{Binding Theme.PanelBackground}"/>
+            <Setter Property="Foreground" Value="{Binding Theme.PrimaryText}"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Padding" Value="8,4"/>
         </Style>
         
         <Style Selector="DataGridCell">
-            <Setter Property="Foreground" Value="#CCCCCC"/>
+            <Setter Property="Foreground" Value="{Binding Theme.PrimaryText}"/>
             <Setter Property="Background" Value="Transparent"/>
         </Style>
         
         <Style Selector="DataGridCell TextBlock">
-            <Setter Property="Foreground" Value="#CCCCCC"/>
+            <Setter Property="Foreground" Value="{Binding Theme.PrimaryText}"/>
         </Style>
         
         <Style Selector="DataGridRow">
-            <Setter Property="Background" Value="#2A3647"/>
+            <Setter Property="Background" Value="{Binding Theme.MainBackground}"/>
         </Style>
         
         <Style Selector="DataGridRow:selected /template/ Rectangle#BackgroundRectangle">
-            <Setter Property="Fill" Value="#3C4A5C"/>
+            <Setter Property="Fill" Value="{Binding Theme.ButtonBackground}"/>
             <Setter Property="Opacity" Value="1"/>
         </Style>
         
@@ -52,7 +52,7 @@
         </Style>
         
         <Style Selector="Button:pointerover">
-            <Setter Property="Background" Value="#4A5A6F"/>
+            <Setter Property="Background" Value="{Binding Theme.ButtonHoverBackground}"/>
         </Style>
     </Window.Styles>
 
@@ -114,9 +114,9 @@
                   CanUserResizeColumns="True"
                   CanUserSortColumns="True"
                   HeadersVisibility="Column"
-                  Background="#2D3E50"
-                  Foreground="#CCCCCC"
-                  RowBackground="#2A3647"
+                  Background="{Binding Theme.CanvasBackground}"
+                  Foreground="{Binding Theme.PrimaryText}"
+                  RowBackground="{Binding Theme.MainBackground}"
                   Margin="10">
             
             <DataGrid.Columns>

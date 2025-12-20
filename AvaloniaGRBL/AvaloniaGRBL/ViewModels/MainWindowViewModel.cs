@@ -26,6 +26,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     
     private readonly GrblConnection _grblConnection;
     private readonly Queue<string> _logQueue = new(1000);
+    private readonly Queue<string> _gcodeLogQueue = new(1000);
     private bool _disposed;
     
     [ObservableProperty]
@@ -43,6 +44,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(StartProgramCommand))]
     [NotifyCanExecuteChangedFor(nameof(ResetGrblCommand))]
+    [NotifyPropertyChangedFor(nameof(CanExecuteFraming))]
     private bool _isConnected;
     
     [ObservableProperty]
@@ -52,10 +54,17 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     private string _connectionLog = "";
     
     [ObservableProperty]
+    private string _gcodeLog = "";
+    
+    [ObservableProperty]
+    private string _manualGCodeCommand = "";
+    
+    [ObservableProperty]
     private GCodeFile? _loadedGCodeFile;
     
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(StartProgramCommand))]
+    [NotifyPropertyChangedFor(nameof(CanExecuteFraming))]
     private bool _hasGCodeLoaded;
     
     [ObservableProperty]
@@ -83,11 +92,17 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     [ObservableProperty]
     private string _grblState = "Unknown";
     
+    // Persistent work coordinate offset (GRBL only sends this occasionally)
+    private double _wcoX = 0;
+    private double _wcoY = 0;
+    private double _wcoZ = 0;
+    
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(StartProgramCommand))]
     [NotifyCanExecuteChangedFor(nameof(PauseProgramCommand))]
     [NotifyCanExecuteChangedFor(nameof(ResumeProgramCommand))]
     [NotifyCanExecuteChangedFor(nameof(StopProgramCommand))]
+    [NotifyPropertyChangedFor(nameof(CanExecuteFraming))]
     private bool _isProgramRunning;
     
     [ObservableProperty]
@@ -101,8 +116,17 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     [ObservableProperty]
     private int _totalLines;
     
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanExecuteFraming))]
+    [NotifyCanExecuteChangedFor(nameof(PauseProgramCommand))]
+    [NotifyCanExecuteChangedFor(nameof(StopProgramCommand))]
+    private bool _isFraming;
+    
     private CancellationTokenSource? _executionCancellation;
+    private CancellationTokenSource? _framingCancellation;
     private readonly ManualResetEventSlim _pauseEvent = new(true);
+    
+    public bool CanExecuteFraming => IsConnected && HasGCodeLoaded && !IsProgramRunning && !IsFraming;
     
     public MainWindowViewModel()
     {
@@ -215,13 +239,26 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     {
         Avalonia.Threading.Dispatcher.UIThread.Post(() =>
         {
-            GrblState = status.State;
-            MachinePosition = $"X: {status.MachineX:F3}  Y: {status.MachineY:F3}  Z: {status.MachineZ:F3}";
-            WorkPosition = $"X: {status.WorkX:F3}  Y: {status.WorkY:F3}  Z: {status.WorkZ:F3}";
+            // Update persistent WCO if provided in this status report
+            if (status.WcoX != 0 || status.WcoY != 0 || status.WcoZ != 0)
+            {
+                _wcoX = status.WcoX;
+                _wcoY = status.WcoY;
+                _wcoZ = status.WcoZ;
+            }
             
-            // Update laser position indicator on canvas using machine coordinates
-            // (machine coordinates match the G-code preview coordinate system)
-            Renderer?.UpdateLaserPosition(status.MachineX, status.MachineY);
+            // Calculate work position: WPos = MPos - WCO
+            var workX = status.MachineX - _wcoX;
+            var workY = status.MachineY - _wcoY;
+            var workZ = status.MachineZ - _wcoZ;
+            
+            GrblState = status.State;
+            MachinePosition = $"MPos: X: {status.MachineX:F3}  Y: {status.MachineY:F3}  Z: {status.MachineZ:F3}";
+            WorkPosition = $"WPos: X: {workX:F3}  Y: {workY:F3}  Z: {workZ:F3}";
+            
+            // Update laser position indicator using work coordinates
+            // GCode preview is in work coordinate space, laser marker tracks work position
+            Renderer?.UpdateLaserPosition(workX, workY);
         });
     }
     
@@ -239,6 +276,54 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         
         // Rebuild log text from queue using string.Join for efficiency
         ConnectionLog = string.Join(Environment.NewLine, _logQueue);
+    }
+    
+    private void AppendGCodeLog(string command, bool isSent = true)
+    {
+        var timestamp = DateTime.Now.ToString("HH:mm:ss.fff");
+        var prefix = isSent ? ">> " : "<< ";
+        var logEntry = $"[{timestamp}] {prefix}{command}";
+        
+        // Add to queue and maintain max size
+        _gcodeLogQueue.Enqueue(logEntry);
+        if (_gcodeLogQueue.Count > 1000)
+        {
+            _gcodeLogQueue.Dequeue();
+        }
+        
+        // Rebuild log text from queue using string.Join for efficiency
+        GcodeLog = string.Join(Environment.NewLine, _gcodeLogQueue);
+    }
+    
+    [RelayCommand]
+    private void SendManualGCode()
+    {
+        if (!IsConnected)
+        {
+            AppendLog("Cannot send GCode: Not connected to machine");
+            return;
+        }
+        
+        if (string.IsNullOrWhiteSpace(ManualGCodeCommand))
+        {
+            return;
+        }
+        
+        var command = ManualGCodeCommand.Trim();
+        
+        try
+        {
+            AppendGCodeLog(command, true);
+            _grblConnection.SendCommand(command);
+            AppendLog($"Sent manual command: {command}");
+            
+            // Clear the input field
+            ManualGCodeCommand = "";
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Error sending manual command: {ex.Message}");
+        }
     }
     
     [RelayCommand]
@@ -279,17 +364,8 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
                 var file = files[0];
                 var path = file.Path.LocalPath;
                 
-                AppendLog($"Loading G-Code file: {file.Name}");
-                
-                // Load file on background thread to avoid blocking UI
-                LoadedGCodeFile = await Task.Run(() => GCodeFile.Load(path));
-                HasGCodeLoaded = true;
-                GcodeFileName = file.Name;
-                _lastOpenedFilePath = path;
-                
-                UpdateGCodeStats();
-                
-                AppendLog($"G-Code file loaded: {LoadedGCodeFile.CommandCount} commands");
+                // Use the common loading method that handles both G-Code and SVG files
+                await LoadGCodeFileFromPathAsync(path);
             }
         }
         catch (Exception ex)
@@ -571,6 +647,8 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         if (!IsConnected) return;
         try
         {
+            var command = FormatJogCommand(-JogStep, JogStep, JogSpeed);
+            AppendGCodeLog(command, true);
             _grblConnection.Jog(JogDirection.NW, JogStep, JogSpeed);
             AppendLog($"Jog NW: {JogStep}mm @ {JogSpeed}mm/min");
         }
@@ -586,6 +664,8 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         if (!IsConnected) return;
         try
         {
+            var command = FormatJogCommand(0, JogStep, JogSpeed);
+            AppendGCodeLog(command, true);
             _grblConnection.Jog(JogDirection.N, JogStep, JogSpeed);
             AppendLog($"Jog N: {JogStep}mm @ {JogSpeed}mm/min");
         }
@@ -601,6 +681,8 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         if (!IsConnected) return;
         try
         {
+            var command = FormatJogCommand(JogStep, JogStep, JogSpeed);
+            AppendGCodeLog(command, true);
             _grblConnection.Jog(JogDirection.NE, JogStep, JogSpeed);
             AppendLog($"Jog NE: {JogStep}mm @ {JogSpeed}mm/min");
         }
@@ -616,6 +698,8 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         if (!IsConnected) return;
         try
         {
+            var command = FormatJogCommand(-JogStep, 0, JogSpeed);
+            AppendGCodeLog(command, true);
             _grblConnection.Jog(JogDirection.W, JogStep, JogSpeed);
             AppendLog($"Jog W: {JogStep}mm @ {JogSpeed}mm/min");
         }
@@ -631,6 +715,8 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         if (!IsConnected) return;
         try
         {
+            var command = "$H";
+            AppendGCodeLog(command, true);
             _grblConnection.Jog(JogDirection.Home, 0, 0);
             AppendLog("Homing cycle started");
         }
@@ -646,6 +732,8 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         if (!IsConnected) return;
         try
         {
+            var command = FormatJogCommand(JogStep, 0, JogSpeed);
+            AppendGCodeLog(command, true);
             _grblConnection.Jog(JogDirection.E, JogStep, JogSpeed);
             AppendLog($"Jog E: {JogStep}mm @ {JogSpeed}mm/min");
         }
@@ -661,6 +749,8 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         if (!IsConnected) return;
         try
         {
+            var command = FormatJogCommand(-JogStep, -JogStep, JogSpeed);
+            AppendGCodeLog(command, true);
             _grblConnection.Jog(JogDirection.SW, JogStep, JogSpeed);
             AppendLog($"Jog SW: {JogStep}mm @ {JogSpeed}mm/min");
         }
@@ -676,6 +766,8 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         if (!IsConnected) return;
         try
         {
+            var command = FormatJogCommand(0, -JogStep, JogSpeed);
+            AppendGCodeLog(command, true);
             _grblConnection.Jog(JogDirection.S, JogStep, JogSpeed);
             AppendLog($"Jog S: {JogStep}mm @ {JogSpeed}mm/min");
         }
@@ -691,6 +783,8 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         if (!IsConnected) return;
         try
         {
+            var command = FormatJogCommand(JogStep, -JogStep, JogSpeed);
+            AppendGCodeLog(command, true);
             _grblConnection.Jog(JogDirection.SE, JogStep, JogSpeed);
             AppendLog($"Jog SE: {JogStep}mm @ {JogSpeed}mm/min");
         }
@@ -715,7 +809,9 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         try
         {
             // Send G92 X0 Y0 Z0 command to set current position as origin
-            _grblConnection.SendCommand("G92 X0 Y0 Z0");
+            var command = "G92 X0 Y0 Z0";
+            _grblConnection.SendCommand(command);
+            AppendGCodeLog(command, true);
             AppendLog("Work origin set to current position (G92 X0 Y0 Z0)");
         }
         catch (Exception ex)
@@ -822,6 +918,12 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
             {
                 _grblConnection.SendCommand(command.RawCommand);
                 
+                // Log GCode command
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                {
+                    AppendGCodeLog(command.RawCommand, true);
+                });
+                
                 // Update UI periodically (every 10 lines) to reduce overhead
                 if (i - lastReportedLine >= 10 || i == LoadedGCodeFile.Commands.Count - 1)
                 {
@@ -864,6 +966,13 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     [RelayCommand(CanExecute = nameof(CanPauseProgram))]
     private void PauseProgram()
     {
+        // If framing, treat pause as stop
+        if (IsFraming)
+        {
+            _framingCancellation?.Cancel();
+            return;
+        }
+        
         if (!IsProgramRunning || IsProgramPaused)
         {
             AppendLog("Error: No running program to pause");
@@ -888,7 +997,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     
     private bool CanPauseProgram()
     {
-        return IsProgramRunning && !IsProgramPaused;
+        return (IsProgramRunning && !IsProgramPaused) || IsFraming;
     }
     
     /// <summary>
@@ -935,6 +1044,13 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     [RelayCommand(CanExecute = nameof(CanStopProgram))]
     private void StopProgram()
     {
+        // If framing, cancel it
+        if (IsFraming)
+        {
+            _framingCancellation?.Cancel();
+            return;
+        }
+        
         if (!IsProgramRunning)
         {
             AppendLog("Error: No running program to stop");
@@ -953,7 +1069,9 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
             _grblConnection.SendImmediate(0x21);
             
             // Turn off laser/spindle (M5 command)
-            _grblConnection.SendCommand("M5");
+            var command = "M5";
+            _grblConnection.SendCommand(command);
+            AppendGCodeLog(command, true);
             
             IsProgramRunning = false;
             IsProgramPaused = false;
@@ -969,7 +1087,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     
     private bool CanStopProgram()
     {
-        return IsProgramRunning;
+        return IsProgramRunning || IsFraming;
     }
     
     /// <summary>
@@ -1033,7 +1151,9 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         
         try
         {
-            _grblConnection.SendCommand("$H");
+            var command = "$H";
+            _grblConnection.SendCommand(command);
+            AppendGCodeLog(command, true);
             AppendLog("Homing command sent ($H)");
         }
         catch (Exception ex)
@@ -1053,7 +1173,9 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         
         try
         {
-            _grblConnection.SendCommand("$X");
+            var command = "$X";
+            _grblConnection.SendCommand(command);
+            AppendGCodeLog(command, true);
             AppendLog("Unlock command sent ($X)");
         }
         catch (Exception ex)
@@ -1242,10 +1364,171 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         AppendLog("Accuracy Test generator feature coming soon");
     }
     
+    /// <summary>
+    /// Starts framing operation - traces bounding box with laser at low power (0.3%)
+    /// </summary>
     [RelayCommand]
-    private void ShakeTest()
+    private async Task FramingAsync()
     {
-        AppendLog("Shake Test generator feature coming soon");
+        if (!IsConnected)
+        {
+            AppendLog("Error: Not connected to machine");
+            return;
+        }
+        
+        if (LoadedGCodeFile == null || !LoadedGCodeFile.Bounds.IsValid)
+        {
+            AppendLog("Error: No valid G-Code file loaded");
+            return;
+        }
+        
+        if (IsFraming)
+        {
+            // Stop framing
+            _framingCancellation?.Cancel();
+            return;
+        }
+        
+        try
+        {
+            IsFraming = true;
+            _framingCancellation = new CancellationTokenSource();
+            var bounds = LoadedGCodeFile.Bounds;
+            
+            AppendLog("Starting framing operation with laser at 0.3% power...");
+            
+            // Calculate laser power value for 0.3% (typical range 0-1000)
+            // S3 corresponds to 0.3% power (3 out of 1000)
+            int laserPower = 3;
+            
+            // Move to work coordinate system
+            await SendCommandAsync("G90", _framingCancellation.Token); // Absolute positioning
+            await Task.Delay(100, _framingCancellation.Token);
+            
+            // Turn on laser at low power
+            await SendCommandAsync($"M4 S{laserPower}", _framingCancellation.Token);
+            await Task.Delay(100, _framingCancellation.Token);
+            
+            // Trace the bounding box continuously until cancelled
+            while (!_framingCancellation.Token.IsCancellationRequested)
+            {
+                // Move to bottom-left corner
+                await SendCommandAsync($"G1 X{bounds.MinX:F3} Y{bounds.MinY:F3} F3000", _framingCancellation.Token);
+                await Task.Delay(100, _framingCancellation.Token);
+                
+                // Move to bottom-right corner
+                await SendCommandAsync($"G1 X{bounds.MaxX:F3} Y{bounds.MinY:F3} F3000", _framingCancellation.Token);
+                await Task.Delay(100, _framingCancellation.Token);
+                
+                // Move to top-right corner
+                await SendCommandAsync($"G1 X{bounds.MaxX:F3} Y{bounds.MaxY:F3} F3000", _framingCancellation.Token);
+                await Task.Delay(100, _framingCancellation.Token);
+                
+                // Move to top-left corner
+                await SendCommandAsync($"G1 X{bounds.MinX:F3} Y{bounds.MaxY:F3} F3000", _framingCancellation.Token);
+                await Task.Delay(100, _framingCancellation.Token);
+                
+                // Complete the box by returning to start
+                await SendCommandAsync($"G1 X{bounds.MinX:F3} Y{bounds.MinY:F3} F3000", _framingCancellation.Token);
+                await Task.Delay(500, _framingCancellation.Token); // Pause before next loop
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            AppendLog("Framing operation cancelled");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Framing error: {ex.Message}");
+        }
+        finally
+        {
+            // Turn off laser
+            try
+            {
+                await SendCommandAsync("M5", CancellationToken.None);
+                AppendLog("Framing stopped - Laser OFF");
+            }
+            catch (Exception ex)
+            {
+                AppendLog($"Error turning off laser: {ex.Message}");
+            }
+            
+            IsFraming = false;
+            _framingCancellation?.Dispose();
+            _framingCancellation = null;
+        }
+    }
+    
+    /// <summary>
+    /// Helper method to send a command and wait for it to complete
+    /// </summary>
+    private async Task SendCommandAsync(string command, CancellationToken cancellationToken)
+    {
+        if (!IsConnected)
+            throw new InvalidOperationException("Not connected to machine");
+        
+        _grblConnection.SendCommand(command);
+        AppendGCodeLog(command, true);
+        
+        // Wait for command to be processed
+        await Task.Delay(50, cancellationToken);
+    }
+    
+    /// <summary>
+    /// Format a jog command matching GRBL $J syntax
+    /// </summary>
+    private string FormatJogCommand(double x, double y, double feedRate)
+    {
+        var parts = new List<string> { "$J=G91" }; // Relative positioning
+        
+        if (x != 0)
+            parts.Add($"X{x:F3}");
+        if (y != 0)
+            parts.Add($"Y{y:F3}");
+            
+        parts.Add($"F{feedRate:F0}");
+        
+        return string.Join("", parts);
+    }
+    
+    [RelayCommand]
+    private async Task ShakeTestAsync()
+    {
+        try
+        {
+            var shakeTestWindow = new Views.ShakeTestWindow
+            {
+                DataContext = new ShakeTestViewModel(GenerateShakeTest)
+            };
+            
+            var mainWindow = Avalonia.Application.Current?.ApplicationLifetime is 
+                Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop 
+                ? desktop.MainWindow 
+                : null;
+            
+            await shakeTestWindow.ShowDialog(mainWindow!);
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Error opening Shake Test: {ex.Message}");
+        }
+    }
+    
+    private void GenerateShakeTest(string axis, int flimit, int axislen, int cpower, int cspeed)
+    {
+        try
+        {
+            LoadedGCodeFile = new GCodeFile();
+            LoadedGCodeFile.GenerateShakeTest(axis, flimit, axislen, cpower, cspeed);
+            GcodeFileName = $"Shake Test {axis}";
+            HasGCodeLoaded = true;
+            AppendLog($"Shake Test generated: {LoadedGCodeFile.CommandCount} commands");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Error generating Shake Test: {ex.Message}");
+        }
     }
     
     [RelayCommand]

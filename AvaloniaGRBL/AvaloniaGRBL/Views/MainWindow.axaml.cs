@@ -97,6 +97,27 @@ public partial class MainWindow : Window
                 _renderer.ShowBoundingBox = viewModel.ShowBoundingBox;
             }
         }
+        else if (e.PropertyName == nameof(MainWindowViewModel.ConnectionLog))
+        {
+            ScrollToBottom("ConnectionLogScrollViewer");
+        }
+        else if (e.PropertyName == nameof(MainWindowViewModel.GcodeLog))
+        {
+            ScrollToBottom("GCodeLogScrollViewer");
+        }
+    }
+    
+    private void ScrollToBottom(string scrollViewerName)
+    {
+        var scrollViewer = this.FindControl<ScrollViewer>(scrollViewerName);
+        if (scrollViewer != null)
+        {
+            // Use Dispatcher to ensure scroll happens after content is updated
+            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            {
+                scrollViewer.ScrollToEnd();
+            }, Avalonia.Threading.DispatcherPriority.Background);
+        }
     }
     
     private void OnDragOver(object? sender, DragEventArgs e)

@@ -13,22 +13,8 @@ public class JogStepIndexConverter : IValueConverter
     
     private static readonly double[] StepValues = { 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200 };
     
-    // Convert from slider index to actual step value
+    // Convert from actual step value (JogStep) to slider index (Slider.Value)
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-        if (value is double doubleValue)
-        {
-            int index = (int)Math.Round(doubleValue);
-            if (index >= 0 && index < StepValues.Length)
-            {
-                return StepValues[index];
-            }
-        }
-        return 1.0; // Default value
-    }
-    
-    // Convert from actual step value to slider index
-    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is double stepValue)
         {
@@ -48,6 +34,20 @@ public class JogStepIndexConverter : IValueConverter
             
             return (double)closestIndex;
         }
-        return 3.0; // Default to index 3 (value = 1)
+        return 3.0; // Default to index 3 (1.0mm)
+    }
+    
+    // Convert from slider index (Slider.Value) to actual step value (JogStep)
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is double doubleValue)
+        {
+            int index = (int)Math.Round(doubleValue);
+            if (index >= 0 && index < StepValues.Length)
+            {
+                return StepValues[index];
+            }
+        }
+        return 1.0; // Default value (1.0mm)
     }
 }

@@ -1,0 +1,164 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:AvaloniaGRBL.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="AvaloniaGRBL.Views.ShakeTestWindow"
+        x:DataType="vm:ShakeTestViewModel"
+        Title="Shake Test"
+        Width="800" Height="450"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False">
+
+    <Design.DataContext>
+        <vm:ShakeTestViewModel/>
+    </Design.DataContext>
+
+    <Window.Styles>
+        <Style Selector="TextBlock">
+            <Setter Property="Foreground" Value="{Binding Theme.PrimaryText}"/>
+        </Style>
+        <Style Selector="Label">
+            <Setter Property="Foreground" Value="{Binding Theme.PrimaryText}"/>
+        </Style>
+    </Window.Styles>
+
+    <Grid Background="{Binding Theme.PanelBackground}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Main Content -->
+        <Grid Grid.Row="0" Margin="20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <!-- Image Section -->
+            <Border Grid.Column="0" Background="White" BorderBrush="{Binding Theme.BorderColor}" 
+                    BorderThickness="1" CornerRadius="4" Padding="10">
+                <Viewbox Stretch="Uniform">
+                    <Canvas Width="200" Height="200" Background="White">
+                        <!-- Simple illustration of a laser head with belts/pulleys -->
+                        <!-- Pulley 1 (left) -->
+                        <Ellipse Canvas.Left="30" Canvas.Top="50" Width="40" Height="40" 
+                                 Stroke="Black" StrokeThickness="2" Fill="LightGray"/>
+                        <Ellipse Canvas.Left="40" Canvas.Top="60" Width="20" Height="20" 
+                                 Stroke="Black" StrokeThickness="1" Fill="Gray"/>
+                        
+                        <!-- Pulley 2 (right) -->
+                        <Ellipse Canvas.Left="130" Canvas.Top="50" Width="40" Height="40" 
+                                 Stroke="Black" StrokeThickness="2" Fill="LightGray"/>
+                        <Ellipse Canvas.Left="140" Canvas.Top="60" Width="20" Height="20" 
+                                 Stroke="Black" StrokeThickness="1" Fill="Gray"/>
+                        
+                        <!-- Belt connecting pulleys -->
+                        <Line StartPoint="50,45" EndPoint="150,45" Stroke="Black" StrokeThickness="2"/>
+                        <Line StartPoint="50,95" EndPoint="150,95" Stroke="Black" StrokeThickness="2"/>
+                        
+                        <!-- Laser head -->
+                        <Rectangle Canvas.Left="85" Canvas.Top="65" Width="30" Height="50" 
+                                   Stroke="Black" StrokeThickness="2" Fill="DarkGray"/>
+                        <Line StartPoint="100,115" EndPoint="100,140" Stroke="Red" StrokeThickness="3"/>
+                        <Polygon Points="95,140 100,150 105,140" Fill="Red"/>
+                        
+                        <!-- Movement arrows -->
+                        <Path Data="M 70 130 L 50 130 L 60 120 M 50 130 L 60 140" 
+                              Stroke="Blue" StrokeThickness="2"/>
+                        <Path Data="M 130 130 L 150 130 L 140 120 M 150 130 L 140 140" 
+                              Stroke="Blue" StrokeThickness="2"/>
+                        
+                        <!-- Text "Shake" -->
+                        <TextBlock Canvas.Left="75" Canvas.Top="170" Text="SHAKE" FontWeight="Bold" 
+                                   FontSize="16" Foreground="Black"/>
+                    </Canvas>
+                </Viewbox>
+            </Border>
+            
+            <!-- Settings Section -->
+            <StackPanel Grid.Column="1" Margin="20,0,0,0" Spacing="15">
+                <TextBlock Text="This test allows you to check the reliability of your machine in performing rapid movements without position misalignments.
+It is a fundamental test for fine tuning of your engraver."
+                           TextWrapping="Wrap" FontSize="13"/>
+                           
+                <TextBlock Text="It work by engraving a small reference cross, than shaking your laser head with lot of rapid movement, and then going back to original position and tracing the cross again."
+                           TextWrapping="Wrap" FontSize="13"/>
+                           
+                <TextBlock Text="The test is completed successfully if the initial cross and the final cross match (overlap).
+If your answer is unable to complete the test successfully you will need to check:"
+                           TextWrapping="Wrap" FontSize="13"/>
+                           
+                <StackPanel Margin="20,0,0,0" Spacing="3">
+                    <TextBlock Text="1. That the machine does not slip on the table due to vibrations during work." FontSize="12"/>
+                    <TextBlock Text="2. The table itself and the workpiece do not shake during the test, due to vibrations." FontSize="12"/>
+                    <TextBlock Text="3. That the drive belts are tensioned correctly." FontSize="12"/>
+                    <TextBlock Text="4. The motor shaft is not blocked." FontSize="12"/>
+                    <TextBlock Text="5. The laser carriage has no mechanical resistance during movement at some points of its travel." FontSize="12"/>
+                    <TextBlock Text="6. The electrical wires do not act as a hindrance to the movement and do not detach/move from their connectors during the movement." FontSize="12"/>
+                </StackPanel>
+                
+                <TextBlock Text="If these conditions are met, but the machine is not able to perform the test successfully, you can try to slightly decrease the speed limits set in the 'Grbl Configuration' or maximum accelerations."
+                           TextWrapping="Wrap" FontSize="13" Margin="0,10,0,0"/>
+                           
+                <!-- Test Parameters -->
+                <Separator Background="{Binding Theme.SeparatorColor}" Margin="0,10"/>
+                
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="80"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <!-- Test Type Row -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Test type" VerticalAlignment="Center" FontWeight="Bold"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Axis" VerticalAlignment="Center" Margin="20,0,10,0"/>
+                    <ComboBox Grid.Row="0" Grid.Column="2" ItemsSource="{Binding AxisOptions}" 
+                              SelectedItem="{Binding SelectedAxis}" Width="80"/>
+                    <TextBlock Grid.Row="0" Grid.Column="4" Text="Lenght" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <NumericUpDown Grid.Row="0" Grid.Column="5" Value="{Binding AxisLength}" 
+                                   Minimum="50" Maximum="{Binding MaxAxisLength}" Width="80"/>
+                    
+                    <!-- Cross Engraving Row -->
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Cross engraving" VerticalAlignment="Center" FontWeight="Bold"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="Speed" VerticalAlignment="Center" Margin="20,0,10,0"/>
+                    <NumericUpDown Grid.Row="2" Grid.Column="2" Value="{Binding CrossSpeed}" 
+                                   Minimum="10" Maximum="{Binding MaxCrossSpeed}" Width="80"/>
+                    <TextBlock Grid.Row="2" Grid.Column="4" Text="Power" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <NumericUpDown Grid.Row="2" Grid.Column="5" Value="{Binding CrossPower}" 
+                                   Minimum="1" Maximum="{Binding MaxPower}" Width="80"/>
+                </Grid>
+                
+                <Grid Margin="0,10,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="80"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Limit speed" VerticalAlignment="Center" Margin="135,0,10,0"/>
+                    <ComboBox Grid.Column="1" ItemsSource="{Binding LimitSpeedOptions}" 
+                              SelectedItem="{Binding SelectedLimitSpeed}" Width="80"/>
+                </Grid>
+            </StackPanel>
+        </Grid>
+        
+        <!-- Bottom Buttons -->
+        <Border Grid.Row="1" Background="{Binding Theme.ButtonBackground}" 
+                BorderBrush="{Binding Theme.BorderColor}" BorderThickness="0,1,0,0" Padding="10">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+                <Button Content="Cancel" Command="{Binding CancelCommand}" Width="100" Height="30"/>
+                <Button Content="Create!" Command="{Binding CreateCommand}" Width="100" Height="30"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

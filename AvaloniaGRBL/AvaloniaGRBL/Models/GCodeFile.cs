@@ -94,6 +94,67 @@ public class GCodeFile
         await File.WriteAllLinesAsync(filePath, lines);
         FileName = Path.GetFileName(filePath);
     }
+    
+    /// <summary>
+    /// Generates a Shake Test G-Code program to test machine reliability
+    /// </summary>
+    public void GenerateShakeTest(string axis, int flimit, int axislen, int cpower, int cspeed)
+    {
+        Commands.Clear();
+        Bounds = new GCodeBounds();
+        
+        // Initial setup - laser OFF and move to origin
+        Commands.Add(new GCodeCommand("M5"));  // laser OFF
+        Commands.Add(new GCodeCommand("G1 F1000 X0 Y0 S0"));  // move to origin (slowly)
+        Commands.Add(new GCodeCommand($"G1 F{cspeed} X7 Y10"));  // positioning
+        Commands.Add(new GCodeCommand("M4"));  // laser ON
+        Commands.Add(new GCodeCommand($"G1 F{cspeed} S{cpower} X13 Y10"));  // draw cross
+        Commands.Add(new GCodeCommand("M5"));  // laser OFF
+        Commands.Add(new GCodeCommand($"G1 F{cspeed} X10 Y7"));  // positioning
+        Commands.Add(new GCodeCommand("M4"));  // laser ON
+        Commands.Add(new GCodeCommand($"G1 F{cspeed} S{cpower} X10 Y13"));  // draw cross
+        Commands.Add(new GCodeCommand("M5"));  // laser OFF
+        Commands.Add(new GCodeCommand("G1 F1000 X10 Y10 S0"));  // move to cross center (slowly)
+        
+        // Perform shake tests with different trip distances
+        GenerateShakeTest2(axis, flimit, axislen, 10, 50, 0.5);
+        GenerateShakeTest2(axis, flimit, axislen, 10, 100, 2);
+        GenerateShakeTest2(axis, flimit, axislen, 10, 200, 4);
+        GenerateShakeTest2(axis, flimit, axislen, 10, 400, 8);
+        
+        // Move back to cross center
+        Commands.Add(new GCodeCommand($"G1 F{cspeed} X10 Y10 S0"));  // move to cross center (fast)
+        
+        // Draw the cross again to verify position accuracy
+        Commands.Add(new GCodeCommand($"G1 F{cspeed} X7 Y10"));  // positioning
+        Commands.Add(new GCodeCommand("M4"));  // laser ON
+        Commands.Add(new GCodeCommand($"G1 F{cspeed} S{cpower} X13 Y10"));  // draw cross
+        Commands.Add(new GCodeCommand("M5"));  // laser OFF
+        Commands.Add(new GCodeCommand($"G1 F{cspeed} X10 Y7"));  // positioning
+        Commands.Add(new GCodeCommand("M4"));  // laser ON
+        Commands.Add(new GCodeCommand($"G1 F{cspeed} S{cpower} X10 Y13"));  // draw cross
+        Commands.Add(new GCodeCommand("M5"));  // laser OFF
+        Commands.Add(new GCodeCommand("G1 F1000 X0 Y0 S0"));  // move to origin (slowly)
+        
+        CalculateBounds();
+    }
+    
+    private void GenerateShakeTest2(string axis, int flimit, int axislen, int o, int trip, double step)
+    {
+        for (int c = trip / 2; c < axislen - trip / 2; c += trip)  // center of oscillation points
+        {
+            for (double i = 0; i < trip / 3; i += step)
+            {
+                Commands.Add(new GCodeCommand($"G1 F{flimit} {axis}{FormatNumber(o + c + i)}"));
+                Commands.Add(new GCodeCommand($"G1 F{flimit} {axis}{FormatNumber(o + c - i)}"));
+            }
+        }
+    }
+    
+    private string FormatNumber(double value)
+    {
+        return value.ToString("F3").TrimEnd('0').TrimEnd('.');
+    }
 }
 
 public class GCodeBounds

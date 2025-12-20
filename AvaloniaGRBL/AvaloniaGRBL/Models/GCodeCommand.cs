@@ -66,6 +66,10 @@ public class GCodeCommand
         {
             CommandType = GCodeCommandType.SpindleOn;
         }
+        else if (Regex.IsMatch(cleanCommand, @"\bM4\b", RegexOptions.IgnoreCase))
+        {
+            CommandType = GCodeCommandType.SpindleOn; // M4 is laser mode spindle on
+        }
         else if (Regex.IsMatch(cleanCommand, @"\bM5\b", RegexOptions.IgnoreCase))
         {
             CommandType = GCodeCommandType.SpindleOff;

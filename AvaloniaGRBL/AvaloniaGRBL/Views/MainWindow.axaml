@@ -376,18 +376,86 @@
                         </StackPanel>
                     </Border>
                     
-                    <!-- Connection Log / Console -->
-                    <ScrollViewer Grid.Row="1" Background="{Binding Theme.PanelBackground}">
-                        <TextBox Text="{Binding ConnectionLog}" 
-                                 IsReadOnly="True" 
-                                 TextWrapping="Wrap"
-                                 FontFamily="Courier New"
-                                 FontSize="11"
-                                 Background="{Binding Theme.PanelBackground}"
-                                 Foreground="{Binding Theme.ConsoleText}"
-                                 BorderThickness="0"
-                                 Padding="10"/>
-                    </ScrollViewer>
+                    <!-- Connection Log / Console Tabs -->
+                    <TabControl Grid.Row="1" Background="{Binding Theme.PanelBackground}">
+                        <TabControl.Styles>
+                            <Style Selector="TabItem">
+                                <Setter Property="Foreground" Value="{Binding Theme.PrimaryText}"/>
+                                <Setter Property="FontSize" Value="11"/>
+                            </Style>
+                        </TabControl.Styles>
+                        
+                        <!-- Connection Log Tab -->
+                        <TabItem Header="Connection Log">
+                            <ScrollViewer x:Name="ConnectionLogScrollViewer" Background="{Binding Theme.PanelBackground}">
+                                <TextBox Text="{Binding ConnectionLog}" 
+                                         IsReadOnly="True" 
+                                         TextWrapping="Wrap"
+                                         FontFamily="Courier New"
+                                         FontSize="11"
+                                         Background="{Binding Theme.PanelBackground}"
+                                         Foreground="{Binding Theme.ConsoleText}"
+                                         BorderThickness="0"
+                                         Padding="10"/>
+                            </ScrollViewer>
+                        </TabItem>
+                        
+                        <!-- GCode Console Tab -->
+                        <TabItem Header="GCode Console">
+                            <Grid Background="{Binding Theme.PanelBackground}">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                
+                                <!-- GCode Command Log -->
+                                <ScrollViewer x:Name="GCodeLogScrollViewer" Grid.Row="0" Background="{Binding Theme.PanelBackground}">
+                                    <TextBox Text="{Binding GcodeLog}" 
+                                             IsReadOnly="True" 
+                                             TextWrapping="Wrap"
+                                             FontFamily="Courier New"
+                                             FontSize="11"
+                                             Background="{Binding Theme.PanelBackground}"
+                                             Foreground="{Binding Theme.ConsoleText}"
+                                             BorderThickness="0"
+                                             Padding="10"/>
+                                </ScrollViewer>
+                                
+                                <!-- Manual GCode Input -->
+                                <Border Grid.Row="1" Background="{Binding Theme.MainBackground}" 
+                                        BorderBrush="{Binding Theme.BorderColor}" BorderThickness="0,1,0,0" 
+                                        Padding="5">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <TextBox Grid.Column="0" 
+                                                 Text="{Binding ManualGCodeCommand, Mode=TwoWay}"
+                                                 Watermark="Enter GCode command (e.g., G0 X10 Y10)"
+                                                 FontFamily="Courier New"
+                                                 FontSize="11"
+                                                 Background="{Binding Theme.PanelBackground}"
+                                                 Foreground="{Binding Theme.PrimaryText}"
+                                                 Padding="5"
+                                                 Margin="0,0,5,0">
+                                            <TextBox.KeyBindings>
+                                                <KeyBinding Gesture="Enter" Command="{Binding SendManualGCodeCommand}"/>
+                                            </TextBox.KeyBindings>
+                                        </TextBox>
+                                        
+                                        <Button Grid.Column="1" 
+                                                Content="Send"
+                                                Command="{Binding SendManualGCodeCommand}"
+                                                Width="60"
+                                                Height="30"
+                                                Classes="connect-button"/>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </TabItem>
+                    </TabControl>
 
                     <Border Grid.Row="2" Background="{Binding Theme.MainBackground}" BorderBrush="{Binding Theme.BorderColor}" BorderThickness="0,0,0,1" Padding="10">
 
@@ -433,7 +501,7 @@
 
                         <!-- Step Setting -->
                         <StackPanel Spacing="3" HorizontalAlignment="Center">
-                            <TextBlock Text="{Binding #stepSlider.Value, Converter={x:Static converters:JogStepIndexConverter.Instance}, StringFormat='{}{0:G}'}" 
+                            <TextBlock Text="{Binding JogStep, StringFormat='{}{0:G}'}" 
                                        Foreground="{Binding Theme.PrimaryText}" FontSize="11" 
                                        HorizontalAlignment="Center" FontFamily="Courier New"/>
                             <Slider x:Name="stepSlider"
@@ -529,7 +597,9 @@
                     <!-- Additional Control Buttons -->
                     <Button Content="🎯" Classes="toolbar-button" ToolTip.Tip="Set Origin (Zero XY)" Command="{Binding SetOriginCommand}"/>
                     <Button Content="⚙" Classes="toolbar-button" ToolTip.Tip="Settings"/>
-                    <Button Content="🔲" Classes="toolbar-button" ToolTip.Tip="Frame"/>
+                    <Button Content="◱" Classes="toolbar-button" ToolTip.Tip="Framing - Laser ON - Low power (0.3 %)" 
+                            Command="{Binding FramingCommand}" 
+                            IsEnabled="{Binding CanExecuteFraming}"/>
                     <Button Content="⊕" Classes="toolbar-button" ToolTip.Tip="Target"/>
                     <Button Content="🔆" Classes="toolbar-button" ToolTip.Tip="Laser"/>
                     <Button Content="🔧" Classes="toolbar-button" ToolTip.Tip="Tools"/>

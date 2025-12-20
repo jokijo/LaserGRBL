@@ -28,6 +28,15 @@ public class GrblStatus
     /// <summary>Work position Z coordinate</summary>
     public double WorkZ { get; set; }
     
+    /// <summary>Work coordinate offset X</summary>
+    public double WcoX { get; set; }
+    
+    /// <summary>Work coordinate offset Y</summary>
+    public double WcoY { get; set; }
+    
+    /// <summary>Work coordinate offset Z</summary>
+    public double WcoZ { get; set; }
+    
     /// <summary>Current feed rate</summary>
     public double FeedRate { get; set; }
     
@@ -113,6 +122,34 @@ public class GrblStatus
                         status.SpindleSpeed = spindle;
                     }
                 }
+                else if (part.StartsWith("WCO:"))
+                {
+                    var coords = part.Substring(4).Split(',');
+                    if (coords.Length >= 2)
+                    {
+                        double.TryParse(coords[0], System.Globalization.NumberStyles.Float, 
+                            System.Globalization.CultureInfo.InvariantCulture, out double x);
+                        double.TryParse(coords[1], System.Globalization.NumberStyles.Float, 
+                            System.Globalization.CultureInfo.InvariantCulture, out double y);
+                        status.WcoX = x;
+                        status.WcoY = y;
+                        
+                        if (coords.Length >= 3)
+                        {
+                            double.TryParse(coords[2], System.Globalization.NumberStyles.Float, 
+                                System.Globalization.CultureInfo.InvariantCulture, out double z);
+                            status.WcoZ = z;
+                        }
+                    }
+                }
+            }
+            
+            // If WCO was provided, calculate WPos from MPos - WCO (GRBL sends either WPos OR WCO, not both)
+            if (status.WcoX != 0 || status.WcoY != 0 || status.WcoZ != 0)
+            {
+                status.WorkX = status.MachineX - status.WcoX;
+                status.WorkY = status.MachineY - status.WcoY;
+                status.WorkZ = status.MachineZ - status.WcoZ;
             }
             
             return status;

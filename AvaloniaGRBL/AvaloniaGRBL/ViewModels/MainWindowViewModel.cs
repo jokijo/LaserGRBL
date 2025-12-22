@@ -20,6 +20,8 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     private const string DonateUrl = "https://lasergrbl.com/donate";
     private const string FacebookCommunityUrl = "https://www.facebook.com/groups/486886768471991";
     private const string CH340DriversSearchUrl = "https://www.google.com/search?q=ch340+drivers";
+    private const string CH340MacDriverUrl = "https://github.com/adrianmihalko/ch340g-ch34g-ch34x-mac-os-x-driver";
+    private const string CH340LinuxDriverUrl = "https://www.google.com/search?q=ch340+linux+driver+install";
     
     // Localization manager for dynamic language switching
     public LocalizationManager Localization => LocalizationManager.Instance;
@@ -2018,8 +2020,134 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     [RelayCommand]
     private void InstallCH340Driver()
     {
-        AppendLog("Install CH340 Driver feature coming soon");
-        AppendLog($"Please download the driver from: {CH340DriversSearchUrl}");
+        AppendLog("Attempting to install CH340 Driver...");
+        
+        if (OperatingSystem.IsWindows())
+        {
+            InstallCH340DriverWindows();
+        }
+        else if (OperatingSystem.IsMacOS())
+        {
+            InstallCH340DriverMacOS();
+        }
+        else if (OperatingSystem.IsLinux())
+        {
+            InstallCH340DriverLinux();
+        }
+        else
+        {
+            AppendLog("Unsupported operating system for automatic driver installation");
+            AppendLog($"Please visit: {CH340DriversSearchUrl}");
+        }
+    }
+    
+    private void InstallCH340DriverWindows()
+    {
+        try
+        {
+            // Get the base directory of the application
+            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            string driverPath = System.IO.Path.Combine(baseDirectory, "Driver", "CH341SER.EXE");
+            
+            if (System.IO.File.Exists(driverPath))
+            {
+                AppendLog($"Launching CH340 driver installer: {driverPath}");
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = driverPath,
+                    UseShellExecute = true
+                });
+            }
+            else
+            {
+                AppendLog($"Driver file not found at: {driverPath}");
+                AppendLog($"Opening browser to download CH340 drivers...");
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = CH340DriversSearchUrl,
+                    UseShellExecute = true
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Error launching CH340 driver installer: {ex.Message}");
+            AppendLog($"Opening browser to download CH340 drivers...");
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = CH340DriversSearchUrl,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex2)
+            {
+                AppendLog($"Error opening browser: {ex2.Message}");
+                AppendLog($"Please manually download the driver from: {CH340DriversSearchUrl}");
+            }
+        }
+    }
+    
+    private void InstallCH340DriverMacOS()
+    {
+        AppendLog("macOS detected - Opening CH340 driver download page...");
+        AppendLog("Note: You may need to disable System Integrity Protection to install the driver.");
+        AppendLog("After installation, restart your Mac for the driver to take effect.");
+        
+        try
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = CH340MacDriverUrl,
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Error opening browser: {ex.Message}");
+            AppendLog($"Please manually visit: {CH340MacDriverUrl}");
+        }
+    }
+    
+    private void InstallCH340DriverLinux()
+    {
+        AppendLog("Linux detected - CH340 driver information:");
+        AppendLog("");
+        AppendLog("Good news! Most modern Linux distributions include the CH340 driver by default.");
+        AppendLog("The driver module is called 'ch341' and is usually automatically loaded.");
+        AppendLog("");
+        AppendLog("To check if the driver is loaded, run in terminal:");
+        AppendLog("  lsmod | grep ch341");
+        AppendLog("");
+        AppendLog("To see if your device is recognized, run:");
+        AppendLog("  dmesg | grep ch341");
+        AppendLog("  ls /dev/ttyUSB*");
+        AppendLog("");
+        AppendLog("If you need to manually install the driver:");
+        AppendLog("  Ubuntu/Debian: sudo apt-get install linux-modules-extra-$(uname -r)");
+        AppendLog("  Fedora: sudo dnf install kernel-modules-extra");
+        AppendLog("  Arch: Driver is included in the kernel");
+        AppendLog("");
+        AppendLog("You may also need to add your user to the 'dialout' group:");
+        AppendLog("  sudo usermod -a -G dialout $USER");
+        AppendLog("  (log out and back in for changes to take effect)");
+        AppendLog("");
+        
+        try
+        {
+            AppendLog("Opening browser for additional Linux driver information...");
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = CH340LinuxDriverUrl,
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Error opening browser: {ex.Message}");
+            AppendLog($"For more information, visit: {CH340LinuxDriverUrl}");
+        }
     }
     
     [RelayCommand]

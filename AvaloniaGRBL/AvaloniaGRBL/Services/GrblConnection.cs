@@ -37,6 +37,9 @@ public class GrblConnection : IDisposable
         if (IsConnected)
             throw new InvalidOperationException("Already connected");
             
+        TaskCompletionSource<bool> grblResponseReceived = new TaskCompletionSource<bool>();
+        EventHandler<string>? responseHandler = null;
+        
         try
         {
             OnStatusChanged("Connecting...");
@@ -51,11 +54,36 @@ public class GrblConnection : IDisposable
             _cancellationTokenSource = new CancellationTokenSource();
             _receiveTask = Task.Run(() => ReceiveLoop(_cancellationTokenSource.Token));
             
-            // Start status polling
-            _statusPollingTask = Task.Run(() => StatusPollingLoop(_cancellationTokenSource.Token));
+            // Listen for GRBL response
+            responseHandler = (sender, data) =>
+            {
+                // GRBL sends "Grbl" in its welcome message after reset
+                if (data.Contains("Grbl", StringComparison.OrdinalIgnoreCase) || 
+                    data.StartsWith("ok", StringComparison.OrdinalIgnoreCase) ||
+                    data.StartsWith("<", StringComparison.OrdinalIgnoreCase))
+                {
+                    grblResponseReceived.TrySetResult(true);
+                }
+            };
+            
+            DataReceived += responseHandler;
             
             // Send soft reset to GRBL
             SendCommand("\x18"); // Ctrl-X soft reset
+            
+            // Wait for GRBL to respond (with timeout)
+            var responseTask = grblResponseReceived.Task;
+            var timeoutTask = Task.Delay(3000); // 3 second timeout
+            
+            var completedTask = await Task.WhenAny(responseTask, timeoutTask);
+            
+            if (completedTask == timeoutTask)
+            {
+                throw new TimeoutException("GRBL did not respond. Check your connection and device.");
+            }
+            
+            // Start status polling after successful connection
+            _statusPollingTask = Task.Run(() => StatusPollingLoop(_cancellationTokenSource.Token));
             
             OnStatusChanged("Connected");
         }
@@ -65,6 +93,13 @@ public class GrblConnection : IDisposable
             OnErrorOccurred(ex);
             Disconnect();
             throw;
+        }
+        finally
+        {
+            if (responseHandler != null)
+            {
+                DataReceived -= responseHandler;
+            }
         }
     }
     

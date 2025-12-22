@@ -1,0 +1,160 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:AvaloniaGRBL.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="450"
+        x:Class="AvaloniaGRBL.Views.CuttingTestWindow"
+        x:DataType="vm:CuttingTestViewModel"
+        Title="Cutting Test generator"
+        Width="700" Height="450"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
+
+    <Design.DataContext>
+        <vm:CuttingTestViewModel />
+    </Design.DataContext>
+
+    <Grid Margin="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left side - Preview -->
+        <Border Grid.Column="0" Background="#2A2A2A" BorderBrush="#444" BorderThickness="1" Padding="10" Margin="0,0,20,0">
+            <StackPanel>
+                <TextBlock Text="Cutting Test" FontSize="12" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                
+                <!-- Simple grid preview -->
+                <Border Height="200" Background="White" BorderBrush="#666" BorderThickness="1">
+                    <Grid ShowGridLines="True">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <!-- Draw some squares to represent cutting test -->
+                        <Rectangle Grid.Row="0" Grid.Column="0" Fill="#F0F0F0" Margin="2"/>
+                        <Rectangle Grid.Row="0" Grid.Column="1" Fill="#E0E0E0" Margin="2"/>
+                        <Rectangle Grid.Row="0" Grid.Column="2" Fill="#C0C0C0" Margin="2"/>
+                        <Rectangle Grid.Row="0" Grid.Column="3" Fill="#A0A0A0" Margin="2"/>
+                        <Rectangle Grid.Row="0" Grid.Column="4" Fill="#808080" Margin="2"/>
+                        
+                        <Rectangle Grid.Row="1" Grid.Column="0" Fill="#E8E8E8" Margin="2"/>
+                        <Rectangle Grid.Row="1" Grid.Column="1" Fill="#D0D0D0" Margin="2"/>
+                        <Rectangle Grid.Row="1" Grid.Column="2" Fill="#B0B0B0" Margin="2"/>
+                        <Rectangle Grid.Row="1" Grid.Column="3" Fill="#909090" Margin="2"/>
+                        <Rectangle Grid.Row="1" Grid.Column="4" Fill="#707070" Margin="2"/>
+                    </Grid>
+                </Border>
+                
+                <TextBlock Text="Test grid with varying speeds" 
+                           FontSize="9" 
+                           HorizontalAlignment="Center" Margin="0,5,0,0"
+                           TextWrapping="Wrap"
+                           TextAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Right side - Parameters -->
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="15">
+                <TextBlock Text="Generate a cutting test to find optimal speed for cutting through material." 
+                           TextWrapping="Wrap" FontSize="12"/>
+
+                <TextBlock Text="Parameters" FontWeight="Bold" FontSize="14"/>
+
+                <!-- Pass (Number of cycles) -->
+                <Border Background="#2A2A2A" Padding="10" CornerRadius="5">
+                    <Grid ColumnDefinitions="Auto,*,Auto,*">
+                        <TextBlock Grid.Column="0" Text="Pass (cycles)" VerticalAlignment="Center" Margin="0,0,10,0" Width="100"/>
+                        
+                        <TextBlock Grid.Column="1" Text="from" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <NumericUpDown Grid.Column="2" Value="{Binding PassMin}" Minimum="1" Maximum="20" Width="100"/>
+                        
+                        <TextBlock Grid.Column="3" Text="to" Margin="10,0,5,0" VerticalAlignment="Center"/>
+                        <NumericUpDown Grid.Column="4" Value="{Binding PassMax}" Minimum="1" Maximum="20" Width="100"/>
+                    </Grid>
+                </Border>
+
+                <!-- Speed (F) -->
+                <Border Background="#2A2A2A" Padding="10" CornerRadius="5">
+                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,120,Auto,120,Auto,80">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Speed (F)" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="from" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <NumericUpDown Grid.Row="0" Grid.Column="2" Value="{Binding SpeedMin}" Minimum="0" Maximum="20000" Width="100"
+                                       IsEnabled="{Binding SpeedMinEnabled}"/>
+                        
+                        <TextBlock Grid.Row="0" Grid.Column="3" Text="to" Margin="10,0,5,0" VerticalAlignment="Center"/>
+                        <NumericUpDown Grid.Row="0" Grid.Column="4" Value="{Binding SpeedMax}" Minimum="0" Maximum="20000" Width="100"/>
+                        
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="steps" Margin="0,10,5,0" VerticalAlignment="Center"/>
+                        <NumericUpDown Grid.Row="1" Grid.Column="2" Value="{Binding SpeedSteps}" Minimum="1" Maximum="50" Width="100" Margin="0,10,0,0"/>
+                        
+                        <TextBlock Grid.Row="1" Grid.Column="3" Text="step size" Margin="10,10,5,0" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding SpeedStepSize}" Width="100" Margin="0,10,0,0" IsReadOnly="True"/>
+                    </Grid>
+                </Border>
+
+                <!-- Power Fixed (S) -->
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="Power (S) fixed" VerticalAlignment="Center" Width="100"/>
+                    <NumericUpDown Value="{Binding PowerFixed}" Minimum="0" Maximum="1000" Width="100"/>
+                </StackPanel>
+
+                <!-- Laser Mode -->
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="Laser Mode" VerticalAlignment="Center" Width="100"/>
+                    <ComboBox SelectedItem="{Binding LaserMode}" Width="200">
+                        <ComboBoxItem Content="M3 - Constant Power" IsSelected="True">M3</ComboBoxItem>
+                        <ComboBoxItem Content="M4 - Dynamic Power">M4</ComboBoxItem>
+                    </ComboBox>
+                </StackPanel>
+
+                <!-- Text -->
+                <Border Background="#2A2A2A" Padding="10" CornerRadius="5">
+                    <Grid ColumnDefinitions="Auto,*,Auto,*,Auto,*" RowDefinitions="Auto,Auto">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Text" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="speed" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <NumericUpDown Grid.Row="0" Grid.Column="2" Value="{Binding TextSpeed}" Minimum="100" Maximum="20000" Width="100"/>
+                        
+                        <TextBlock Grid.Row="0" Grid.Column="3" Text="pow" Margin="10,0,5,0" VerticalAlignment="Center"/>
+                        <NumericUpDown Grid.Row="0" Grid.Column="4" Value="{Binding TextPower}" Minimum="0" Maximum="1000" Width="100"/>
+                        
+                        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" 
+                                 Text="{Binding CustomLabel}" 
+                                 Watermark="enter custom label" 
+                                 Margin="0,10,0,0"/>
+                    </Grid>
+                </Border>
+
+                <!-- Size -->
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="Size" VerticalAlignment="Center" Width="100"/>
+                    <TextBlock Text="W" VerticalAlignment="Center"/>
+                    <TextBox Text="{Binding Width, StringFormat=F1}" Width="100" IsReadOnly="True"/>
+                    <TextBlock Text="H" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                    <TextBox Text="{Binding Height, StringFormat=F1}" Width="100" IsReadOnly="True"/>
+                </StackPanel>
+
+                <!-- Buttons -->
+                <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right" Margin="0,20,0,0">
+                    <Button Content="❌ Cancel" Width="120" Click="OnCancel"/>
+                    <Button Content="✓ Create!" Width="120" Command="{Binding CreateCommand}" Click="OnCreate"/>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>

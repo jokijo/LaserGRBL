@@ -13,11 +13,13 @@ public class GCodeCommand
     public string RawCommand { get; set; }
     public GCodeCommandType CommandType { get; set; }
     public Dictionary<char, double> Parameters { get; set; }
+    public List<double> GCodes { get; set; } // Track all G-codes on this line
     
     public GCodeCommand(string command)
     {
         RawCommand = command?.Trim() ?? string.Empty;
         Parameters = new Dictionary<char, double>();
+        GCodes = new List<double>();
         Parse();
     }
     
@@ -89,6 +91,12 @@ public class GCodeCommand
                 char letter = match.Groups[1].Value[0];
                 if (double.TryParse(match.Groups[2].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out double value))
                 {
+                    // Track all G-codes separately since multiple can appear on one line
+                    if (letter == 'G')
+                    {
+                        GCodes.Add(value);
+                    }
+                    // Store the last value for each parameter (for X, Y, Z, F, S, etc.)
                     Parameters[letter] = value;
                 }
             }

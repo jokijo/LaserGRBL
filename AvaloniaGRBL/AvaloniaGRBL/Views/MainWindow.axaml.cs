@@ -10,6 +10,8 @@ namespace AvaloniaGRBL.Views;
 public partial class MainWindow : Window
 {
     private GCodeRenderer? _renderer;
+    private bool _isConnectionLogHovered;
+    private bool _isGCodeLogHovered;
     
     public MainWindow()
     {
@@ -22,6 +24,9 @@ public partial class MainWindow : Window
         AddHandler(DragDrop.DragOverEvent, OnDragOver);
         AddHandler(DragDrop.DropEvent, OnDrop);
         DragDrop.SetAllowDrop(this, true);
+        
+        // Setup hover tracking for auto-scroll control
+        this.Loaded += (s, e) => SetupScrollViewerHoverTracking();
     }
     
     private void MainWindow_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -107,8 +112,33 @@ public partial class MainWindow : Window
         }
     }
     
+    private void SetupScrollViewerHoverTracking()
+    {
+        // Setup hover tracking for Connection Log
+        var connectionLogScrollViewer = this.FindControl<ScrollViewer>("ConnectionLogScrollViewer");
+        if (connectionLogScrollViewer != null)
+        {
+            connectionLogScrollViewer.PointerEntered += (s, e) => _isConnectionLogHovered = true;
+            connectionLogScrollViewer.PointerExited += (s, e) => _isConnectionLogHovered = false;
+        }
+        
+        // Setup hover tracking for GCode Log
+        var gcodeLogScrollViewer = this.FindControl<ScrollViewer>("GCodeLogScrollViewer");
+        if (gcodeLogScrollViewer != null)
+        {
+            gcodeLogScrollViewer.PointerEntered += (s, e) => _isGCodeLogHovered = true;
+            gcodeLogScrollViewer.PointerExited += (s, e) => _isGCodeLogHovered = false;
+        }
+    }
+    
     private void ScrollToBottom(string scrollViewerName)
     {
+        // Check if user is hovering over the log - if so, don't auto-scroll
+        if (scrollViewerName == "ConnectionLogScrollViewer" && _isConnectionLogHovered)
+            return;
+        if (scrollViewerName == "GCodeLogScrollViewer" && _isGCodeLogHovered)
+            return;
+        
         var scrollViewer = this.FindControl<ScrollViewer>(scrollViewerName);
         if (scrollViewer != null)
         {

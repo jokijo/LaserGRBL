@@ -26,7 +26,8 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     
     private readonly GrblConnection _grblConnection;
     private readonly Queue<string> _logQueue = new(1000);
-    private readonly Queue<string> _gcodeLogQueue = new(1000);
+    private readonly Queue<GCodeLogEntry> _gcodeLogQueue = new(1000);
+    private readonly Queue<string> _pendingCommands = new();
     private bool _disposed;
     
     [ObservableProperty]
@@ -44,6 +45,11 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(StartProgramCommand))]
     [NotifyCanExecuteChangedFor(nameof(ResetGrblCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ToggleLaserFocusingCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ToggleLaser10PercentCommand))]
+    [NotifyCanExecuteChangedFor(nameof(SetOriginCommand))]
+    [NotifyCanExecuteChangedFor(nameof(MoveToCenterCommand))]
+    [NotifyCanExecuteChangedFor(nameof(MoveToOriginCommand))]
     [NotifyPropertyChangedFor(nameof(CanExecuteFraming))]
     private bool _isConnected;
     
@@ -106,6 +112,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     private bool _isProgramRunning;
     
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(StartProgramCommand))]
     [NotifyCanExecuteChangedFor(nameof(PauseProgramCommand))]
     [NotifyCanExecuteChangedFor(nameof(ResumeProgramCommand))]
     private bool _isProgramPaused;
@@ -121,6 +128,12 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     [NotifyCanExecuteChangedFor(nameof(PauseProgramCommand))]
     [NotifyCanExecuteChangedFor(nameof(StopProgramCommand))]
     private bool _isFraming;
+    
+    [ObservableProperty]
+    private bool _isLaserOnForFocusing;
+    
+    [ObservableProperty]
+    private bool _isLaserOnAt10Percent;
     
     private CancellationTokenSource? _executionCancellation;
     private CancellationTokenSource? _framingCancellation;
@@ -224,6 +237,13 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         Avalonia.Threading.Dispatcher.UIThread.Post(() =>
         {
             AppendLog($"RX: {data}");
+            
+            // Check if this is a command completion response
+            if (data.Trim().Equals("ok", StringComparison.OrdinalIgnoreCase) || 
+                data.Trim().StartsWith("error:", StringComparison.OrdinalIgnoreCase))
+            {
+                MarkCommandCompleted(data.Trim().StartsWith("error:"));
+            }
         });
     }
     
@@ -278,21 +298,79 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         ConnectionLog = string.Join(Environment.NewLine, _logQueue);
     }
     
-    private void AppendGCodeLog(string command, bool isSent = true)
+    private void AppendGCodeLog(string command, bool isSent = true, bool trackCompletion = true)
     {
         var timestamp = DateTime.Now.ToString("HH:mm:ss.fff");
-        var prefix = isSent ? ">> " : "<< ";
-        var logEntry = $"[{timestamp}] {prefix}{command}";
+        var entry = new GCodeLogEntry
+        {
+            Timestamp = timestamp,
+            Command = command,
+            IsSent = isSent,
+            IsCompleted = !trackCompletion // Mark as completed immediately if not tracking
+        };
+        
+        // Track sent commands for completion marking (only if tracking is enabled)
+        if (isSent && trackCompletion)
+        {
+            _pendingCommands.Enqueue(command);
+        }
         
         // Add to queue and maintain max size
-        _gcodeLogQueue.Enqueue(logEntry);
+        _gcodeLogQueue.Enqueue(entry);
         if (_gcodeLogQueue.Count > 1000)
         {
             _gcodeLogQueue.Dequeue();
         }
         
-        // Rebuild log text from queue using string.Join for efficiency
-        GcodeLog = string.Join(Environment.NewLine, _gcodeLogQueue);
+        // Rebuild log text from queue
+        RebuildGCodeLog();
+    }
+    
+    private void MarkCommandCompleted(bool isError)
+    {
+        if (_pendingCommands.Count > 0)
+        {
+            var completedCommand = _pendingCommands.Dequeue();
+            
+            // Find the entry in the log and mark it as completed
+            foreach (var entry in _gcodeLogQueue)
+            {
+                if (entry.Command == completedCommand && !entry.IsCompleted)
+                {
+                    entry.IsCompleted = true;
+                    entry.IsError = isError;
+                    break;
+                }
+            }
+            
+            // Rebuild the log display
+            RebuildGCodeLog();
+        }
+    }
+    
+    private void RebuildGCodeLog()
+    {
+        var sb = new StringBuilder();
+        foreach (var entry in _gcodeLogQueue)
+        {
+            string icon;
+            if (!entry.IsSent)
+            {
+                icon = "<< ";
+            }
+            else if (entry.IsCompleted)
+            {
+                icon = entry.IsError ? "❌ " : "✓ ";
+            }
+            else
+            {
+                icon = "⏱ ";
+            }
+            
+            sb.AppendLine($"[{entry.Timestamp}] {icon}{entry.Command}");
+        }
+        
+        GcodeLog = sb.ToString().TrimEnd();
     }
     
     [RelayCommand]
@@ -797,7 +875,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     /// <summary>
     /// Set current position as origin (0,0,0)
     /// </summary>
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanSetOrigin))]
     private void SetOrigin()
     {
         if (!IsConnected)
@@ -820,12 +898,186 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         }
     }
     
+    private bool CanSetOrigin()
+    {
+        return IsConnected;
+    }
+    
     /// <summary>
-    /// Start executing the loaded G-code program
+    /// Move laser to center of bounding box
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanMoveToCenter))]
+    private void MoveToCenter()
+    {
+        if (!IsConnected)
+        {
+            AppendLog("Error: Not connected to GRBL");
+            return;
+        }
+        
+        if (LoadedGCodeFile == null || !LoadedGCodeFile.Bounds.IsValid)
+        {
+            AppendLog("Error: No valid G-Code file loaded");
+            return;
+        }
+        
+        try
+        {
+            var bounds = LoadedGCodeFile.Bounds;
+            var centerX = (bounds.MinX + bounds.MaxX) / 2;
+            var centerY = (bounds.MinY + bounds.MaxY) / 2;
+            
+            // Move to center in work coordinate system
+            var command = $"G90 G0 X{centerX:F3} Y{centerY:F3}";
+            _grblConnection.SendCommand(command);
+            AppendGCodeLog(command, true);
+            AppendLog($"Moving to center of bounding box: X{centerX:F3} Y{centerY:F3}");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Move to center failed: {ex.Message}");
+        }
+    }
+    
+    private bool CanMoveToCenter()
+    {
+        return IsConnected;
+    }
+    
+    /// <summary>
+    /// Move laser to work origin (0,0)
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanMoveToOrigin))]
+    private void MoveToOrigin()
+    {
+        if (!IsConnected)
+        {
+            AppendLog("Error: Not connected to GRBL");
+            return;
+        }
+        
+        try
+        {
+            // Move to origin in work coordinate system
+            var command = "G90 G0 X0 Y0";
+            _grblConnection.SendCommand(command);
+            AppendGCodeLog(command, true);
+            AppendLog("Moving to work origin (0,0)");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Move to origin failed: {ex.Message}");
+        }
+    }
+    
+    private bool CanMoveToOrigin()
+    {
+        return IsConnected;
+    }
+    
+    /// <summary>
+    /// Toggle laser on/off for focusing at 0.3% power
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanToggleLaserFocusing))]
+    private void ToggleLaserFocusing()
+    {
+        if (!IsConnected)
+        {
+            AppendLog("Error: Not connected to GRBL");
+            return;
+        }
+        
+        try
+        {
+            if (IsLaserOnForFocusing)
+            {
+                // Turn off laser
+                var command = "M5";
+                _grblConnection.SendCommand(command);
+                AppendGCodeLog(command, true);
+                AppendLog("Laser turned OFF");
+                IsLaserOnForFocusing = false;
+            }
+            else
+            {
+                // Turn on laser at 0.3% power (S3 for 1000 max spindle speed)
+                var command = "M3 S3";
+                _grblConnection.SendCommand(command);
+                AppendGCodeLog(command, true);
+                AppendLog("Laser turned ON for focusing (0.3% power)");
+                IsLaserOnForFocusing = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Toggle laser focusing failed: {ex.Message}");
+            IsLaserOnForFocusing = false;
+        }
+    }
+    
+    private bool CanToggleLaserFocusing()
+    {
+        return IsConnected;
+    }
+    
+    /// <summary>
+    /// Toggle laser at 10% power (M3 S100 / M5)
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanToggleLaser10Percent))]
+    private void ToggleLaser10Percent()
+    {
+        if (!IsConnected)
+        {
+            AppendLog("Error: Not connected to GRBL");
+            return;
+        }
+        
+        try
+        {
+            if (IsLaserOnAt10Percent)
+            {
+                // Turn laser off
+                var command = "M5";
+                _grblConnection.SendCommand(command);
+                AppendGCodeLog(command, true);
+                AppendLog("Laser turned OFF (10%)");
+                IsLaserOnAt10Percent = false;
+            }
+            else
+            {
+                // Turn laser on at 10% power (S100 out of 1000 max)
+                var command = "M3 S100";
+                _grblConnection.SendCommand(command);
+                AppendGCodeLog(command, true);
+                AppendLog("Laser turned ON at 10% power");
+                IsLaserOnAt10Percent = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Toggle laser 10% failed: {ex.Message}");
+            IsLaserOnAt10Percent = false;
+        }
+    }
+    
+    private bool CanToggleLaser10Percent()
+    {
+        return IsConnected;
+    }
+    
+    /// <summary>
+    /// Start executing the loaded G-code program, or resume if paused
     /// </summary>
     [RelayCommand(CanExecute = nameof(CanStartProgram))]
     private async Task StartProgramAsync()
     {
+        // If paused, resume instead of starting
+        if (IsProgramRunning && IsProgramPaused)
+        {
+            ResumeProgram();
+            return;
+        }
+        
         if (!IsConnected || LoadedGCodeFile == null)
         {
             AppendLog("Error: Cannot start program - not connected or no file loaded");
@@ -880,7 +1132,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     
     private bool CanStartProgram()
     {
-        return IsConnected && HasGCodeLoaded && !IsProgramRunning;
+        return IsConnected && HasGCodeLoaded && (!IsProgramRunning || IsProgramPaused);
     }
     
     /// <summary>
@@ -981,13 +1233,26 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         
         try
         {
+            // Set paused state FIRST to enable Start button immediately
+            IsProgramPaused = true;
+            
+            // Manually trigger command notification to ensure UI updates
+            StartProgramCommand.NotifyCanExecuteChanged();
+            
             // Block the execution loop
             _pauseEvent.Reset();
             
-            // Send Feed Hold command (0x21 = '!')
+            // Send Feed Hold command (0x21 = '!') - this is immediate
             _grblConnection.SendImmediate(0x21);
-            IsProgramPaused = true;
-            AppendLog("Program paused (Feed Hold)");
+            
+            // Turn off laser (send without tracking completion since GRBL is pausing)
+            var command = "M5";
+            _grblConnection.SendCommand(command);
+            AppendGCodeLog(command, true, trackCompletion: false);
+            
+            AppendLog("Program paused (Feed Hold + M5 laser off)");
+            AppendLog(HasGCodeLoaded.ToString());
+            AppendLog(IsConnected.ToString() + " " + HasGCodeLoaded.ToString() + " " + IsProgramRunning.ToString() + " " + IsProgramPaused.ToString());
         }
         catch (Exception ex)
         {
@@ -1347,15 +1612,86 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     // ===== Generate Menu Commands =====
     
     [RelayCommand]
-    private void PowerVsSpeed()
+    private async Task PowerVsSpeedAsync()
     {
-        AppendLog("Power vs Speed generator feature coming soon");
+        try
+        {
+            var powerVsSpeedWindow = new Views.PowerVsSpeedWindow
+            {
+                DataContext = new PowerVsSpeedViewModel(GeneratePowerVsSpeedTest)
+            };
+            
+            var mainWindow = Avalonia.Application.Current?.ApplicationLifetime is 
+                Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop 
+                ? desktop.MainWindow 
+                : null;
+            
+            await powerVsSpeedWindow.ShowDialog(mainWindow!);
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Error opening Power vs Speed generator: {ex.Message}");
+        }
+    }
+    
+    private void GeneratePowerVsSpeedTest(int fRow, int sCol, int fStart, int fEnd, int sStart, int sEnd, 
+                                          int xSize, int ySize, double resolution, int fText, int sText, 
+                                          string title, string laserMode)
+    {
+        try
+        {
+            LoadedGCodeFile = new GCodeFile();
+            LoadedGCodeFile.GenerateGreyscaleTest(fRow, sCol, fStart, fEnd, sStart, sEnd, 
+                                                   xSize, ySize, resolution, fText, sText, title, laserMode);
+            GcodeFileName = "PowerSpeed Test";
+            HasGCodeLoaded = true;
+            AppendLog($"Power vs Speed test generated: {LoadedGCodeFile.CommandCount} commands");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Error generating Power vs Speed test: {ex.Message}");
+        }
     }
     
     [RelayCommand]
-    private void CuttingTest()
+    private async Task CuttingTestAsync()
     {
-        AppendLog("Cutting Test generator feature coming soon");
+        try
+        {
+            var cuttingTestWindow = new Views.CuttingTestWindow
+            {
+                DataContext = new CuttingTestViewModel(GenerateCuttingTest)
+            };
+            
+            var mainWindow = Avalonia.Application.Current?.ApplicationLifetime is 
+                Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop 
+                ? desktop.MainWindow 
+                : null;
+            
+            await cuttingTestWindow.ShowDialog(mainWindow!);
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Error opening Cutting Test generator: {ex.Message}");
+        }
+    }
+    
+    private void GenerateCuttingTest(int fCol, int fStart, int fEnd, int pStart, int pEnd, 
+                                     int sFixed, int fText, int sText, string title, string laserMode)
+    {
+        try
+        {
+            LoadedGCodeFile = new GCodeFile();
+            LoadedGCodeFile.GenerateCuttingTest(fCol, fStart, fEnd, pStart, pEnd, 
+                                                sFixed, fText, sText, title, laserMode);
+            GcodeFileName = "Cutting Test";
+            HasGCodeLoaded = true;
+            AppendLog($"Cutting test generated: {LoadedGCodeFile.CommandCount} commands");
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Error generating Cutting test: {ex.Message}");
+        }
     }
     
     [RelayCommand]
@@ -1829,4 +2165,16 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
             _disposed = true;
         }
     }
+}
+
+/// <summary>
+/// Represents a GCode command log entry with status tracking
+/// </summary>
+internal class GCodeLogEntry
+{
+    public string Timestamp { get; set; } = string.Empty;
+    public string Command { get; set; } = string.Empty;
+    public bool IsSent { get; set; }
+    public bool IsCompleted { get; set; }
+    public bool IsError { get; set; }
 }

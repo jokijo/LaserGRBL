@@ -361,18 +361,6 @@
                                         ToolTip.Tip="{Binding Localization[RefreshPorts]}"
                                         Classes="refresh-button"/>
                             </StackPanel>
-                            
-                            <!-- Status Info -->
-                            <Separator Margin="0,10" Background="{Binding Theme.SeparatorColor}"/>
-                            <TextBlock Text="{Binding GrblState, FallbackValue='Idle'}" 
-                                       FontSize="14" FontWeight="Bold" 
-                                       Foreground="{Binding Theme.AccentText}" TextAlignment="Center"/>
-                            <TextBlock Text="{Binding MachinePosition, FallbackValue='MPos: X:0.000 Y:0.000 Z:0.000'}" 
-                                       FontFamily="Courier New" FontSize="10" 
-                                       Foreground="{Binding Theme.SecondaryText}" Margin="0,5,0,0"/>
-                            <TextBlock Text="{Binding WorkPosition, FallbackValue='WPos: X:0.000 Y:0.000 Z:0.000'}" 
-                                       FontFamily="Courier New" FontSize="10" 
-                                       Foreground="{Binding Theme.SecondaryText}"/>
                         </StackPanel>
                     </Border>
                     
@@ -537,9 +525,15 @@
                     
                     <!-- Coordinate Display (Top Right) -->
                     <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" Margin="20">
-                        <Border Background="{Binding Theme.InfoBoxBackground}" BorderBrush="{Binding Theme.InfoBoxBorder}" BorderThickness="1" Padding="10">
+                        <Border Background="{Binding Theme.InfoBoxBackground}" BorderBrush="{Binding Theme.InfoBoxBorder}" BorderThickness="1" Padding="10" Opacity="0.70">
                             <StackPanel>
+                                <TextBlock Text="{Binding GrblState, FallbackValue='Idle'}"
+                                       FontSize="14" FontWeight="Bold" 
+                                       Foreground="{Binding Theme.AccentText}" TextAlignment="Left"/>
                                 <TextBlock Text="{Binding WorkPosition, FallbackValue='WCO     17,600    -52,000'}" 
+                                           FontFamily="Courier New" FontSize="14" 
+                                           Foreground="{Binding Theme.PrimaryText}" TextAlignment="Right"/>
+                                <TextBlock Text="{Binding MachinePosition, FallbackValue='WCO     17,600    -52,000'}" 
                                            FontFamily="Courier New" FontSize="14" 
                                            Foreground="{Binding Theme.PrimaryText}" TextAlignment="Right"/>
                                 <Grid ColumnDefinitions="Auto,Auto" Margin="0,5,0,0">
@@ -596,13 +590,19 @@
                     
                     <!-- Additional Control Buttons -->
                     <Button Content="🎯" Classes="toolbar-button" ToolTip.Tip="Set Origin (Zero XY)" Command="{Binding SetOriginCommand}"/>
-                    <Button Content="⚙" Classes="toolbar-button" ToolTip.Tip="Settings"/>
+                    <!-- <Button Content="⚙" Classes="toolbar-button" ToolTip.Tip="Settings"/> -->
                     <Button Content="◱" Classes="toolbar-button" ToolTip.Tip="Framing - Laser ON - Low power (0.3 %)" 
                             Command="{Binding FramingCommand}" 
                             IsEnabled="{Binding CanExecuteFraming}"/>
-                    <Button Content="⊕" Classes="toolbar-button" ToolTip.Tip="Target"/>
-                    <Button Content="🔆" Classes="toolbar-button" ToolTip.Tip="Laser"/>
-                    <Button Content="🔧" Classes="toolbar-button" ToolTip.Tip="Tools"/>
+                    <Button Content="⊕" Classes="toolbar-button" ToolTip.Tip="Turn on laser for focusing (0.3 %)" 
+                            Command="{Binding ToggleLaserFocusingCommand}"/>
+                    <Button Content="🔆" Classes="toolbar-button" ToolTip.Tip="Laser 10 %" 
+                            Command="{Binding ToggleLaser10PercentCommand}"/>
+                    <Button Content="⊙" Classes="toolbar-button" ToolTip.Tip="Move to center of bounding box" 
+                            Command="{Binding MoveToCenterCommand}"/>
+                    <Button Content="○" Classes="toolbar-button" ToolTip.Tip="Move to origin (0,0)" 
+                            Command="{Binding MoveToOriginCommand}"/>
+                    <!-- <Button Content="🔧" Classes="toolbar-button" ToolTip.Tip="Tools"/> -->
                     
                     <Border Width="20" Background="Transparent"/>
                     

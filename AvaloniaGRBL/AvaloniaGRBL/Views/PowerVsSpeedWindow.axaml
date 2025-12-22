@@ -1,0 +1,177 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:AvaloniaGRBL.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="750" d:DesignHeight="400"
+        x:Class="AvaloniaGRBL.Views.PowerVsSpeedWindow"
+        x:DataType="vm:PowerVsSpeedViewModel"
+        Title="Power Vs Speed test generator"
+        Width="750" Height="400"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
+
+    <Design.DataContext>
+        <vm:PowerVsSpeedViewModel />
+    </Design.DataContext>
+
+    <Grid Margin="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left side - Preview -->
+        <Border Grid.Column="0" Background="#2A2A2A" BorderBrush="#444" BorderThickness="1" Padding="10" Margin="0,0,20,0">
+            <StackPanel>
+                <TextBlock Text="LaserGRBL GrayScale Test" FontSize="12" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                
+                <!-- Simple gradient preview -->
+                <Border Height="200" Background="White" BorderBrush="#666" BorderThickness="1">
+                    <Grid>
+                        <Rectangle>
+                            <Rectangle.Fill>
+                                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                                    <GradientStop Color="#E0E0E0" Offset="0"/>
+                                    <GradientStop Color="#A0A0A0" Offset="0.33"/>
+                                    <GradientStop Color="#606060" Offset="0.66"/>
+                                    <GradientStop Color="#202020" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Rectangle.Fill>
+                        </Rectangle>
+                        <!-- Grid overlay -->
+                        <Grid ShowGridLines="True" Opacity="0.3">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                        </Grid>
+                    </Grid>
+                </Border>
+                
+                <TextBlock Text="S100                                                 S1000" 
+                           FontSize="9" FontFamily="Courier New" 
+                           HorizontalAlignment="Center" Margin="0,5,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Right side - Parameters -->
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="15">
+                <TextBlock Text="Generate test map for different combinations of power and speed." 
+                           TextWrapping="Wrap" FontSize="12"/>
+
+                <TextBlock Text="Parameters" FontWeight="Bold" FontSize="14"/>
+
+                <!-- Power (S) -->
+                <Border Background="#2A2A2A" Padding="10" CornerRadius="5">
+                    <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="Auto,120,Auto,120,Auto,80">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Power (S)" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="from" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <NumericUpDown Grid.Row="0" Grid.Column="2" Value="{Binding PowerMin}" Minimum="0" Maximum="1000" Width="100" 
+                                       IsEnabled="{Binding PowerMinEnabled}"/>
+                        
+                        <TextBlock Grid.Row="0" Grid.Column="3" Text="to" Margin="10,0,5,0" VerticalAlignment="Center"/>
+                        <NumericUpDown Grid.Row="0" Grid.Column="4" Value="{Binding PowerMax}" Minimum="0" Maximum="1000" Width="100"/>
+                        
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="steps" Margin="0,10,5,0" VerticalAlignment="Center"/>
+                        <NumericUpDown Grid.Row="1" Grid.Column="2" Value="{Binding PowerSteps}" Minimum="1" Maximum="50" Width="100" Margin="0,10,0,0"/>
+                        
+                        <TextBlock Grid.Row="1" Grid.Column="3" Text="step size" Margin="10,10,5,0" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding PowerStepSize}" Width="100" Margin="0,10,0,0" IsReadOnly="True"/>
+                    </Grid>
+                </Border>
+
+                <!-- Speed (F) -->
+                <Border Background="#2A2A2A" Padding="10" CornerRadius="5">
+                    <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="Auto,120,Auto,120,Auto,80">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Speed (F)" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="from" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <NumericUpDown Grid.Row="0" Grid.Column="2" Value="{Binding SpeedMin}" Minimum="0" Maximum="20000" Width="100"
+                                       IsEnabled="{Binding SpeedMinEnabled}"/>
+                        
+                        <TextBlock Grid.Row="0" Grid.Column="3" Text="to" Margin="10,0,5,0" VerticalAlignment="Center"/>
+                        <NumericUpDown Grid.Row="0" Grid.Column="4" Value="{Binding SpeedMax}" Minimum="0" Maximum="20000" Width="100"/>
+                        
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="steps" Margin="0,10,5,0" VerticalAlignment="Center"/>
+                        <NumericUpDown Grid.Row="1" Grid.Column="2" Value="{Binding SpeedSteps}" Minimum="1" Maximum="50" Width="100" Margin="0,10,0,0"/>
+                        
+                        <TextBlock Grid.Row="1" Grid.Column="3" Text="step size" Margin="10,10,5,0" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding SpeedStepSize}" Width="100" Margin="0,10,0,0" IsReadOnly="True"/>
+                    </Grid>
+                </Border>
+
+                <!-- Laser Mode -->
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="Laser Mode" VerticalAlignment="Center" Width="100"/>
+                    <ComboBox SelectedItem="{Binding LaserMode}" Width="200">
+                        <ComboBoxItem Content="M3 - Constant Power">M3</ComboBoxItem>
+                        <ComboBoxItem Content="M4 - Dynamic Power" IsSelected="True">M4</ComboBoxItem>
+                    </ComboBox>
+                </StackPanel>
+
+                <!-- Quality -->
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="Quality" VerticalAlignment="Center" Width="100"/>
+                    <NumericUpDown Value="{Binding Quality}" Minimum="1" Maximum="20" Increment="0.5" 
+                                   FormatString="F3" Width="100"/>
+                    <TextBlock Text="Lines/mm" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Text -->
+                <Border Background="#2A2A2A" Padding="10" CornerRadius="5">
+                    <Grid ColumnDefinitions="Auto,*,Auto,*,Auto,*" RowDefinitions="Auto,Auto">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Text" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="speed" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <NumericUpDown Grid.Row="0" Grid.Column="2" Value="{Binding TextSpeed}" Minimum="100" Maximum="20000" Width="100"/>
+                        
+                        <TextBlock Grid.Row="0" Grid.Column="3" Text="pow" Margin="10,0,5,0" VerticalAlignment="Center"/>
+                        <NumericUpDown Grid.Row="0" Grid.Column="4" Value="{Binding TextPower}" Minimum="0" Maximum="1000" Width="100"/>
+                        
+                        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="4" 
+                                 Text="{Binding CustomLabel}" 
+                                 Watermark="enter custom label" 
+                                 Margin="0,10,0,0"/>
+                    </Grid>
+                </Border>
+
+                <!-- Size -->
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <TextBlock Text="Size" VerticalAlignment="Center" Width="100"/>
+                    <TextBlock Text="W" VerticalAlignment="Center"/>
+                    <NumericUpDown Value="{Binding Width}" Minimum="10" Maximum="500" Width="100" 
+                                   FormatString="F1"/>
+                    <TextBlock Text="H" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                    <NumericUpDown Value="{Binding Height}" Minimum="10" Maximum="500" Width="100"
+                                   FormatString="F1"/>
+                </StackPanel>
+
+                <!-- Buttons -->
+                <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right" Margin="0,20,0,0">
+                    <Button Content="❌ Cancel" Width="120" Click="OnCancel"/>
+                    <Button Content="✓ Create!" Width="120" Command="{Binding CreateCommand}" Click="OnCreate"/>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>

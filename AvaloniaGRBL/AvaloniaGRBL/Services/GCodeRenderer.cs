@@ -558,13 +558,23 @@ public class GCodeRenderer
         if (_currentFile == null)
             return;
         
-        // NOTE: This assumes absolute positioning mode (G90)
-        // Relative positioning mode (G91) is not currently supported
         double currentX = 0, currentY = 0;
         bool laserOn = false;
+        bool absoluteMode = true; // G90 is default (absolute positioning)
         
         foreach (var cmd in _currentFile.Commands)
         {
+            // Update modal state FIRST (before processing movement)
+            // Modal commands on the same line affect the current command
+            // Check all G-codes on this line (there can be multiple)
+            foreach (var gValue in cmd.GCodes)
+            {
+                if (gValue == 90)
+                    absoluteMode = true;
+                else if (gValue == 91)
+                    absoluteMode = false;
+            }
+            
             // Track laser state
             if (cmd.CommandType == GCodeCommandType.SpindleOn)
             {
@@ -577,12 +587,24 @@ public class GCodeRenderer
                 continue;
             }
             
-            // Handle movement commands
+            // Handle movement commands using the updated modal state
             if (cmd.CommandType == GCodeCommandType.RapidMove || 
                 cmd.CommandType == GCodeCommandType.LinearMove)
             {
-                var newX = cmd.HasParameter('X') ? cmd.GetParameter('X') : currentX;
-                var newY = cmd.HasParameter('Y') ? cmd.GetParameter('Y') : currentY;
+                // Calculate new position based on absolute or relative mode
+                double newX, newY;
+                if (absoluteMode)
+                {
+                    // Absolute mode: parameters are absolute positions
+                    newX = cmd.HasParameter('X') ? cmd.GetParameter('X') : currentX;
+                    newY = cmd.HasParameter('Y') ? cmd.GetParameter('Y') : currentY;
+                }
+                else
+                {
+                    // Relative mode: parameters are offsets from current position
+                    newX = currentX + (cmd.HasParameter('X') ? cmd.GetParameter('X') : 0);
+                    newY = currentY + (cmd.HasParameter('Y') ? cmd.GetParameter('Y') : 0);
+                }
                 
                 // Only draw if there's actual movement
                 if (newX != currentX || newY != currentY)
@@ -635,8 +657,21 @@ public class GCodeRenderer
                 // This provides a basic visualization but reduces accuracy for curved toolpaths
                 // TODO: Implement proper arc rendering by calculating arc center from I/J parameters
                 // and drawing multiple line segments to approximate the curve
-                var newX = cmd.HasParameter('X') ? cmd.GetParameter('X') : currentX;
-                var newY = cmd.HasParameter('Y') ? cmd.GetParameter('Y') : currentY;
+                
+                // Calculate new position based on absolute or relative mode
+                double newX, newY;
+                if (absoluteMode)
+                {
+                    // Absolute mode: parameters are absolute positions
+                    newX = cmd.HasParameter('X') ? cmd.GetParameter('X') : currentX;
+                    newY = cmd.HasParameter('Y') ? cmd.GetParameter('Y') : currentY;
+                }
+                else
+                {
+                    // Relative mode: parameters are offsets from current position
+                    newX = currentX + (cmd.HasParameter('X') ? cmd.GetParameter('X') : 0);
+                    newY = currentY + (cmd.HasParameter('Y') ? cmd.GetParameter('Y') : 0);
+                }
                 
                 if (newX != currentX || newY != currentY)
                 {
